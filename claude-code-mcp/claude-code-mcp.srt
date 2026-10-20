@@ -155,58 +155,58 @@ If Claude Code asks for permission the first time, approve it.
 Claude checks the page, and the console, and finds the real bug: the thank-you message never appears.
 
 40
-00:03:38,996 --> 00:03:39,226
+00:03:38,996 --> 00:03:44,473
 It's a one-letter typo. Easy to miss when you read the code, but obvious in a real browser.
 
 41
-00:03:39,676 --> 00:03:39,904
+00:03:44,923 --> 00:03:47,244
 I ask Claude to fix it, and test it again.
 
 42
-00:03:42,726 --> 00:03:49,010
+00:03:47,973 --> 00:03:54,257
 This time, the message appears. Claude didn't just read my code. It used my page, like a real user.
 
 43
-00:03:50,560 --> 00:03:53,462
+00:03:55,807 --> 00:03:58,709
 Step five: go further. Here are four tips.
 
 44
-00:03:53,912 --> 00:04:02,886
+00:03:59,159 --> 00:04:08,133
 One: add dash dash scope project, and the server is saved in a dot mcp dot json file. Commit it, and your whole team gets the same tools.
 
 45
-00:04:03,336 --> 00:04:09,939
+00:04:08,583 --> 00:04:15,186
 Two: type slash mcp inside Claude, or run claude mcp list, to check your servers anytime.
 
 46
-00:04:10,389 --> 00:04:16,427
+00:04:15,636 --> 00:04:21,674
 Three: only add servers you trust. A server can run code on your machine, and see the data you send it.
 
 47
-00:04:16,877 --> 00:04:24,890
+00:04:22,124 --> 00:04:30,137
 Four: remove servers you don't use, with claude mcp remove. Each connected server takes some space in Claude's context window.
 
 48
-00:04:26,440 --> 00:04:27,093
+00:04:31,687 --> 00:04:32,340
 Let's recap.
 
 49
-00:04:27,543 --> 00:04:32,733
+00:04:32,790 --> 00:04:37,980
 MCP is a standard way to plug tools into Claude, like a USB-C port for AI.
 
 50
-00:04:33,183 --> 00:04:37,575
+00:04:38,430 --> 00:04:42,822
 You add a server with claude mcp add, and check it with claude mcp list.
 
 51
-00:04:38,025 --> 00:04:43,377
+00:04:43,272 --> 00:04:48,624
 And whenever you keep copying data into the chat, that's your sign to connect the tool with MCP.
 
 52
-00:04:44,827 --> 00:04:50,746
+00:04:50,074 --> 00:04:55,993
 The demo page and the setup from this video are linked in the description. Try finding the bug with Claude yourself.
 
 53
-00:04:51,196 --> 00:04:58,026
+00:04:56,443 --> 00:05:03,273
 If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
 
