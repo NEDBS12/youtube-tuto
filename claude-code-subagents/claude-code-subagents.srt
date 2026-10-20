@@ -1,0 +1,240 @@
+1
+00:00:00,600 --> 00:00:06,392
+Have you noticed your Claude Code conversation filling up with long test results, logs, and search output?
+
+2
+00:00:06,842 --> 00:00:10,421
+In this video, you'll learn how to keep it clean, with subagents.
+
+3
+00:00:10,871 --> 00:00:16,975
+I'll explain what a subagent is, when to use one, and then we'll build a real one together, step by step.
+
+4
+00:00:18,525 --> 00:00:19,629
+So, what is a subagent?
+
+5
+00:00:20,079 --> 00:00:26,110
+A subagent is a specialized helper that Claude can hand a task to. Like a teammate you delegate a job to.
+
+6
+00:00:26,560 --> 00:00:33,983
+It works in its own context window, that's its own working memory, with its own instructions, and only the tools you allow.
+
+7
+00:00:34,433 --> 00:00:38,546
+When it's done, it sends back only a short summary to your main conversation.
+
+8
+00:00:38,996 --> 00:00:43,881
+And it's just a Markdown file, with a short header and instructions, like the one on the right.
+
+9
+00:00:45,331 --> 00:00:47,296
+Here's how it works, in three parts.
+
+10
+00:00:47,746 --> 00:00:53,938
+First, Claude delegates. When your request matches a subagent's description, Claude hands the task over.
+
+11
+00:00:54,388 --> 00:01:01,097
+Second, the subagent works alone, with a fresh context, its own instructions, and only the tools you gave it.
+
+12
+00:01:01,547 --> 00:01:06,749
+Third, only a summary comes back. All the long output stays inside the subagent.
+
+13
+00:01:07,199 --> 00:01:10,840
+So your main conversation stays clean, and focused on your real work.
+
+14
+00:01:12,290 --> 00:01:14,743
+Why use subagents? Here are four reasons.
+
+15
+00:01:15,193 --> 00:01:21,647
+One: save context. Noisy output, like logs and test results, stays out of your conversation.
+
+16
+00:01:22,097 --> 00:01:28,122
+Two: limit tools. For example, a test runner that can run commands, but can't edit your files.
+
+17
+00:01:28,572 --> 00:01:33,112
+Three: specialize. Each subagent gets focused instructions for one job.
+
+18
+00:01:33,562 --> 00:01:39,635
+And four: lower costs. You can send simple jobs to a faster, cheaper model, like Haiku.
+
+19
+00:01:41,085 --> 00:01:42,168
+So when should you use one?
+
+20
+00:01:42,618 --> 00:01:48,663
+Stay in the main conversation for back-and-forth work, quick changes, and steps that share a lot of context.
+
+21
+00:01:49,113 --> 00:01:56,649
+Use a subagent when a task produces lots of output you won't need again, needs strict tool limits, or can simply end with a summary.
+
+22
+00:01:58,099 --> 00:01:59,855
+Our example: a test runner.
+
+23
+00:02:00,305 --> 00:02:06,245
+Running a test suite prints a lot. Here, sixty-eight lines, and all of it lands in your conversation.
+
+24
+00:02:06,695 --> 00:02:13,103
+A test-runner subagent runs the tests in its own context, and sends back just the failures, and where to look.
+
+25
+00:02:14,653 --> 00:02:19,803
+First, the problem. Here's a small shop project: a cart file, and thirty tests.
+
+26
+00:02:20,253 --> 00:02:22,947
+I start Claude Code, and ask it to run the tests.
+
+27
+00:02:23,516 --> 00:02:30,025
+Claude runs them right here, in the main conversation. Every line of the output goes into its context window.
+
+28
+00:02:30,475 --> 00:02:39,041
+One failure. But all sixty-eight lines now take up space in Claude's working memory. Do this a few times, and your session fills up with noise.
+
+29
+00:02:39,891 --> 00:02:42,244
+Step one: create the subagent file.
+
+30
+00:02:42,694 --> 00:02:48,473
+Subagents for a project live in .claude/agents. One Markdown file per subagent.
+
+31
+00:02:48,923 --> 00:02:55,807
+I call it test-runner dot M D. Put it in the agents folder in your home directory instead, and you get it in every project.
+
+32
+00:02:56,557 --> 00:02:58,198
+Step two: write the header.
+
+33
+00:02:58,648 --> 00:03:02,640
+Like a skill, it starts with a short header between two lines of dashes.
+
+34
+00:03:05,490 --> 00:03:07,549
+The name is how you and Claude refer to it.
+
+35
+00:03:07,999 --> 00:03:15,815
+The description is the key line. Claude reads it to decide when to delegate. Use proactively tells Claude it can call this helper on its own.
+
+36
+00:03:16,265 --> 00:03:25,167
+Tools is an allow list. Read, Grep, Glob and Bash. No Edit or Write, so this helper can run tests, but can never change your code.
+
+37
+00:03:25,617 --> 00:03:33,389
+And model haiku sends this simple job to a faster, cheaper model. Write inherit to use the same model as your conversation.
+
+38
+00:03:34,139 --> 00:03:36,278
+Step three: write the instructions.
+
+39
+00:03:36,728 --> 00:03:42,210
+Everything below the header becomes the subagent's own system prompt. I tell it exactly what to do.
+
+40
+00:03:45,060 --> 00:03:54,492
+Run the tests. If they all pass, reply in one line. For each failure, give the test name, expected versus actual, and the likely file and line.
+
+41
+00:03:54,942 --> 00:04:01,146
+And the most important rule: keep it short, and never paste the full output. That's what keeps your conversation clean.
+
+42
+00:04:01,996 --> 00:04:03,269
+Step four: test it.
+
+43
+00:04:03,719 --> 00:04:08,907
+Because the agents folder is brand new, I start a fresh Claude Code session, so it picks it up.
+
+44
+00:04:09,357 --> 00:04:11,850
+Same request as before: run the tests.
+
+45
+00:04:12,300 --> 00:04:18,946
+This time, Claude delegates. You can see a line with the subagent's name, test-runner, and a short task description.
+
+46
+00:04:19,396 --> 00:04:26,191
+And here's everything that comes back: one failure, what was expected, and exactly where to look. No wall of output.
+
+47
+00:04:26,641 --> 00:04:32,372
+It even found the cause: the code says greater than one hundred, but the rule is one hundred or more.
+
+48
+00:04:32,822 --> 00:04:39,831
+I ask Claude to fix it. Because the description says use proactively, Claude runs the test-runner again to check the fix.
+
+49
+00:04:40,281 --> 00:04:46,324
+You can also call it yourself. Type at, then pick the agent, and that subagent is guaranteed to run.
+
+50
+00:04:47,874 --> 00:04:50,776
+Step five: go further. Here are four tips.
+
+51
+00:04:51,226 --> 00:05:00,054
+One: keep the description short and clear. Say what it does, and when to use it. Descriptions load into every session, so short is better.
+
+52
+00:05:00,504 --> 00:05:06,369
+Two: give it only the tools it needs. Testers and reviewers usually don't need Edit or Write.
+
+53
+00:05:06,819 --> 00:05:12,701
+Three: pick the right model. Haiku for simple jobs, inherit when the task needs your main model.
+
+54
+00:05:13,151 --> 00:05:18,332
+Four: commit the dot claude agents folder to git, and your whole team gets the same helpers.
+
+55
+00:05:19,882 --> 00:05:20,536
+Let's recap.
+
+56
+00:05:20,986 --> 00:05:25,955
+A subagent is a helper with its own context, its own instructions, and its own tools.
+
+57
+00:05:26,405 --> 00:05:32,976
+You create it with one Markdown file in the agents folder: a name, a description, tools, and a model.
+
+58
+00:05:33,426 --> 00:05:38,068
+And you use it for noisy, self-contained tasks, so only the summary comes back.
+
+59
+00:05:39,518 --> 00:05:44,373
+The subagent file and the demo project are linked in the description, so you can try it today.
+
+60
+00:05:44,823 --> 00:05:51,654
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+

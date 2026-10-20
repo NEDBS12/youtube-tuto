@@ -1,0 +1,143 @@
+"""Generates script.json for the Claude Code subagents tutorial from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+SHOP = HERE / "example-files" / "my-shop"
+CART = (SHOP / "cart.py").read_text(encoding="utf-8")
+FIXED = CART.replace("if total > 100:", "if total >= 100:")
+TESTS = (SHOP / "tests" / "test_cart.py").read_text(encoding="utf-8")
+AGENT = (SHOP / ".claude" / "agents" / "test-runner.md").read_text(encoding="utf-8")
+fm_end = AGENT.index("---", 4) + 4
+A_HEAD = AGENT[:fm_end]
+A_BODY = AGENT[fm_end:]
+P = ".claude/agents/test-runner.md"
+
+VERBOSE = ["tool:Bash(python -m pytest -v)",
+           "res:tests/test_cart.py::test_subtotal[items0-0] PASSED",
+           "res:tests/test_cart.py::test_subtotal[items1-10] PASSED",
+           "res:tests/test_cart.py::test_subtotal[items2-30] PASSED",
+           "res:… +65 lines (all of it goes into the conversation)"]
+
+script = {
+ "title": "claude-code-subagents",
+ "steps": ["Create the file", "Write the header", "Write the prompt", "Test it", "Go further"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude Code tutorial · step by step",
+   "title": "Claude Code Subagents\n[[Your AI Helpers]]", "subtitle": "What subagents are, when to use them, and how to build one step by step",
+   "lines": [
+    {"say": "Have you noticed your Claude Code conversation filling up with long test results, logs, and search output?"},
+    {"say": "In this video, you'll learn how to keep it clean, with subagents."},
+    {"say": "I'll explain what a subagent is, when to use one, and then we'll build a real one together, step by step.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is a subagent?", "kicker": "**01** · The concept", "heading": "What is a [[subagent]]?",
+   "items": ["A **specialized helper** that Claude can hand a task to",
+             "It works in **its own context window**, with its own instructions and tools",
+             "It sends back **only a summary** to your main conversation"],
+   "card": {"title": ".CLAUDE/AGENTS/TEST-RUNNER.MD", "code": "---\nname: test-runner\ndescription: Runs the tests...\ntools: Read, Grep, Glob, Bash\nmodel: haiku\n---\n\nYou run tests and report\nthe results..."},
+   "lines": [
+    {"say": "So, what is a subagent?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "A subagent is a specialized helper that Claude can hand a task to. Like a teammate you delegate a job to.", "do": [{"k": "show", "el": "item1"}, {"k": "show", "el": "card", "at": 1.0}]},
+    {"say": "It works in its own context window, that's its own working memory, with its own instructions, and only the tools you allow.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "When it's done, it sends back only a short summary to your main conversation.", "do": [{"k": "show", "el": "item3"}]},
+    {"say": "And it's just a Markdown file, with a short header and instructions, like the one on the right.", "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "How subagents work", "kicker": "**02** · How it works", "heading": "How a subagent [[works]]",
+   "rows": [{"label": "Claude delegates", "text": "Your request matches the subagent's **description**"},
+            {"label": "The subagent works alone", "text": "Fresh context, its own prompt, only its allowed tools"},
+            {"label": "A summary comes back", "text": "The long output stays in the subagent's context"}],
+   "banner": "✓ Your main conversation stays clean and focused",
+   "lines": [
+    {"say": "Here's how it works, in three parts.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "First, Claude delegates. When your request matches a subagent's description, Claude hands the task over.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "Second, the subagent works alone, with a fresh context, its own instructions, and only the tools you gave it.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "Third, only a summary comes back. All the long output stays inside the subagent.", "do": [{"k": "show", "el": "row3"}]},
+    {"say": "So your main conversation stays clean, and focused on your real work.", "do": [{"k": "show", "el": "banner"}], "hold": 0.5}]},
+
+  {"type": "cards", "chapter": "Why use subagents", "kicker": "**03** · The benefits", "heading": "Four reasons to use [[subagents]]",
+   "cards": [{"title": "Save context", "text": "Noisy output stays out of your conversation"},
+             {"title": "Limit tools", "text": "A tester that can't edit, a reviewer that only reads"},
+             {"title": "Specialize", "text": "Focused instructions for one job"},
+             {"title": "Lower costs", "text": "Send simple jobs to a faster model, like Haiku"}],
+   "lines": [
+    {"say": "Why use subagents? Here are four reasons.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: save context. Noisy output, like logs and test results, stays out of your conversation.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: limit tools. For example, a test runner that can run commands, but can't edit your files.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: specialize. Each subagent gets focused instructions for one job.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "And four: lower costs. You can send simple jobs to a faster, cheaper model, like Haiku.", "do": [{"k": "show", "el": "card4"}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "When to use a subagent", "kicker": "**04** · When to use it", "heading": "Main conversation vs. [[subagent]]",
+   "left": {"title": "Stay in the main conversation", "body": "• Back-and-forth, step by step\n• Quick, targeted changes\n• Steps that share a lot of context"},
+   "right": {"title": "Use a subagent", "body": "• Lots of output you won't need again\n• Strict limits on tools\n• Self-contained work that ends\n  with a summary"},
+   "lines": [
+    {"say": "So when should you use one?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Stay in the main conversation for back-and-forth work, quick changes, and steps that share a lot of context.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "Use a subagent when a task produces lots of output you won't need again, needs strict tool limits, or can simply end with a summary.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Our example", "kicker": "**05** · Our example", "heading": "A [[test runner]] subagent",
+   "left": {"title": "Without a subagent", "code": "$ python -m pytest -v\ntest_subtotal[items0-0] PASSED\ntest_subtotal[items1-10] PASSED\ntest_subtotal[items2-30] PASSED\n...\n68 lines of output,\nall in your conversation"},
+   "right": {"title": "With a test-runner subagent", "body": "**1 failed, 29 passed**\n\n• test_discount[100-90]\n  expected 90, got 100\n• cart.py, line 8:\n  `>` should be `>=`"},
+   "lines": [
+    {"say": "Our example: a test runner.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Running a test suite prints a lot. Here, sixty-eight lines, and all of it lands in your conversation.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "A test-runner subagent runs the tests in its own context, and sends back just the failures, and where to look.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.5}], "hold": 0.6}]},
+
+  {"type": "screen", "chapter": "The problem without a subagent", "project": "my-shop", "kicker": "**DEMO** · The problem", "lines": [
+    {"say": "First, the problem. Here's a small shop project: a cart file, and thirty tests.", "do": [{"k": "file", "path": "tests/test_cart.py", "text": TESTS, "open": False}, {"k": "file", "path": "pytest.ini", "text": "[pytest]\npythonpath = .\n", "open": False}, {"k": "file", "path": "cart.py", "text": CART}]},
+    {"say": "I start Claude Code, and ask it to run the tests.", "do": [{"k": "cmd", "text": "claude", "cps": 12}, {"k": "claude", "at": 1.0}, {"k": "cprompt", "at": 1.6, "text": "Run the tests", "cps": 16}]},
+    {"say": "Claude runs them right here, in the main conversation. Every line of the output goes into its context window.", "do": [{"k": "cout", "lines": VERBOSE + ["ai:1 test failed: test_discount[100-90]. The other 29 passed."], "dur": 2.0}, {"k": "callout", "at": 2.4, "dur": 5.0, "target": "term", "match": "+65 lines", "label": "68 lines in your context"}]},
+    {"say": "One failure. But all sixty-eight lines now take up space in Claude's working memory. Do this a few times, and your session fills up with noise.", "do": [{"k": "note", "dur": 7.0, "title": "Context window", "text": "Claude's **working memory** for this session.\nEvery line of output stays in it, and space is limited."}], "hold": 0.4},
+
+    {"say": "Step one: create the subagent file.", "do": [{"k": "step", "n": 1}, {"k": "clear"}]},
+    {"say": "Subagents for a project live in .claude/agents. One Markdown file per subagent.", "tts": "Subagents for a project live in dot claude, slash agents. One Markdown file per subagent.", "do": [{"k": "cmd", "text": "mkdir -p .claude/agents", "cps": 18}, {"k": "open", "path": P, "at": 2.0}]},
+    {"say": "I call it test-runner dot M D. Put it in the agents folder in your home directory instead, and you get it in every project.", "do": [{"k": "note", "dur": 6.5, "title": "Where subagents live", "rows": [["`.claude/agents/`", "this project, shared via git"], ["`~/.claude/agents/`", "all your projects"]]}], "hold": 0.3},
+
+    {"say": "Step two: write the header.", "do": [{"k": "step", "n": 2}]},
+    {"say": "Like a skill, it starts with a short header between two lines of dashes.", "do": [{"k": "type", "path": P, "text": A_HEAD, "cps": 34}]},
+    {"say": "The name is how you and Claude refer to it.", "do": [{"k": "callout", "dur": 3.4, "target": "editor", "match": "name: test-runner", "label": "Its name"}]},
+    {"say": "The description is the key line. Claude reads it to decide when to delegate. Use proactively tells Claude it can call this helper on its own.", "do": [{"k": "callout", "dur": 7.5, "target": "editor", "match": "description:", "label": "When Claude should delegate"}]},
+    {"say": "Tools is an allow list. Read, Grep, Glob and Bash. No Edit or Write, so this helper can run tests, but can never change your code.", "do": [{"k": "callout", "dur": 7.0, "target": "editor", "match": "tools:", "label": "Can run tests, can't edit"}]},
+    {"say": "And model haiku sends this simple job to a faster, cheaper model. Write inherit to use the same model as your conversation.", "do": [{"k": "callout", "dur": 6.0, "target": "editor", "match": "model: haiku", "label": "A faster, cheaper model"}], "hold": 0.3},
+
+    {"say": "Step three: write the instructions.", "do": [{"k": "step", "n": 3}]},
+    {"say": "Everything below the header becomes the subagent's own system prompt. I tell it exactly what to do.", "do": [{"k": "type", "path": P, "text": A_BODY, "cps": 36}]},
+    {"say": "Run the tests. If they all pass, reply in one line. For each failure, give the test name, expected versus actual, and the likely file and line.", "do": [{"k": "callout", "dur": 7.5, "target": "editor", "match": "For each failing", "span": 4, "label": "Exactly what to report"}]},
+    {"say": "And the most important rule: keep it short, and never paste the full output. That's what keeps your conversation clean.", "do": [{"k": "callout", "dur": 5.5, "target": "editor", "match": "Never paste", "label": "Only the summary comes back"}], "hold": 0.4},
+
+    {"say": "Step four: test it.", "do": [{"k": "step", "n": 4}, {"k": "clear"}]},
+    {"say": "Because the agents folder is brand new, I start a fresh Claude Code session, so it picks it up.", "do": [{"k": "cmd", "text": "claude", "cps": 12}, {"k": "claude", "at": 1.0}]},
+    {"say": "Same request as before: run the tests.", "do": [{"k": "cprompt", "text": "Run the tests", "cps": 16}]},
+    {"say": "This time, Claude delegates. You can see a line with the subagent's name, test-runner, and a short task description.", "do": [{"k": "cout", "lines": ["tool:test-runner(Run the test suite)", "res:Done"], "dur": 0.8}, {"k": "callout", "at": 1.0, "dur": 5.0, "target": "term", "match": "test-runner(Run", "label": "Delegated to the subagent"}]},
+    {"say": "And here's everything that comes back: one failure, what was expected, and exactly where to look. No wall of output.", "do": [{"k": "cout", "lines": ["ai:The test-runner reports 1 failure (29 passed):", "• test_discount[100-90]: expected 90, got 100", "• Likely cause: cart.py line 8 uses > 100,", "  so an order of exactly 100 gets no discount."], "dur": 1.6}, {"k": "callout", "at": 2.0, "dur": 5.5, "target": "term", "match": "reports 1 failure", "span": 4, "label": "Just the summary"}]},
+    {"say": "It even found the cause: the code says greater than one hundred, but the rule is one hundred or more.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "if total > 100", "label": "The bug"}]},
+    {"say": "I ask Claude to fix it. Because the description says use proactively, Claude runs the test-runner again to check the fix.", "do": [{"k": "cprompt", "text": "Fix it", "cps": 12}, {"k": "cout", "at": 1.2, "lines": ["tool:Edit(cart.py)", "res:Updated cart.py", "tool:test-runner(Re-run the tests)", "res:Done", "ai:Fixed: all 30 tests pass."], "dur": 2.0}, {"k": "file", "at": 1.6, "path": "cart.py", "text": FIXED}, {"k": "callout", "at": 3.4, "dur": 4.5, "target": "term", "match": "all 30 tests pass", "label": "Verified by the subagent"}]},
+    {"say": "You can also call it yourself. Type at, then pick the agent, and that subagent is guaranteed to run.", "do": [{"k": "cprompt", "text": "@agent-test-runner check everything still passes", "cps": 26}, {"k": "cout", "at": 0.4, "lines": ["tool:test-runner(Check all tests pass)", "res:Done", "ai:All 30 tests pass."], "dur": 1.2}], "hold": 0.6}]},
+
+  {"type": "cards", "kicker": "**STEP 5** · Go further", "heading": "4 tips for [[better subagents]]", "rail": True,
+   "cards": [{"title": "Short, clear description", "text": "Say what it does and when; add \"use proactively\""},
+             {"title": "Only the tools it needs", "text": "Leave out Edit and Write for testers and reviewers"},
+             {"title": "Pick the right model", "text": "`haiku` for simple jobs, `inherit` for hard ones"},
+             {"title": "Share it", "text": "Commit `.claude/agents/`: your team gets the same helpers"}],
+   "lines": [
+    {"say": "Step five: go further. Here are four tips.", "do": [{"k": "step", "n": 5}, {"k": "show", "el": "heading"}]},
+    {"say": "One: keep the description short and clear. Say what it does, and when to use it. Descriptions load into every session, so short is better.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: give it only the tools it needs. Testers and reviewers usually don't need Edit or Write.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: pick the right model. Haiku for simple jobs, inherit when the task needs your main model.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "Four: commit the dot claude agents folder to git, and your whole team gets the same helpers.", "do": [{"k": "show", "el": "card4"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["A subagent = a helper with **its own context**, prompt and tools",
+             "One file in `.claude/agents/`: name, description, tools, model",
+             "Use it for [[noisy, self-contained]] tasks"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "A subagent is a helper with its own context, its own instructions, and its own tools.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "You create it with one Markdown file in the agents folder: a name, a description, tools, and a model.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "And you use it for noisy, self-contained tasks, so only the summary comes back.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Thanks for [[watching]]", "subtitle": "The subagent and the demo project are in the description", "lines": [
+    {"say": "The subagent file and the demo project are linked in the description, so you can try it today.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")
