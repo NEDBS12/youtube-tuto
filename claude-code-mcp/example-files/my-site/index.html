@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head><title>Zero Cost AI Newsletter</title></head>
+<body>
+  <h1>Get free AI tools every week</h1>
+  <form id="signup">
+    <input id="email" type="email" placeholder="you@example.com" required>
+    <button>Sign up</button>
+  </form>
+  <p id="success" hidden>Thanks! Check your inbox.</p>
+
+  <script>
+    document.getElementById("signup").addEventListener("submit", (e) => {
+      e.preventDefault();
+      document.getElementById("sucess").hidden = false;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+"""Generates script.json for the Claude Code MCP tutorial from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+SITE = HERE / "example-files" / "my-site"
+INDEX = (SITE / "index.html").read_text(encoding="utf-8")
+FIXED = INDEX.replace('"sucess"', '"success"')
+MCPJSON = (SITE / ".mcp.json").read_text(encoding="utf-8")
+ADD = "claude mcp add playwright -- npx -y @playwright/mcp@latest"
+ASK = "Use playwright to open http://localhost:8000, sign up with test@example.com, and tell me what happens"
+
+script = {
+ "title": "claude-code-mcp",
+ "steps": ["Find a server", "Add it", "Check it", "Use it", "Go further"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude Code tutorial · step by step",
+   "title": "MCP in Claude Code\n[[Connect Claude to Your Tools]]", "subtitle": "What MCP is, when to use it, and how to add your first server",
+   "lines": [
+    {"say": "Claude can read and write your code. But can it open your website, and click the buttons, like a real user?"},
+    {"say": "Out of the box, no. In this video, you'll give it that power, with MCP."},
+    {"say": "I'll explain what MCP is, when to use it, and then we'll connect a real server together, step by step.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is MCP?", "kicker": "**01** · The concept", "heading": "What is [[MCP]]?",
+   "items": ["**Model Context Protocol**: an open standard that connects AI to tools and data",
+             "An **MCP server** gives Claude new tools: a browser, GitHub, your database…",
+             "Add a server once, and Claude **uses its tools when they help**"],
+   "card": {"title": "ONE STANDARD, MANY TOOLS", "code": "Claude Code\n  │  MCP\n  ├─ playwright → a real browser\n  ├─ github     → issues, pull requests\n  └─ database   → your data"},
+   "lines": [
+    {"say": "So, what is MCP?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "MCP stands for Model Context Protocol. It's an open standard for connecting AI to tools and data.", "do": [{"k": "show", "el": "item1"}, {"k": "show", "el": "card", "at": 1.0}]},
+    {"say": "Think of it like a USB-C port for AI. One standard plug, and many different tools can connect to it."},
+    {"say": "Each connection is called an MCP server. A server gives Claude new tools, like a web browser, GitHub, or your database.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "You add a server once, and from then on, Claude uses its tools whenever they help.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "How MCP works", "kicker": "**02** · How it works", "heading": "How MCP [[works]]",
+   "rows": [{"label": "You add a server", "text": "One command: `claude mcp add`"},
+            {"label": "Claude Code connects", "text": "The server tells Claude which tools it offers"},
+            {"label": "Claude uses the tools", "text": "It calls them when they help, and reads the results"}],
+   "banner": "✓ Local servers run on your computer · remote servers live at a URL",
+   "lines": [
+    {"say": "Here's how it works, in three parts.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "First, you add a server, with one command: claude mcp add.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "Second, when a session starts, Claude Code connects to the server, and the server lists the tools it offers.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "Third, Claude calls those tools when they help with your request, and the results come back into the conversation.", "do": [{"k": "show", "el": "row3"}]},
+    {"say": "Some servers run locally on your computer. Others are hosted online, at a URL.", "do": [{"k": "show", "el": "banner"}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "When to use MCP", "kicker": "**03** · When to use it", "heading": "When to use [[MCP]]",
+   "left": {"title": "Without MCP", "body": "You copy data into the chat\n\n• Paste error logs, issues, query results\n• Claude only sees what you paste\n• Slow, and easy to miss things"},
+   "right": {"title": "With MCP", "body": "Claude reads and acts on the tool directly\n\n• Opens the page, reads the issue\n• Always the real, current data\n• You just ask"},
+   "lines": [
+    {"say": "So when should you use MCP?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Here's a simple rule. If you keep copying data from another tool into the chat, like error logs, issues, or query results, that's a sign.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "Connect that tool with MCP instead, and Claude can read and act on it directly, with the real, current data.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Our example", "kicker": "**04** · Our example", "heading": "Let Claude [[test your website]]",
+   "left": {"title": "index.html · a newsletter signup form", "code": "<form id=\"signup\">\n  <input id=\"email\" type=\"email\">\n  <button>Sign up</button>\n</form>\n<p id=\"success\" hidden>\n  Thanks! Check your inbox.\n</p>"},
+   "right": {"title": "With the Playwright MCP server", "body": "Claude opens the page in Chrome\n→ types an email, clicks the button\n→ sees what a real user sees\n→ finds the bug, and fixes it"},
+   "lines": [
+    {"say": "Our example: letting Claude test a website, like a real user.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Here's a small newsletter page with a signup form. When you sign up, a thank-you message should appear.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "With the Playwright MCP server, Claude can open the page in Chrome, fill in the form, click the button, and check what really happens.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.5}], "hold": 0.6}]},
+
+  {"type": "screen", "chapter": "The problem without MCP", "project": "my-site", "kicker": "**DEMO** · The problem", "lines": [
+    {"say": "First, the problem. Here's my page. I start Claude Code, and ask it to check the signup in a browser.", "do": [{"k": "file", "path": "index.html", "text": INDEX}, {"k": "cmd", "at": 2.0, "text": "claude", "cps": 12}, {"k": "claude", "at": 3.0}]},
+    {"say": "Open my page in a browser, and check that signing up works.", "do": [{"k": "cprompt", "text": "Open my page in a browser and check that signing up works", "cps": 26}]},
+    {"say": "Claude can read my code, but it can't open a browser, or click buttons. So I'd have to test it by hand.", "do": [{"k": "cout", "lines": ["ai:I can read index.html, but I can't open a browser or click buttons, so I can't test the signup the way a user would. You could test it manually, or I can review the code."], "dur": 1.0}, {"k": "callout", "at": 1.4, "dur": 5.0, "target": "term", "match": "can't open a browser", "label": "No browser"}]},
+    {"say": "Let's give Claude a real browser.", "hold": 0.4},
+
+    {"say": "Step one: find a server.", "do": [{"k": "step", "n": 1}, {"k": "clear"}]},
+    {"say": "There are hundreds of MCP servers. A good place to look is the Anthropic Directory, or the docs of the tool you use.", "do": [{"k": "note", "dur": 9.0, "title": "Where to find MCP servers", "rows": [["Anthropic Directory", "claude.ai/directory"], ["The tool's own docs", "GitHub, Sentry, Notion…"], ["Our pick: Playwright", "a real browser, no account"]]}]},
+    {"say": "For our example, I pick Playwright, from Microsoft. It gives Claude a real browser, and it needs no account. Just Node.js, version 18 or later.", "hold": 0.4},
+
+    {"say": "Step two: add it.", "do": [{"k": "step", "n": 2}]},
+    {"say": "In my terminal, not inside Claude, I run claude mcp add, a name I choose, playwright, then two dashes, and the command that starts the server.", "do": [{"k": "cmd", "text": ADD, "cps": 22, "out": ["Added stdio MCP server playwright with command:", "npx -y @playwright/mcp@latest to local config", "File modified: ~/.claude.json"]}]},
+    {"say": "The two dashes matter. Everything after them is the command Claude Code runs to start the server.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "claude mcp add playwright", "label": "name, then -- command"}]},
+    {"say": "The confirmation says local config. That means the server is just for me, in this project.", "do": [{"k": "callout", "dur": 4.5, "target": "term", "match": "to local config", "label": "Saved for this project"}], "hold": 0.4},
+
+    {"say": "Step three: check that it connects.", "do": [{"k": "step", "n": 3}]},
+    {"say": "I run claude mcp list.", "do": [{"k": "cmd", "text": "claude mcp list", "cps": 14, "out": ["Checking MCP server health...", "", "playwright: npx -y @playwright/mcp@latest - ✔ Connected"]}]},
+    {"say": "Connected means it's ready. The very first check can fail while the package downloads, so just wait a moment, and run it again.", "do": [{"k": "callout", "dur": 6.0, "target": "term", "match": "✔ Connected", "label": "Ready to use"}], "hold": 0.4},
+
+    {"say": "Step four: use it.", "do": [{"k": "step", "n": 4}, {"k": "clear"}]},
+    {"say": "First, I serve my page locally, with Python's built-in web server.", "do": [{"k": "cmd", "text": "python -m http.server 8000", "cps": 18, "out": ["Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ..."]}]},
+    {"say": "Then, in a second terminal, I start Claude, and ask it to test the signup with playwright.", "do": [{"k": "clear", "at": 0.5}, {"k": "cmd", "at": 0.6, "text": "claude", "cps": 12}, {"k": "claude", "at": 1.6}, {"k": "cprompt", "at": 2.2, "text": ASK, "cps": 34}]},
+    {"say": "A Chrome window opens, so you can watch it work. Notice each tool call is labeled with the server name, playwright, and the action.", "do": [{"k": "cout", "lines": ["tool:playwright - browser_navigate (MCP)", "res:Opened http://localhost:8000", "tool:playwright - browser_type (MCP)", "res:Typed test@example.com", "tool:playwright - browser_click (MCP)", "res:Clicked \"Sign up\""], "dur": 3.0}, {"k": "callout", "at": 3.4, "dur": 4.5, "target": "term", "match": "browser_navigate", "label": "An MCP tool call"}]},
+    {"say": "If Claude Code asks for permission the first time, approve it.", "hold": 0.2},
+    {"say": "Claude checks the page, and the console, and finds the real bug: the thank-you message never appears.", "do": [{"k": "cout", "lines": ["tool:playwright - browser_console_messages (MCP)", "res:TypeError: Cannot set properties of null", "ai:Found a bug: after clicking Sign up, the thank-you message never appears. The script looks for id \"sucess\", but the message's id is \"success\"."], "dur": 2.0}, {"k": "callout", "at": 2.4, "dur": 5.0, "target": "term", "match": "Found a bug", "span": 1, "label": "What a real user would see"}]},
+    {"say": "It's a one-letter typo. Easy to miss when you read the code, but obvious in a real browser.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "sucess", "label": "The typo"}]},
+    {"say": "I ask Claude to fix it, and test it again.", "do": [{"k": "cprompt", "text": "Fix it and test again", "cps": 18}, {"k": "cout", "at": 1.6, "lines": ["tool:Edit(index.html)", "res:Updated index.html"], "dur": 0.6}, {"k": "file", "at": 2.0, "path": "index.html", "text": FIXED}]},
+    {"say": "This time, the message appears. Claude didn't just read my code. It used my page, like a real user.", "do": [{"k": "cout", "lines": ["tool:playwright - browser_click (MCP)", "res:Clicked \"Sign up\"", "ai:Fixed and re-tested: \"Thanks! Check your inbox.\" now appears, and there are no console errors."], "dur": 1.6}, {"k": "callout", "at": 2.0, "dur": 5.0, "target": "term", "match": "Fixed and re-tested", "label": "Bug fixed, verified"}], "hold": 0.6}]},
+
+  {"type": "cards", "kicker": "**STEP 5** · Go further", "heading": "4 tips to [[go further]]", "rail": True,
+   "cards": [{"title": "Share with your team", "text": "Add `--scope project` to save it in `.mcp.json`"},
+             {"title": "Check anytime", "text": "`/mcp` inside Claude · `claude mcp list` outside"},
+             {"title": "Only trust servers you know", "text": "A server can run code and see your data"},
+             {"title": "Remove what you don't use", "text": "Each server takes space in Claude's context"}],
+   "lines": [
+    {"say": "Step five: go further. Here are four tips.", "do": [{"k": "step", "n": 5}, {"k": "show", "el": "heading"}]},
+    {"say": "One: add dash dash scope project, and the server is saved in a dot mcp dot json file. Commit it, and your whole team gets the same tools.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: type slash mcp inside Claude, or run claude mcp list, to check your servers anytime.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: only add servers you trust. A server can run code on your machine, and see the data you send it.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "Four: remove servers you don't use, with claude mcp remove. Each connected server takes some space in Claude's context window.", "do": [{"k": "show", "el": "card4"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["MCP = a standard way to plug tools into Claude",
+             "Add a server with `claude mcp add`, check it with `claude mcp list`",
+             "Use MCP when you keep [[copying data]] into the chat"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "MCP is a standard way to plug tools into Claude, like a USB-C port for AI.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "You add a server with claude mcp add, and check it with claude mcp list.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "And whenever you keep copying data into the chat, that's your sign to connect the tool with MCP.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Thanks for [[watching]]", "subtitle": "The demo page and setup are in the description", "lines": [
+    {"say": "The demo page and the setup from this video are linked in the description. Try finding the bug with Claude yourself.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")

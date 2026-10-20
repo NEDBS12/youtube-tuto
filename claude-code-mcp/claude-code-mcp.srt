@@ -1,0 +1,212 @@
+1
+00:00:00,600 --> 00:00:06,555
+Claude can read and write your code. But can it open your website, and click the buttons, like a real user?
+
+2
+00:00:07,005 --> 00:00:11,502
+Out of the box, no. In this video, you'll give it that power, with MCP.
+
+3
+00:00:11,952 --> 00:00:18,046
+I'll explain what MCP is, when to use it, and then we'll connect a real server together, step by step.
+
+4
+00:00:19,596 --> 00:00:20,697
+So, what is MCP?
+
+5
+00:00:21,147 --> 00:00:27,780
+MCP stands for Model Context Protocol. It's an open standard for connecting AI to tools and data.
+
+6
+00:00:28,230 --> 00:00:34,298
+Think of it like a USB-C port for AI. One standard plug, and many different tools can connect to it.
+
+7
+00:00:34,748 --> 00:00:42,552
+Each connection is called an MCP server. A server gives Claude new tools, like a web browser, GitHub, or your database.
+
+8
+00:00:43,002 --> 00:00:47,726
+You add a server once, and from then on, Claude uses its tools whenever they help.
+
+9
+00:00:49,176 --> 00:00:51,141
+Here's how it works, in three parts.
+
+10
+00:00:51,591 --> 00:00:55,717
+First, you add a server, with one command: claude mcp add.
+
+11
+00:00:56,167 --> 00:01:02,420
+Second, when a session starts, Claude Code connects to the server, and the server lists the tools it offers.
+
+12
+00:01:02,870 --> 00:01:08,959
+Third, Claude calls those tools when they help with your request, and the results come back into the conversation.
+
+13
+00:01:09,409 --> 00:01:14,319
+Some servers run locally on your computer. Others are hosted online, at a URL.
+
+14
+00:01:15,769 --> 00:01:17,291
+So when should you use MCP?
+
+15
+00:01:17,741 --> 00:01:26,209
+Here's a simple rule. If you keep copying data from another tool into the chat, like error logs, issues, or query results, that's a sign.
+
+16
+00:01:26,659 --> 00:01:33,302
+Connect that tool with MCP instead, and Claude can read and act on it directly, with the real, current data.
+
+17
+00:01:34,752 --> 00:01:38,663
+Our example: letting Claude test a website, like a real user.
+
+18
+00:01:39,113 --> 00:01:44,590
+Here's a small newsletter page with a signup form. When you sign up, a thank-you message should appear.
+
+19
+00:01:45,040 --> 00:01:52,615
+With the Playwright MCP server, Claude can open the page in Chrome, fill in the form, click the button, and check what really happens.
+
+20
+00:01:54,165 --> 00:02:00,351
+First, the problem. Here's my page. I start Claude Code, and ask it to check the signup in a browser.
+
+21
+00:02:00,801 --> 00:02:03,970
+Open my page in a browser, and check that signing up works.
+
+22
+00:02:04,420 --> 00:02:10,253
+Claude can read my code, but it can't open a browser, or click buttons. So I'd have to test it by hand.
+
+23
+00:02:10,703 --> 00:02:12,243
+Let's give Claude a real browser.
+
+24
+00:02:13,093 --> 00:02:14,784
+Step one: find a server.
+
+25
+00:02:15,234 --> 00:02:21,809
+There are hundreds of MCP servers. A good place to look is the Anthropic Directory, or the docs of the tool you use.
+
+26
+00:02:22,259 --> 00:02:32,242
+For our example, I pick Playwright, from Microsoft. It gives Claude a real browser, and it needs no account. Just Node.js, version 18 or later.
+
+27
+00:02:33,092 --> 00:02:33,958
+Step two: add it.
+
+28
+00:02:34,408 --> 00:02:43,760
+In my terminal, not inside Claude, I run claude mcp add, a name I choose, playwright, then two dashes, and the command that starts the server.
+
+29
+00:02:44,210 --> 00:02:49,530
+The two dashes matter. Everything after them is the command Claude Code runs to start the server.
+
+30
+00:02:49,980 --> 00:02:55,307
+The confirmation says local config. That means the server is just for me, in this project.
+
+31
+00:02:56,157 --> 00:02:58,182
+Step three: check that it connects.
+
+32
+00:02:58,632 --> 00:03:00,363
+I run claude mcp list.
+
+33
+00:03:00,853 --> 00:03:07,528
+Connected means it's ready. The very first check can fail while the package downloads, so just wait a moment, and run it again.
+
+34
+00:03:08,378 --> 00:03:09,724
+Step four: use it.
+
+35
+00:03:10,174 --> 00:03:14,314
+First, I serve my page locally, with Python's built-in web server.
+
+36
+00:03:14,764 --> 00:03:19,947
+Then, in a second terminal, I start Claude, and ask it to test the signup with playwright.
+
+37
+00:03:20,785 --> 00:03:28,185
+A Chrome window opens, so you can watch it work. Notice each tool call is labeled with the server name, playwright, and the action.
+
+38
+00:03:28,635 --> 00:03:31,988
+If Claude Code asks for permission the first time, approve it.
+
+39
+00:03:32,638 --> 00:03:38,546
+Claude checks the page, and the console, and finds the real bug: the thank-you message never appears.
+
+40
+00:03:38,996 --> 00:03:39,226
+It's a one-letter typo. Easy to miss when you read the code, but obvious in a real browser.
+
+41
+00:03:39,676 --> 00:03:39,904
+I ask Claude to fix it, and test it again.
+
+42
+00:03:42,726 --> 00:03:49,010
+This time, the message appears. Claude didn't just read my code. It used my page, like a real user.
+
+43
+00:03:50,560 --> 00:03:53,462
+Step five: go further. Here are four tips.
+
+44
+00:03:53,912 --> 00:04:02,886
+One: add dash dash scope project, and the server is saved in a dot mcp dot json file. Commit it, and your whole team gets the same tools.
+
+45
+00:04:03,336 --> 00:04:09,939
+Two: type slash mcp inside Claude, or run claude mcp list, to check your servers anytime.
+
+46
+00:04:10,389 --> 00:04:16,427
+Three: only add servers you trust. A server can run code on your machine, and see the data you send it.
+
+47
+00:04:16,877 --> 00:04:24,890
+Four: remove servers you don't use, with claude mcp remove. Each connected server takes some space in Claude's context window.
+
+48
+00:04:26,440 --> 00:04:27,093
+Let's recap.
+
+49
+00:04:27,543 --> 00:04:32,733
+MCP is a standard way to plug tools into Claude, like a USB-C port for AI.
+
+50
+00:04:33,183 --> 00:04:37,575
+You add a server with claude mcp add, and check it with claude mcp list.
+
+51
+00:04:38,025 --> 00:04:43,377
+And whenever you keep copying data into the chat, that's your sign to connect the tool with MCP.
+
+52
+00:04:44,827 --> 00:04:50,746
+The demo page and the setup from this video are linked in the description. Try finding the bug with Claude yourself.
+
+53
+00:04:51,196 --> 00:04:58,026
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
