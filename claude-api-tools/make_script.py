@@ -1,0 +1,153 @@
+"""Generates script.json for the Claude API tools / Tool Runner tutorial from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+EX = HERE / "example-files" / "order-bot"
+read = lambda f: (EX / f).read_text(encoding="utf-8")
+NO_TOOLS, MANUAL, RUNNER, SHOP, ORDERS = read("no_tools.py"), read("manual_loop.py"), read("runner.py"), read("shop_tools.py"), read("orders.json")
+cut = MANUAL.index("while True:")
+M_DEF, M_LOOP = MANUAL[:cut], MANUAL[cut:]
+rcut = RUNNER.index("runner = client")
+R_TOOL, R_RUN = RUNNER[:rcut], RUNNER[rcut:]
+
+TOOL_JSON = '{\n  "name": "get_order_status",\n  "description": "Look up an order...",\n  "input_schema": {\n    "type": "object",\n    "properties": {\n      "order_id": {"type": "string"}\n    },\n    "required": ["order_id"]\n  }\n}'
+
+script = {
+ "title": "claude-api-tools",
+ "steps": ["Define the tool", "Run the loop", "Use the Tool Runner", "Handle errors", "Know stop reasons"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude API tutorial · step by step",
+   "title": "Claude Tools & the Tool Runner\n[[The Tool Use Lifecycle]]", "subtitle": "Give Claude your own functions, and understand every stop_reason",
+   "lines": [
+    {"say": "Claude is great with words. But on its own, it can't check your database, call your API, or look up a customer's order."},
+    {"say": "Tools fix that. In this video, you'll learn how tools work, the full tool use lifecycle with stop reasons, and how the Tool Runner handles the loop for you."},
+    {"say": "We'll build a real example, step by step, in Python.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is a tool?", "kicker": "**01** · The concept", "heading": "What is a [[tool]]?",
+   "items": ["A function you **describe** to Claude: a name, a description, an input schema",
+             "Claude **decides** when to call it, and with which inputs",
+             "Claude **never runs it**: your code does, then sends back the result"],
+   "card": {"title": "A TOOL DEFINITION", "code": TOOL_JSON},
+   "lines": [
+    {"say": "So, what is a tool?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "A tool is a function you describe to Claude, with three parts: a name, a description, and an input schema, which is a JSON schema for its parameters.", "do": [{"k": "show", "el": "item1"}, {"k": "show", "el": "card", "at": 2.0}]},
+    {"say": "Claude reads that description, and decides when to call the tool, and with which inputs.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "But here's the key idea: Claude never runs anything itself. It asks. Your code runs the function, and sends the result back.", "do": [{"k": "show", "el": "item3"}]},
+    {"say": "Some tools, like web search, run on Anthropic's servers instead. Today: your own tools.", "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "The tool use lifecycle", "kicker": "**02** · How it works", "heading": "The tool use [[lifecycle]]",
+   "rows": [{"label": "You send", "text": "The messages, plus your `tools` list"},
+            {"label": "Claude replies: stop_reason \"tool_use\"", "text": "A `tool_use` block: id, name, input"},
+            {"label": "You run it and send a tool_result", "text": "Same id → Claude answers: `end_turn`"}],
+   "banner": "↻ Loop while stop_reason is \"tool_use\"",
+   "lines": [
+    {"say": "Here's the tool use lifecycle. Every tool call is a round trip.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: you send the conversation, plus your list of tools.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "Two: if Claude wants a tool, the response comes back with stop reason, tool use. It contains a tool use block, with an i d, the tool name, and the input.", "tts": "Two: if Claude wants a tool, the response comes back with stop reason: tool use. It contains a tool use block, with an I D, the tool name, and the input.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "Three: you run the tool, and send back a tool result, with the same i d. Then Claude writes its answer, with stop reason, end turn.", "tts": "Three: you run the tool, and send back a tool result, with the same I D. Then Claude writes its answer, with stop reason: end turn.", "do": [{"k": "show", "el": "row3"}]},
+    {"say": "Claude may call tools several times in a row. So the rule is simple: keep looping while the stop reason is tool use.", "do": [{"k": "show", "el": "banner"}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Anatomy of a tool call", "kicker": "**03** · Anatomy", "heading": "What goes [[back and forth]]",
+   "left": {"title": "Claude → you (stop_reason: tool_use)", "code": '{\n  "type": "tool_use",\n  "id": "toolu_01A09q...",\n  "name": "get_order_status",\n  "input": {"order_id": "1042"}\n}'},
+   "right": {"title": "You → Claude (a user message)", "code": '{\n  "type": "tool_result",\n  "tool_use_id": "toolu_01A09q...",\n  "content": "{\\"status\\": \\"shipped\\"}",\n  "is_error": false\n}'},
+   "lines": [
+    {"say": "Let's look closer. On the left, Claude's request: the tool name, the input it chose, and a unique i d.", "tts": "Let's look closer. On the left, Claude's request: the tool name, the input it chose, and a unique I D.", "do": [{"k": "show", "el": "heading"}, {"k": "show", "el": "left", "at": 1.0}]},
+    {"say": "On the right, your answer, sent as a user message. The tool use i d links the result to the request. And is error tells Claude if the tool failed.", "tts": "On the right, your answer, sent as a user message. The tool use I D links the result to the request. And is error tells Claude if the tool failed.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}]},
+    {"say": "Two rules: the tool result must come right after Claude's tool use message, and tool results go first in the message content.", "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "When to use tools", "kicker": "**04** · When to use it", "heading": "When to use [[tools]]",
+   "left": {"title": "Use a tool when you need…", "body": "• Actions: send, write, update\n• Fresh or private data:\n  prices, orders, your database\n• A guaranteed JSON shape\n• Your existing APIs and systems"},
+   "right": {"title": "Skip tools when…", "body": "• Claude can answer alone:\n  summaries, translation\n• It's one-shot Q&A with\n  nothing to execute\n• The extra round trip costs\n  more than the task"},
+   "lines": [
+    {"say": "When should you use a tool?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "When Claude needs to do something, like send or update. When it needs fresh or private data, like your orders. Or when you need a guaranteed JSON shape.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "Skip tools when Claude can answer from text alone, like a summary or a translation. Every tool call is an extra round trip.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Our use case", "kicker": "**05** · Our use case", "heading": "An [[order status]] assistant",
+   "left": {"title": "Without a tool", "body": "Customer: \"Where is order 1042?\"\n\nClaude can't see your orders.\nIt can only apologize,\nor worse, guess."},
+   "right": {"title": "With get_order_status", "body": "Claude calls the tool\n→ your code reads orders.json\n→ \"Order 1042 has shipped\n   with DHL, arriving Oct 23\"\n\n✓ Real data, every time"},
+   "lines": [
+    {"say": "Our use case: an order status assistant for a small online shop.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Without a tool, Claude can't see the orders. It can only apologize.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "With a get order status tool, Claude asks for the data, our code reads it, and the answer is based on real data.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "screen", "chapter": "The problem: no tools", "project": "order-bot", "kicker": "**DEMO** · Without tools", "lines": [
+    {"say": "Here's the project: the orders in a JSON file, and a small function that looks one up.", "do": [{"k": "file", "path": "orders.json", "text": ORDERS, "open": False}, {"k": "file", "path": "shop_tools.py", "text": SHOP}]},
+    {"say": "If the order doesn't exist, it raises an error with a clear message. We'll come back to that.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "raise ValueError", "span": 3, "label": "A helpful error"}]},
+    {"say": "First, I ask Claude about an order, with no tools at all.", "do": [{"k": "file", "path": "no_tools.py", "text": NO_TOOLS}, {"k": "cmd", "at": 1.6, "text": "python no_tools.py", "out": ["stop_reason: end_turn", "I don't have access to your order information.", "Please check your confirmation email."]}]},
+    {"say": "Stop reason: end turn. Claude finished, but it simply can't know. Let's give it a tool.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "I don't have access", "span": 2, "label": "It can't see your orders"}], "hold": 0.5},
+
+    {"say": "Step one: define the tool.", "do": [{"k": "step", "n": 1}, {"k": "open", "path": "manual_loop.py", "at": 0.6}]},
+    {"say": "I import the SDK and my function, then describe the tool in a list: a name, a description, and an input schema.", "do": [{"k": "type", "path": "manual_loop.py", "text": M_DEF, "cps": 60}]},
+    {"say": "The description matters most. Claude reads it to decide when to call the tool. The docs recommend three or four sentences: what it does, and when to use it.", "do": [{"k": "callout", "dur": 5.5, "target": "editor", "match": '"description": (', "span": 5, "label": "When to use it"}]},
+    {"say": "The input schema says the tool takes one required string: the order i d.", "tts": "The input schema says the tool takes one required string: the order I D.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": '"required"', "label": "One required input"}], "hold": 0.4},
+
+    {"say": "Step two: run the lifecycle loop.", "do": [{"k": "step", "n": 2}]},
+    {"say": "Inside a while loop, I call the API with the tools, and print the stop reason. If it's not tool use, Claude is done, so I break.", "do": [{"k": "type", "path": "manual_loop.py", "text": M_LOOP, "cps": 60}]},
+    {"say": "Otherwise, I append Claude's message, run each tool use block, and send back a tool result with the same i d. Then the loop calls Claude again.", "tts": "Otherwise, I append Claude's message, run each tool use block, and send back a tool result with the same I D. Then the loop calls Claude again.", "do": [{"k": "callout", "dur": 5.5, "target": "editor", "match": '"tool_use_id": block.id', "span": 1, "label": "Same id"}]},
+    {"say": "Now, let's run it, and watch the stop reasons.", "do": [{"k": "cmd", "text": "python manual_loop.py", "out": ["stop_reason: tool_use", "  tool call: get_order_status({'order_id': '1042'})", "stop_reason: end_turn", "Your order 1042 has shipped with DHL and should", "arrive on October 23, 2026."]}]},
+    {"say": "There's the lifecycle: first tool use, my code runs the function, then end turn, with an answer based on real data. Claude's wording will differ in your run.", "do": [{"k": "callout", "dur": 5.5, "target": "term", "match": "stop_reason: tool_use", "span": 3, "label": "The full lifecycle"}]},
+
+    {"say": "Step three: the Tool Runner. That loop works, but you'd write it in every project. The SDK can do it for you.", "do": [{"k": "step", "n": 3}, {"k": "open", "path": "runner.py", "at": 2.0}]},
+    {"say": "With the beta tool decorator, my plain Python function becomes a tool. The SDK builds the schema from the type hints and the docstring.", "do": [{"k": "type", "path": "runner.py", "text": R_TOOL, "cps": 60}, {"k": "callout", "at": 3.4, "dur": 4.5, "target": "editor", "match": "@beta_tool", "label": "Schema from your function"}]},
+    {"say": "Then the tool runner, which is in beta in the official SDKs. It runs the tools, appends the messages, and loops until Claude stops calling tools.", "do": [{"k": "type", "path": "runner.py", "text": R_RUN, "cps": 60}]},
+    {"say": "Max iterations puts a safety limit on the loop. And I still get each message, to print its stop reason.", "hold": 0.4, "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "max_iterations=5", "label": "A safety limit"}]},
+
+    {"say": "Step four: handle errors. This time, I ask about two orders: ten forty-two, and nine thousand nine hundred ninety-nine, which doesn't exist.", "do": [{"k": "step", "n": 4}, {"k": "callout", "at": 2.0, "dur": 5.0, "target": "editor", "match": "1042 and 9999", "label": "9999 doesn't exist"}]},
+    {"say": "Claude calls the tool twice, in one turn. For nine nine nine nine, my function raises an error.", "do": [{"k": "cmd", "text": "python runner.py", "out": ["stop_reason: tool_use", "Error occurred while calling tool: get_order_status", "ValueError: Order 9999 not found. Ask the customer to", "check the number in their confirmation email.", "stop_reason: end_turn", "Order 1042 has shipped with DHL and should arrive on", "October 23. I couldn't find order 9999: could you check", "the number in your confirmation email?"]}]},
+    {"say": "The Tool Runner catches it, and sends it to Claude as a tool result with is error set to true. The script doesn't crash.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "ValueError: Order 9999", "span": 2, "label": "Sent as is_error: true"}]},
+    {"say": "And because my error message says what to do next, Claude answers the first order, and asks the customer to check the second number.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "I couldn't find order 9999", "span": 2, "label": "Claude recovers"}]},
+    {"say": "In the manual loop, you'd catch the exception yourself, and set is error in the tool result.", "hold": 0.6}]},
+
+  {"type": "cards", "kicker": "**STEP 5** · Know stop reasons", "heading": "Every [[stop_reason]]", "rail": True,
+   "cards": [{"title": "end_turn", "text": "Finished: use the answer"},
+             {"title": "tool_use", "text": "Run the tool, send a tool_result"},
+             {"title": "max_tokens", "text": "Cut off: raise max_tokens"},
+             {"title": "stop_sequence", "text": "Hit one of your stop sequences"},
+             {"title": "pause_turn", "text": "Server tool loop paused: send it back"},
+             {"title": "refusal", "text": "Declined: read stop_details"}],
+   "lines": [
+    {"say": "Step five: know every stop reason, because your code should check it on every response.", "do": [{"k": "step", "n": 5}, {"k": "show", "el": "heading"}]},
+    {"say": "End turn: Claude finished. Use the answer.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Tool use: run the tool, and send the result back.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Max tokens: the answer hit your max tokens limit, so it's cut off. Raise the limit, or continue the response.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "Stop sequence: Claude wrote one of your custom stop sequences.", "do": [{"k": "show", "el": "card4"}]},
+    {"say": "Pause turn: a server tool, like web search, hit its loop limit. Send the conversation back, and Claude continues.", "do": [{"k": "show", "el": "card5"}]},
+    {"say": "Refusal: Claude declined to respond. Check the stop details. There's also model context window exceeded, when the response fills the context window.", "do": [{"k": "show", "el": "card6"}], "hold": 0.6}]},
+
+  {"type": "cards", "chapter": "Tips", "kicker": "**TIPS** · Production habits", "heading": "4 tips for [[better tools]]",
+   "cards": [{"title": "Describe in detail", "text": "What it does, when to use it, each parameter"},
+             {"title": "Write helpful errors", "text": "Say what went wrong and what to try next"},
+             {"title": "Always bound the loop", "text": "`max_iterations`, or a counter in your loop"},
+             {"title": "Need approval? Go manual", "text": "Manual loop for human-in-the-loop and logging"}],
+   "lines": [
+    {"say": "Four tips before you ship.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: write detailed descriptions. It's the biggest factor in how well Claude uses your tools.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: write helpful error messages. Say what went wrong, and what to try next, so Claude can recover.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: always bound the loop, with max iterations, or a counter in your own loop.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "And four: the Tool Runner is the easy default. When you need human approval before a tool runs, custom logging, or conditional execution, use the manual loop.", "do": [{"k": "show", "el": "card4"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["A tool = name + description + input schema; **your code** runs it",
+             "Loop while `stop_reason` is `tool_use`; send back a `tool_result`",
+             "The [[Tool Runner]] runs the loop and turns errors into `is_error`"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "A tool is a name, a description, and an input schema. Claude asks, and your code runs it.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "The lifecycle: loop while the stop reason is tool use, and send back a tool result with the same i d.", "tts": "The lifecycle: loop while the stop reason is tool use, and send back a tool result with the same I D.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "And the Tool Runner runs that loop for you, and turns your exceptions into is error results.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Thanks for [[watching]]", "subtitle": "The code, an offline test and a cheat sheet are in the description", "lines": [
+    {"say": "All the code, an offline test you can run without an API key, and a stop reason cheat sheet are linked in the description.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+# captions say "id"; the voice says "I D"
+for sc in script["scenes"]:
+    for ln in sc["lines"]:
+        if " i d" in ln["say"]:
+            ln.setdefault("tts", ln["say"].replace(" i d", " I D"))
+            ln["say"] = ln["say"].replace(" i d", " id")
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")

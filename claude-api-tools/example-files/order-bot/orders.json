@@ -1,0 +1,5 @@
+{
+  "1042": {"status": "shipped", "carrier": "DHL", "delivery": "2026-10-23"},
+  "1043": {"status": "processing", "carrier": null, "delivery": null},
+  "1044": {"status": "delivered", "carrier": "UPS", "delivery": "2026-10-18"}
+}

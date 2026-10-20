@@ -1,0 +1,248 @@
+1
+00:00:00,600 --> 00:00:07,683
+Claude is great with words. But on its own, it can't check your database, call your API, or look up a customer's order.
+
+2
+00:00:08,133 --> 00:00:16,994
+Tools fix that. In this video, you'll learn how tools work, the full tool use lifecycle with stop reasons, and how the Tool Runner handles the loop for you.
+
+3
+00:00:17,444 --> 00:00:20,732
+We'll build a real example, step by step, in Python.
+
+4
+00:00:22,282 --> 00:00:23,117
+So, what is a tool?
+
+5
+00:00:23,567 --> 00:00:32,919
+A tool is a function you describe to Claude, with three parts: a name, a description, and an input schema, which is a JSON schema for its parameters.
+
+6
+00:00:33,369 --> 00:00:38,201
+Claude reads that description, and decides when to call the tool, and with which inputs.
+
+7
+00:00:38,651 --> 00:00:46,659
+But here's the key idea: Claude never runs anything itself. It asks. Your code runs the function, and sends the result back.
+
+8
+00:00:47,109 --> 00:00:52,822
+Some tools, like web search, run on Anthropic's servers instead. Today: your own tools.
+
+9
+00:00:54,272 --> 00:00:58,024
+Here's the tool use lifecycle. Every tool call is a round trip.
+
+10
+00:00:58,474 --> 00:01:01,793
+One: you send the conversation, plus your list of tools.
+
+11
+00:01:02,243 --> 00:01:12,534
+Two: if Claude wants a tool, the response comes back with stop reason, tool use. It contains a tool use block, with an id, the tool name, and the input.
+
+12
+00:01:12,984 --> 00:01:21,309
+Three: you run the tool, and send back a tool result, with the same id. Then Claude writes its answer, with stop reason, end turn.
+
+13
+00:01:21,759 --> 00:01:28,344
+Claude may call tools several times in a row. So the rule is simple: keep looping while the stop reason is tool use.
+
+14
+00:01:29,794 --> 00:01:36,383
+Let's look closer. On the left, Claude's request: the tool name, the input it chose, and a unique id.
+
+15
+00:01:36,833 --> 00:01:45,949
+On the right, your answer, sent as a user message. The tool use id links the result to the request. And is error tells Claude if the tool failed.
+
+16
+00:01:46,399 --> 00:01:53,486
+Two rules: the tool result must come right after Claude's tool use message, and tool results go first in the message content.
+
+17
+00:01:54,936 --> 00:01:55,992
+When should you use a tool?
+
+18
+00:01:56,442 --> 00:02:05,670
+When Claude needs to do something, like send or update. When it needs fresh or private data, like your orders. Or when you need a guaranteed JSON shape.
+
+19
+00:02:06,120 --> 00:02:13,631
+Skip tools when Claude can answer from text alone, like a summary or a translation. Every tool call is an extra round trip.
+
+20
+00:02:15,081 --> 00:02:18,581
+Our use case: an order status assistant for a small online shop.
+
+21
+00:02:19,031 --> 00:02:23,128
+Without a tool, Claude can't see the orders. It can only apologize.
+
+22
+00:02:23,578 --> 00:02:30,123
+With a get order status tool, Claude asks for the data, our code reads it, and the answer is based on real data.
+
+23
+00:02:31,573 --> 00:02:36,767
+Here's the project: the orders in a JSON file, and a small function that looks one up.
+
+24
+00:02:37,217 --> 00:02:42,145
+If the order doesn't exist, it raises an error with a clear message. We'll come back to that.
+
+25
+00:02:42,595 --> 00:02:45,953
+First, I ask Claude about an order, with no tools at all.
+
+26
+00:02:46,403 --> 00:02:51,680
+Stop reason: end turn. Claude finished, but it simply can't know. Let's give it a tool.
+
+27
+00:02:52,630 --> 00:02:54,335
+Step one: define the tool.
+
+28
+00:02:54,785 --> 00:03:02,365
+I import the SDK and my function, then describe the tool in a list: a name, a description, and an input schema.
+
+29
+00:03:05,215 --> 00:03:14,447
+The description matters most. Claude reads it to decide when to call the tool. The docs recommend three or four sentences: what it does, and when to use it.
+
+30
+00:03:14,897 --> 00:03:19,280
+The input schema says the tool takes one required string: the order id.
+
+31
+00:03:20,130 --> 00:03:22,314
+Step two: run the lifecycle loop.
+
+32
+00:03:22,764 --> 00:03:30,650
+Inside a while loop, I call the API with the tools, and print the stop reason. If it's not tool use, Claude is done, so I break.
+
+33
+00:03:33,500 --> 00:03:41,751
+Otherwise, I append Claude's message, run each tool use block, and send back a tool result with the same id. Then the loop calls Claude again.
+
+34
+00:03:42,201 --> 00:03:44,873
+Now, let's run it, and watch the stop reasons.
+
+35
+00:03:45,323 --> 00:03:54,683
+There's the lifecycle: first tool use, my code runs the function, then end turn, with an answer based on real data. Claude's wording will differ in your run.
+
+36
+00:03:55,133 --> 00:04:02,014
+Step three: the Tool Runner. That loop works, but you'd write it in every project. The SDK can do it for you.
+
+37
+00:04:02,464 --> 00:04:10,404
+With the beta tool decorator, my plain Python function becomes a tool. The SDK builds the schema from the type hints and the docstring.
+
+38
+00:04:10,854 --> 00:04:19,970
+Then the tool runner, which is in beta in the official SDKs. It runs the tools, appends the messages, and loops until Claude stops calling tools.
+
+39
+00:04:20,420 --> 00:04:26,343
+Max iterations puts a safety limit on the loop. And I still get each message, to print its stop reason.
+
+40
+00:04:27,193 --> 00:04:36,876
+Step four: handle errors. This time, I ask about two orders: ten forty-two, and nine thousand nine hundred ninety-nine, which doesn't exist.
+
+41
+00:04:37,326 --> 00:04:43,214
+Claude calls the tool twice, in one turn. For nine nine nine nine, my function raises an error.
+
+42
+00:04:43,664 --> 00:04:50,329
+The Tool Runner catches it, and sends it to Claude as a tool result with is error set to true. The script doesn't crash.
+
+43
+00:04:50,779 --> 00:04:57,717
+And because my error message says what to do next, Claude answers the first order, and asks the customer to check the second number.
+
+44
+00:04:58,167 --> 00:05:03,001
+In the manual loop, you'd catch the exception yourself, and set is error in the tool result.
+
+45
+00:05:04,551 --> 00:05:09,883
+Step five: know every stop reason, because your code should check it on every response.
+
+46
+00:05:10,333 --> 00:05:13,067
+End turn: Claude finished. Use the answer.
+
+47
+00:05:13,517 --> 00:05:16,714
+Tool use: run the tool, and send the result back.
+
+48
+00:05:17,164 --> 00:05:24,182
+Max tokens: the answer hit your max tokens limit, so it's cut off. Raise the limit, or continue the response.
+
+49
+00:05:24,632 --> 00:05:28,198
+Stop sequence: Claude wrote one of your custom stop sequences.
+
+50
+00:05:28,648 --> 00:05:35,931
+Pause turn: a server tool, like web search, hit its loop limit. Send the conversation back, and Claude continues.
+
+51
+00:05:36,381 --> 00:05:45,707
+Refusal: Claude declined to respond. Check the stop details. There's also model context window exceeded, when the response fills the context window.
+
+52
+00:05:47,257 --> 00:05:48,455
+Four tips before you ship.
+
+53
+00:05:48,905 --> 00:05:54,235
+One: write detailed descriptions. It's the biggest factor in how well Claude uses your tools.
+
+54
+00:05:54,685 --> 00:06:00,937
+Two: write helpful error messages. Say what went wrong, and what to try next, so Claude can recover.
+
+55
+00:06:01,387 --> 00:06:06,640
+Three: always bound the loop, with max iterations, or a counter in your own loop.
+
+56
+00:06:07,090 --> 00:06:16,839
+And four: the Tool Runner is the easy default. When you need human approval before a tool runs, custom logging, or conditional execution, use the manual loop.
+
+57
+00:06:18,389 --> 00:06:19,042
+Let's recap.
+
+58
+00:06:19,492 --> 00:06:25,416
+A tool is a name, a description, and an input schema. Claude asks, and your code runs it.
+
+59
+00:06:25,866 --> 00:06:31,616
+The lifecycle: loop while the stop reason is tool use, and send back a tool result with the same id.
+
+60
+00:06:32,066 --> 00:06:36,925
+And the Tool Runner runs that loop for you, and turns your exceptions into is error results.
+
+61
+00:06:38,375 --> 00:06:45,249
+All the code, an offline test you can run without an API key, and a stop reason cheat sheet are linked in the description.
+
+62
+00:06:45,699 --> 00:06:52,530
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
