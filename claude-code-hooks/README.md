@@ -30,7 +30,6 @@ echo $?
 
 - `claude-code-hooks.mp4`: the video
 - `claude-code-hooks.srt`: subtitles
-- `claude-code-hooks.youtube.txt`: title, description and tags
 - `script.json`, `make_script.py`: the video script (made with the `claude-expert-video` skill)
 - `example-files/my-app/`: the demo project (the `.env` holds fake demo values only)
 
