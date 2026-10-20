@@ -1,0 +1,51 @@
+TITLE (recommended)
+Claude Code Hooks Explained: Protect Your Files Step by Step
+
+OTHER TITLE OPTIONS
+1. Claude Code Hooks for Beginners: Rules Claude Always Follows
+2. Stop Claude From Editing Your .env File (Claude Code Hooks)
+
+DESCRIPTION
+Want Claude Code to follow a rule every single time, not just most of the time? In this beginner tutorial, you'll learn what Claude Code hooks are, when to use them, and how to build one step by step to protect your secret files.
+
+We build a real PreToolUse hook that blocks Claude from editing your .env file, test it, and see why hooks beat instructions for rules that must always hold. All you need is Claude Code and Python.
+
+CHAPTERS
+0:00 Introduction
+0:18 What is a hook?
+0:45 How a hook works
+1:17 When to use a hook
+1:38 Common hook events
+2:01 Our example
+2:19 The problem without a hook
+2:44 Step 1: Write the script
+3:30 Step 2: Register the hook
+4:10 Step 3: Test it
+4:38 Step 4: Go further
+5:09 Recap
+
+HOOK FILES FROM THIS VIDEO
+• Hook script + settings, ready to copy: https://tinyurl.com/2a8v9764
+• All files from this video (with a step-by-step README): https://tinyurl.com/28ngl44v
+
+RESOURCES
+• Claude Code hooks guide: https://tinyurl.com/29pjvfzu
+• Hooks reference (all events and options): https://tinyurl.com/ynkssrh5
+
+QUICK REFERENCE
+• Project hook, shared with your team: .claude/settings.json
+• Just for you in this project: .claude/settings.local.json
+• All your projects: ~/.claude/settings.json
+• Exit code 0 = carry on, exit code 2 = block and tell Claude why
+• On Mac or Linux, use python3 in the command
+
+Subscribe to Zero Cost AI for free AI apps and tutorials: {subscribe link}
+More videos: {channel link}
+
+ABOUT ZERO COST AI
+Free AI apps and tutorials. I build AI tools and share them for free, along with beginner-friendly guides. Subscribe for more.
+
+#ClaudeCode #AIAgents #AItutorial #ZeroCostAI #FreeAI
+
+TAGS
+claude code, claude code hooks, claude hooks, pretooluse hook, claude code tutorial, ai coding assistant, claude ai, protect env file, ai automation, claude code for beginners, anthropic claude, ai tutorial

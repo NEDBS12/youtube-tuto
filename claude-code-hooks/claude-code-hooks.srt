@@ -1,0 +1,248 @@
+1
+00:00:00,600 --> 00:00:06,171
+What if Claude edited a file you never wanted it to touch, like the file with your passwords and API keys?
+
+2
+00:00:06,621 --> 00:00:10,746
+In this video, you'll learn how to stop that for good, with Claude Code hooks.
+
+3
+00:00:11,196 --> 00:00:16,950
+I'll explain what a hook is, when to use one, and then we'll build a real one together, step by step.
+
+4
+00:00:18,500 --> 00:00:19,351
+So, what is a hook?
+
+5
+00:00:19,801 --> 00:00:24,142
+A hook is a command that Claude Code runs automatically, at a moment you choose.
+
+6
+00:00:24,592 --> 00:00:32,609
+Those moments are called events. For example: just before Claude uses a tool, right after it edits a file, or when it finishes answering.
+
+7
+00:00:33,059 --> 00:00:38,259
+Your command can simply let things carry on. Or it can block the action, and tell Claude why.
+
+8
+00:00:38,709 --> 00:00:43,812
+You set hooks up in a settings file, with a few lines of JSON, like the ones on the right.
+
+9
+00:00:45,262 --> 00:00:47,449
+Here's how a hook works, in three parts.
+
+10
+00:00:47,899 --> 00:00:53,990
+First, an event and a matcher. For example: just before Claude uses the Edit or Write tool.
+
+11
+00:00:54,440 --> 00:01:00,406
+Second, your script runs. Claude Code sends it the details, like which file Claude wants to change.
+
+12
+00:01:00,856 --> 00:01:09,870
+Third, the result. Exit with code zero, and Claude carries on. Exit with code two, and the action is blocked, and Claude reads your reason.
+
+13
+00:01:10,320 --> 00:01:16,219
+And here's the key point: a hook runs every single time. It doesn't depend on Claude remembering a rule.
+
+14
+00:01:17,669 --> 00:01:21,045
+So when should you use a hook, instead of just writing an instruction?
+
+15
+00:01:21,495 --> 00:01:29,941
+An instruction in CLAUDE.md is guidance. Claude usually follows it, but it's not guaranteed. That's perfect for style and preferences.
+
+16
+00:01:30,391 --> 00:01:37,412
+A hook is code that runs every time. Use it for rules that must always hold, or actions that must always happen.
+
+17
+00:01:38,862 --> 00:01:41,823
+There are many events. Here are four you'll use the most.
+
+18
+00:01:42,273 --> 00:01:46,491
+PreToolUse runs before a tool, so it can check the action, or block it.
+
+19
+00:01:46,941 --> 00:01:52,807
+PostToolUse runs after a tool succeeds. For example, to format a file Claude just edited.
+
+20
+00:01:53,257 --> 00:01:57,713
+Notification runs when Claude needs your attention, so you can get a desktop alert.
+
+21
+00:01:58,163 --> 00:02:00,437
+And Stop runs when Claude finishes answering.
+
+22
+00:02:01,887 --> 00:02:04,015
+Our example: protecting your secrets.
+
+23
+00:02:04,465 --> 00:02:10,796
+Most projects have a dot env file, with passwords and API keys. Claude should never change it.
+
+24
+00:02:11,246 --> 00:02:18,042
+With a PreToolUse hook, any attempt to edit it is blocked, Claude explains why, and every other file works as normal.
+
+25
+00:02:19,592 --> 00:02:25,332
+First, the problem. Here's a small Python project, with my secrets in a dot env file.
+
+26
+00:02:25,782 --> 00:02:30,402
+I've turned on auto-accept for edits, so Claude can work without asking me each time.
+
+27
+00:02:30,852 --> 00:02:34,072
+Now I ask: clean up the formatting in my config files.
+
+28
+00:02:34,522 --> 00:02:40,893
+Claude edited the dot env file too, where my secret keys live. It was trying to help, but I didn't want that.
+
+29
+00:02:41,343 --> 00:02:43,342
+Let's make sure this can never happen again.
+
+30
+00:02:44,192 --> 00:02:46,047
+Step one: write the hook script.
+
+31
+00:02:46,497 --> 00:02:50,623
+I create a hooks folder inside dot claude, with a small Python file.
+
+32
+00:02:51,073 --> 00:02:56,809
+At the top, I list what Claude must never edit: the dot env file, and a secrets folder.
+
+33
+00:02:57,259 --> 00:03:04,679
+When the hook runs, Claude Code sends the details of the tool call as JSON. I read the file path Claude wants to change.
+
+34
+00:03:05,129 --> 00:03:10,937
+This line turns Windows backslashes into forward slashes, so the check works on every computer.
+
+35
+00:03:11,387 --> 00:03:17,042
+Then the check. If the path matches a protected pattern, I print a reason, and exit with code two.
+
+36
+00:03:17,492 --> 00:03:21,499
+Otherwise, exit with code zero, and Claude carries on as usual.
+
+37
+00:03:21,949 --> 00:03:25,600
+Before wiring it up, I test it by hand, with a fake tool call.
+
+38
+00:03:26,050 --> 00:03:29,923
+It prints the reason. And the exit code is two. The script works.
+
+39
+00:03:30,773 --> 00:03:33,296
+Step two: register the hook in your settings.
+
+40
+00:03:33,746 --> 00:03:38,710
+In the project's .claude folder, I open settings.json, and add a hooks section.
+
+41
+00:03:41,846 --> 00:03:46,135
+The event is PreToolUse, so it runs just before Claude uses a tool.
+
+42
+00:03:46,585 --> 00:03:52,069
+The matcher says which tools: only Edit and Write, the tools Claude uses to change files.
+
+43
+00:03:52,519 --> 00:03:58,525
+And the command runs my script with Python. The project dir variable always points to the project folder.
+
+44
+00:03:58,975 --> 00:04:02,645
+On a Mac or Linux, you might need to write python3 instead.
+
+45
+00:04:03,095 --> 00:04:09,458
+Where you save the hook decides who it protects. This project's settings file can be committed, so your whole team gets it.
+
+46
+00:04:10,408 --> 00:04:11,801
+Step three: test it.
+
+47
+00:04:12,251 --> 00:04:17,297
+I start Claude Code again, still with auto-accept on, and repeat the same request.
+
+48
+00:04:17,747 --> 00:04:22,726
+Claude tries to edit dot env, and the hook blocks it, before anything changes.
+
+49
+00:04:23,176 --> 00:04:26,736
+Claude reads the reason, explains it to me, and moves on.
+
+50
+00:04:27,186 --> 00:04:30,999
+Even with auto-accept turned on, the hook still has the final word.
+
+51
+00:04:31,749 --> 00:04:37,402
+And normal files still work. I ask for a docstring in app dot py, and the edit goes through.
+
+52
+00:04:38,952 --> 00:04:41,755
+Step four: go further. Here are four tips.
+
+53
+00:04:42,205 --> 00:04:46,536
+One: type slash hooks in Claude Code, to see every hook it has loaded.
+
+54
+00:04:46,986 --> 00:04:53,950
+Two: always test your script on its own first, like we did, by piping in sample JSON and checking the exit code.
+
+55
+00:04:54,400 --> 00:04:58,947
+Three: commit the dot claude folder to git, and your whole team is protected.
+
+56
+00:04:59,397 --> 00:05:07,790
+Four: try other events. A PostToolUse hook can format every file Claude edits, and a Notification hook can alert you when Claude needs you.
+
+57
+00:05:09,340 --> 00:05:09,994
+Let's recap.
+
+58
+00:05:10,444 --> 00:05:14,818
+A hook is a command that Claude Code runs automatically, at an event you choose.
+
+59
+00:05:15,268 --> 00:05:20,936
+Exit with code zero to carry on, or code two to block the action, and tell Claude why.
+
+60
+00:05:21,386 --> 00:05:25,655
+Use instructions for preferences, and hooks for rules that must always hold.
+
+61
+00:05:27,105 --> 00:05:32,603
+The hook script and settings from this video are linked in the description, so you can copy them and try it today.
+
+62
+00:05:33,053 --> 00:05:39,884
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
