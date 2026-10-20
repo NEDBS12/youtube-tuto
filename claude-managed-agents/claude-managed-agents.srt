@@ -1,0 +1,216 @@
+1
+00:00:00,600 --> 00:00:09,572
+You want Claude to do real work: run code, create files, and keep going for minutes. Should you build the agent yourself, or let Anthropic run it for you?
+
+2
+00:00:10,022 --> 00:00:19,277
+In this video, you'll learn the difference between your own agent and Claude Managed Agents, when to choose each one, and how to build a Managed Agent, step by step.
+
+3
+00:00:20,827 --> 00:00:21,989
+First, what is an agent?
+
+4
+00:00:22,439 --> 00:00:30,250
+An agent is Claude, plus tools, plus a loop. Claude acts, looks at the result, and acts again, until the task is done.
+
+5
+00:00:30,700 --> 00:00:38,150
+With your own agent, you write that loop, like in my last video: you call the API, run each tool yourself, and keep the history.
+
+6
+00:00:38,600 --> 00:00:47,403
+With Claude Managed Agents, Anthropic runs the loop for you, with built-in tools, inside a secure cloud sandbox. It's in beta today.
+
+7
+00:00:48,853 --> 00:00:51,779
+Managed Agents is built on four building blocks.
+
+8
+00:00:52,229 --> 00:00:58,801
+The agent: the model, the system prompt, and the tools. You create it once, and reuse it by its ID.
+
+9
+00:00:59,251 --> 00:01:04,543
+The environment: where the agent runs. A cloud sandbox, with the network rules you choose.
+
+10
+00:01:04,993 --> 00:01:10,209
+A session: one running agent, doing one task, with its own sandbox and files.
+
+11
+00:01:10,659 --> 00:01:16,382
+And events: you send messages as events, and the session streams back everything the agent does.
+
+12
+00:01:17,832 --> 00:01:18,632
+So, who does what?
+
+13
+00:01:19,082 --> 00:01:30,384
+With your own agent, you do everything: the loop, running every tool on your machine, the message history, retries, and the context. In return, you control every step.
+
+14
+00:01:30,834 --> 00:01:46,153
+With Managed Agents, Anthropic runs the loop. Claude gets built-in tools: bash, file tools, web search and web fetch, inside a cloud sandbox. Sessions keep the history and the files, and caching and compaction are built in.
+
+15
+00:01:47,603 --> 00:01:48,822
+When should you choose each one?
+
+16
+00:01:49,272 --> 00:02:02,866
+Build your own agent for short tasks, when you need a custom loop, when tools must run inside your own systems, or when you need Zero Data Retention. Managed Agents isn't eligible for it today, because sessions are stored server-side.
+
+17
+00:02:03,316 --> 00:02:16,173
+Choose a Managed Agent for long tasks that run for minutes or hours, when Claude must run code or create files safely, for async or scheduled work, or when you just don't want to build the loop, the sandbox and the tools.
+
+18
+00:02:17,623 --> 00:02:21,055
+Here's our use case, from the same small shop as my last video.
+
+19
+00:02:21,505 --> 00:02:26,681
+The order bot answered one quick question, with one tool. Your own agent is perfect for that.
+
+20
+00:02:27,131 --> 00:02:38,596
+Now I want a monthly sales report: analyze October's orders, write a report, and draw a chart. Claude has to write and run Python, and create files. That's a job for a Managed Agent.
+
+21
+00:02:40,046 --> 00:02:44,175
+Here's the data: twenty-four orders from October, in a CSV file.
+
+22
+00:02:44,625 --> 00:02:47,878
+To do this with your own agent, you'd have to build a lot first.
+
+23
+00:02:48,328 --> 00:03:00,270
+A bash tool, and a safe place to run Claude's code, because you don't want it running on your laptop. File tools. A loop that keeps going for minutes. History, retries, and somewhere to keep the files.
+
+24
+00:03:01,020 --> 00:03:03,834
+Managed Agents gives you all of that. Let's build it.
+
+25
+00:03:04,684 --> 00:03:08,962
+Step one: define the agent. I create setup agent dot p y.
+
+26
+00:03:09,412 --> 00:03:15,297
+Client dot beta dot agents dot create: a name, the model, a system prompt, and the tools.
+
+27
+00:03:17,829 --> 00:03:24,660
+The system prompt says where to save outputs: in mnt, session, outputs. That folder matters later.
+
+28
+00:03:25,110 --> 00:03:34,328
+And this one line gives Claude the full agent toolset: bash, read, write, edit, glob, grep, web search and web fetch.
+
+29
+00:03:35,178 --> 00:03:38,638
+Step two: create the environment, where sessions run.
+
+30
+00:03:39,088 --> 00:03:44,093
+A cloud sandbox. Python, pandas and Matplotlib are already installed in it.
+
+31
+00:03:44,543 --> 00:03:52,667
+I set networking to limited. If you leave it out, you get unrestricted network access. My agent doesn't need the internet, so I keep it closed.
+
+32
+00:03:53,117 --> 00:04:01,223
+Then I save both IDs, and run the setup once. You create the agent and the environment once, and reuse them for every task.
+
+33
+00:04:02,073 --> 00:04:06,142
+Step three: start a session. This is the part you run for each task.
+
+34
+00:04:06,592 --> 00:04:14,650
+I upload the CSV with the Files API, then create a session with my agent and environment, and mount the file inside the sandbox.
+
+35
+00:04:15,100 --> 00:04:21,786
+Then the task, in plain English: the total revenue, revenue per week, the top three products, and a chart.
+
+36
+00:04:22,636 --> 00:04:25,737
+Step four: send the task, and stream the events.
+
+37
+00:04:26,187 --> 00:04:33,656
+I open the stream first, then send a user message event. For each event, I print the tools Claude uses, and its messages.
+
+38
+00:04:36,480 --> 00:04:45,249
+When the session goes idle, the agent has stopped. Like stop reason in the Messages API, the idle event says why: end turn means it's done.
+
+39
+00:04:46,099 --> 00:04:53,333
+Step five: get the outputs. Files the agent saves in the outputs folder can be listed for this session, and downloaded.
+
+40
+00:04:53,783 --> 00:05:01,474
+I skip the CSV I uploaded, and wait a few seconds first, because the docs say outputs can appear just after the session goes idle.
+
+41
+00:05:01,924 --> 00:05:04,429
+Now, let's run it, and watch the agent work.
+
+42
+00:05:04,879 --> 00:05:13,431
+Claude wrote and ran Python in the sandbox, saved the report and the chart, and went idle with end turn. Then my script downloaded both files.
+
+43
+00:05:13,881 --> 00:05:19,870
+Those numbers are real for this data. I checked them. Your agent's exact tool calls and wording will differ.
+
+44
+00:05:21,420 --> 00:05:22,704
+Four tips before production.
+
+45
+00:05:23,154 --> 00:05:28,224
+One: create the agent and the environment once, then start one session per task.
+
+46
+00:05:28,674 --> 00:05:35,567
+Two: always set networking. Limited is safer, and if you leave it out, the sandbox gets unrestricted access.
+
+47
+00:05:36,017 --> 00:05:47,297
+Three: handle every idle reason. End turn means done. Requires action means a custom tool, or a confirmation, needs your answer. Budget reached means the session hit its budget.
+
+48
+00:05:47,747 --> 00:05:57,831
+And four: sessions are stored server-side, so Managed Agents isn't eligible for Zero Data Retention or HIPAA today. You can delete sessions and files at any time.
+
+49
+00:05:59,381 --> 00:06:00,035
+Let's recap.
+
+50
+00:06:00,485 --> 00:06:07,351
+With your own agent, you run the loop and the tools, and you control every step. Great for short, custom tasks.
+
+51
+00:06:07,801 --> 00:06:16,005
+With a Managed Agent, Anthropic runs the loop, the tools, and a sandbox. Great for long tasks that run code and create files.
+
+52
+00:06:16,455 --> 00:06:23,739
+Create the agent and environment once, then start a session for each task, stream its events, and download the outputs.
+
+53
+00:06:25,189 --> 00:06:32,084
+All the code, an offline test you can run without an API key, and a comparison cheat sheet are linked in the description.
+
+54
+00:06:32,534 --> 00:06:39,364
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
