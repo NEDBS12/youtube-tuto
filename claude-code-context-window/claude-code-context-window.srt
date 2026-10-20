@@ -1,0 +1,180 @@
+1
+00:00:00,600 --> 00:00:05,806
+Have you ever had a long Claude Code session, where Claude suddenly forgot something you told it at the start?
+
+2
+00:00:06,256 --> 00:00:12,126
+That's the context window at work. In this video, you'll learn what it is, and how to manage it like a pro.
+
+3
+00:00:12,576 --> 00:00:18,731
+I'll explain how it works, when it causes problems, and then show you four practical habits, step by step.
+
+4
+00:00:20,281 --> 00:00:21,809
+So, what is the context window?
+
+5
+00:00:22,259 --> 00:00:30,114
+It's Claude's working memory. Everything Claude can see right now: your messages, the files it read, and the output of the commands it ran.
+
+6
+00:00:30,564 --> 00:00:39,704
+Some things load automatically, before you even type: Claude Code's instructions, your CLAUDE.md file, memory, and the names of your skills and tools.
+
+7
+00:00:40,154 --> 00:00:46,965
+And it has a limit, measured in tokens. Most models give you two hundred thousand tokens. Some offer up to a million.
+
+8
+00:00:48,415 --> 00:00:56,601
+A token is a small piece of text: a short word, or part of a longer one. Two hundred thousand tokens is roughly a few hundred pages.
+
+9
+00:00:57,051 --> 00:01:03,966
+That sounds like a lot. But big files, long test output, and long conversations fill it up surprisingly fast.
+
+10
+00:01:05,416 --> 00:01:06,786
+Here's what happens as you work.
+
+11
+00:01:07,236 --> 00:01:12,803
+First, the window fills up. Every file read, and every command output, takes space.
+
+12
+00:01:13,253 --> 00:01:23,170
+Second, near the limit, Claude Code compacts automatically. It clears older tool output first, then summarizes the conversation. So your session keeps going.
+
+13
+00:01:23,620 --> 00:01:30,072
+But third: a summary is shorter than the original. Detailed instructions from early in the chat can get lost.
+
+14
+00:01:30,522 --> 00:01:35,577
+That's why rules that must last belong in a CLAUDE.md file, not just in the chat.
+
+15
+00:01:37,027 --> 00:01:43,225
+Let's see the problem. At the start of this session, I told Claude: always run the tests after every change.
+
+16
+00:01:43,675 --> 00:01:49,772
+Two hours later, after dozens of file reads and test runs, the context window is getting full.
+
+17
+00:01:50,222 --> 00:01:58,779
+Now I ask for another change. Claude edits the file, and stops. No tests. After compaction, my early instruction didn't survive.
+
+18
+00:01:59,229 --> 00:02:01,579
+Let's fix that, with four simple habits.
+
+19
+00:02:02,429 --> 00:02:05,230
+Habit one: see what's inside your context window.
+
+20
+00:02:05,680 --> 00:02:11,948
+Type slash context. You get a live breakdown of what's using space, by category, with suggestions.
+
+21
+00:02:12,398 --> 00:02:18,388
+Here, the conversation itself is by far the biggest part: all those file reads and test runs.
+
+22
+00:02:18,838 --> 00:02:23,847
+The numbers in your own session will be different. The point is to check, before the window fills up.
+
+23
+00:02:24,697 --> 00:02:28,106
+Habit two: save lasting rules in CLAUDE.md.
+
+24
+00:02:28,556 --> 00:02:37,284
+CLAUDE.md is loaded at the start of every session. And after compaction, Claude Code reloads it from disk. So rules here don't get lost.
+
+25
+00:02:37,734 --> 00:02:41,071
+I move my test rule here, plus a couple of others I always want.
+
+26
+00:02:41,521 --> 00:02:49,635
+And I add a Compact instructions section. It tells Claude what to keep when it summarizes: test output, code changes, and failing tests.
+
+27
+00:02:50,485 --> 00:02:52,847
+Habit three: compact with a focus.
+
+28
+00:02:53,297 --> 00:03:00,340
+Claude Code compacts on its own near the limit. But before a big new step, you can do it yourself, and say what matters.
+
+29
+00:03:00,790 --> 00:03:07,433
+The summary keeps what you chose, instead of what the automatic pass guesses is important. And you get lots of free space back.
+
+30
+00:03:08,283 --> 00:03:10,471
+Habit four: clear between tasks.
+
+31
+00:03:10,921 --> 00:03:17,446
+When you switch to unrelated work, old conversation just gets in the way, and costs tokens on every message.
+
+32
+00:03:17,896 --> 00:03:23,236
+So I give this session a name with slash rename, then type slash clear, to start fresh.
+
+33
+00:03:23,686 --> 00:03:30,296
+A clean context window, for the next task. And I can come back to the old session any time, with slash resume.
+
+34
+00:03:30,746 --> 00:03:38,267
+Now, with the rule in CLAUDE.md, the same request ends the right way: Claude edits the file, and runs the tests.
+
+35
+00:03:39,817 --> 00:03:42,560
+Step five: go further. Four more tips.
+
+36
+00:03:43,010 --> 00:03:51,934
+One: delegate big jobs, like test runs or research, to a subagent. The long output stays in its own context window, not yours.
+
+37
+00:03:52,384 --> 00:03:59,149
+Two: disable plugins and MCP servers you don't use. Their descriptions load into every session.
+
+38
+00:03:59,599 --> 00:04:04,376
+Three: run slash context during long sessions, before the window fills up.
+
+39
+00:04:04,826 --> 00:04:10,681
+And four: if you really need more room, some models support a one million token context window.
+
+40
+00:04:12,231 --> 00:04:12,885
+Let's recap.
+
+41
+00:04:13,335 --> 00:04:17,632
+The context window is Claude's working memory: everything it can see right now.
+
+42
+00:04:18,082 --> 00:04:23,408
+When it fills up, Claude Code compacts the conversation, and early details can get lost.
+
+43
+00:04:23,858 --> 00:04:31,303
+So check it with slash context, keep lasting rules in CLAUDE.md, compact with a focus, and clear between tasks.
+
+44
+00:04:32,753 --> 00:04:37,407
+The CLAUDE.md example and a one-page cheat sheet are linked in the description.
+
+45
+00:04:37,857 --> 00:04:44,688
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
