@@ -1,0 +1,252 @@
+1
+00:00:00,600 --> 00:00:07,421
+Do you keep copying things from your other apps into Claude? A bug report from Notion, an email, a meeting from your calendar?
+
+2
+00:00:07,871 --> 00:00:15,742
+Connectors fix that. You connect an app once, and Claude can read it and act in it, everywhere you use Claude, including Claude Code.
+
+3
+00:00:16,192 --> 00:00:22,566
+In this video, you'll learn what connectors are, when to use them, and how to set one up and use it, step by step.
+
+4
+00:00:24,116 --> 00:00:25,192
+So, what is a connector?
+
+5
+00:00:25,642 --> 00:00:33,334
+A connector links Claude to an outside app or service, like your documents, your calendar, your email, or your issue tracker.
+
+6
+00:00:33,784 --> 00:00:37,917
+Once it's connected, Claude can find information there, and take actions for you.
+
+7
+00:00:38,367 --> 00:00:46,787
+Under the hood, it's MCP, the Model Context Protocol. The service runs an MCP server, and the connector links Claude to it.
+
+8
+00:00:47,237 --> 00:00:55,964
+Think of it like signing in to an app on your phone: you do it once, and it's saved to your Claude account, on the web, desktop, mobile, and in Claude Code.
+
+9
+00:00:57,414 --> 00:00:59,379
+Here's how it works, in three parts.
+
+10
+00:00:59,829 --> 00:01:07,266
+First, the service runs an MCP server. Notion, Gmail, Google Drive, and many others already have one.
+
+11
+00:01:07,716 --> 00:01:16,361
+Second, you connect it once, in claude.ai. You pick it in the connectors directory, and sign in to the service. No API keys to copy.
+
+12
+00:01:16,811 --> 00:01:22,642
+Third, it's saved to your account. So every Claude app you sign in to can use it, including Claude Code.
+
+13
+00:01:23,092 --> 00:01:24,965
+Connect once, use it everywhere.
+
+14
+00:01:26,415 --> 00:01:31,419
+So when should you use a connector, and when should you add an MCP server directly in Claude Code?
+
+15
+00:01:31,869 --> 00:01:38,263
+Use a connector for online apps you sign in to, like Notion or Gmail, and that you want in every Claude app.
+
+16
+00:01:38,713 --> 00:01:48,509
+Use claude mcp add for things that stay on one machine: local tools like a test browser, or servers you share with your team in the project's mcp dot json file.
+
+17
+00:01:48,959 --> 00:01:52,890
+I covered that in my MCP video. Today, we'll do the connector way.
+
+18
+00:01:54,340 --> 00:01:59,523
+Here's our use case. I run a small online shop, and I keep my bug list in a Notion page.
+
+19
+00:01:59,973 --> 00:02:08,143
+Before: for every bug, I open Notion, copy the report, paste it into Claude Code, and then go back to update the page.
+
+20
+00:02:08,593 --> 00:02:18,729
+After: I just say, fix the top bug from our list. Claude reads Notion itself, fixes the code, runs the tests, and asks before it marks the bug as fixed.
+
+21
+00:02:20,179 --> 00:02:25,022
+Let's see the problem first. Here's my shop project: the cart code, and its tests.
+
+22
+00:02:25,472 --> 00:02:29,792
+I start Claude Code, and ask it to fix the top bug from my Notion bug list.
+
+23
+00:02:30,242 --> 00:02:34,245
+Claude can't see Notion from here. So it asks me to paste the bug report.
+
+24
+00:02:34,695 --> 00:02:39,560
+That's the copy and paste loop, for every single bug. Let's fix it, with a connector.
+
+25
+00:02:41,010 --> 00:02:46,319
+Step one: connect Notion in claude.ai. I go to Customize, then Connectors.
+
+26
+00:02:46,769 --> 00:02:52,362
+The Discover tab is the connectors directory. It lists connectors from Anthropic and from other companies.
+
+27
+00:02:52,812 --> 00:02:54,592
+I search for Notion, and open it.
+
+28
+00:02:55,042 --> 00:02:56,445
+Then I click Connect to Claude.
+
+29
+00:02:56,895 --> 00:03:03,168
+Claude sends me to Notion's own sign-in page. I sign in, review what Claude can access, and approve it.
+
+30
+00:03:03,618 --> 00:03:08,507
+Back on the Connectors page, Notion is under Your connectors, with the status Connected.
+
+31
+00:03:08,957 --> 00:03:14,441
+That's it. I never copied a key or a token. And this connector is now saved to my Claude account.
+
+32
+00:03:15,891 --> 00:03:17,913
+Step two: check it in Claude Code.
+
+33
+00:03:18,363 --> 00:03:25,634
+Claude Code loads your connectors when a session starts. So I start a new session, signed in with the same claude.ai account.
+
+34
+00:03:26,084 --> 00:03:29,656
+I type slash M C P, to see my MCP servers.
+
+35
+00:03:30,106 --> 00:03:36,954
+There it is: claude dot A I Notion, in its own claude dot A I section. I didn't run a single command to add it.
+
+36
+00:03:37,404 --> 00:03:45,634
+If you don't see it, run slash status. Connectors only load when you're signed in with a claude.ai subscription, not with an API key.
+
+37
+00:03:46,484 --> 00:03:48,766
+Step three: tell Claude where things are.
+
+38
+00:03:49,216 --> 00:03:58,173
+Claude can use Notion now, but it doesn't know which page holds my bugs. So I add it to CLAUDE.md, the file Claude reads at the start of every session.
+
+39
+00:03:58,623 --> 00:04:04,089
+The bug reports live in Notion, on the page called my-shop bugs. And here's the test command.
+
+40
+00:04:04,539 --> 00:04:12,571
+Then two rules: fix one bug at a time, and ask before changing anything in Notion. Reading is fine, but changes need my OK.
+
+41
+00:04:13,421 --> 00:04:16,432
+Step four: use it. Same request as before.
+
+42
+00:04:16,882 --> 00:04:25,251
+This time, Claude calls the Notion connector. It searches for the page, then reads it. The top bug: no free shipping at exactly fifty.
+
+43
+00:04:25,701 --> 00:04:32,521
+Then it reads the cart code, and finds the cause: greater than fifty, instead of greater than or equal to fifty.
+
+44
+00:04:32,971 --> 00:04:37,116
+Following my CLAUDE.md, it runs the tests. All eight pass.
+
+45
+00:04:37,566 --> 00:04:41,911
+And it asks before touching Notion, just like my rule says. I say yes.
+
+46
+00:04:42,361 --> 00:04:47,305
+Claude updates the bug in Notion. No copy, no paste, no switching apps.
+
+47
+00:04:48,855 --> 00:04:51,372
+Step five: control what the connector can do.
+
+48
+00:04:51,822 --> 00:05:00,194
+In claude.ai, open the connector's page. For each group of tools, you choose: always allow, needs approval, or blocked.
+
+49
+00:05:00,644 --> 00:05:04,631
+Here, Claude can read freely, but every change needs my approval.
+
+50
+00:05:05,081 --> 00:05:08,198
+And Disconnect signs Claude out of the service, everywhere.
+
+51
+00:05:09,548 --> 00:05:11,713
+In Claude Code, you have two more switches.
+
+52
+00:05:12,163 --> 00:05:23,674
+In slash M C P, you can turn one connector off for this project only. And a setting called disable Claude A I connectors turns them all off, for example in a repo that should never touch your apps.
+
+53
+00:05:25,224 --> 00:05:27,548
+Before you connect more apps, four tips.
+
+54
+00:05:27,998 --> 00:05:38,228
+One: only connect services you trust. The label shows how much Anthropic reviewed a connector: Verified, Community, or Custom, which means you added it yourself.
+
+55
+00:05:38,678 --> 00:05:45,950
+Two: if a connector doesn't show up in Claude Code, run slash status, and make sure you're signed in with your claude.ai account.
+
+56
+00:05:46,400 --> 00:05:54,235
+Three: if an app isn't in the directory, but it has a remote MCP server, add it as a custom connector, with its URL.
+
+57
+00:05:54,685 --> 00:06:02,457
+And four: on a Team or Enterprise plan, an Owner adds the connector for everyone. Then each person connects their own account.
+
+58
+00:06:04,007 --> 00:06:04,661
+Let's recap.
+
+59
+00:06:05,111 --> 00:06:10,150
+A connector links Claude to an outside app, so it can find information there, and act for you.
+
+60
+00:06:10,600 --> 00:06:15,934
+You connect it once in claude.ai, and it works in every Claude app, including Claude Code.
+
+61
+00:06:16,384 --> 00:06:21,759
+Then tell Claude where your data lives in CLAUDE.md, and choose which tools need your approval.
+
+62
+00:06:23,209 --> 00:06:28,325
+The demo project, the Notion bug page, and a one-page cheat sheet are linked in the description.
+
+63
+00:06:28,775 --> 00:06:35,605
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+

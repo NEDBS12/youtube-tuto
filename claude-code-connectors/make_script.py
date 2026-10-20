@@ -1,0 +1,150 @@
+"""Generates script.json for the Claude connectors tutorial from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+EX = HERE / "example-files" / "my-shop"
+CART = (EX / "cart.py").read_text(encoding="utf-8")
+CART_FIXED = CART.replace("total > 50 else", "total >= 50 else")
+TESTS = (EX / "tests" / "test_cart.py").read_text(encoding="utf-8")
+CLAUDEMD = (EX / "CLAUDE.md").read_text(encoding="utf-8")
+ri = CLAUDEMD.index("## Rules")
+MD_WHERE, MD_RULES = CLAUDEMD[:ri], CLAUDEMD[ri:]
+assert CART != CART_FIXED
+
+URL = "claude.ai/customize/connectors"
+NAVS = ["＋ New chat", "Chats", "Projects", "-", "Customize", "  Connectors", "  Skills", "  Plugins"]
+BASE = {"k": "bview", "url": URL, "nav": "Connectors", "heading": "Connectors", "sub": "Give Claude access to the apps and data you use"}
+DIRECTORY = [{"name": "Google Drive", "desc": "Search your Drive and read Docs, Sheets and PDFs", "btn": "Connect to Claude", "ghost": True},
+             {"name": "Gmail", "desc": "Search your email and answer from your messages", "btn": "Connect to Claude", "ghost": True},
+             {"name": "Google Calendar", "desc": "Your meetings, attendees and availability", "btn": "Connect to Claude", "ghost": True},
+             {"name": "Notion", "desc": "Search, read and update your Notion pages", "btn": "Connect to Claude", "ghost": True}]
+NOTION = {"name": "Notion", "icon": "N", "color": "#E8ECF8", "desc": "Search, read and update your Notion pages", "btn": "Connect to Claude"}
+
+script = {
+ "title": "claude-code-connectors",
+ "steps": ["Connect in claude.ai", "Check in Claude Code", "Tell Claude where", "Use it", "Control access"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude tutorial · step by step",
+   "title": "Claude Connectors\n[[Connect Once, Use Everywhere]]", "subtitle": "Link Claude to your apps, then use them from Claude Code",
+   "lines": [
+    {"say": "Do you keep copying things from your other apps into Claude? A bug report from Notion, an email, a meeting from your calendar?"},
+    {"say": "Connectors fix that. You connect an app once, and Claude can read it and act in it, everywhere you use Claude, including Claude Code."},
+    {"say": "In this video, you'll learn what connectors are, when to use them, and how to set one up and use it, step by step.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is a connector?", "kicker": "**01** · The concept", "heading": "What is a [[connector]]?",
+   "items": ["A **link** between Claude and an outside app: your docs, calendar, email, issue tracker",
+             "Claude can **find information** there and **take actions** for you",
+             "Built on **MCP**: the service runs an MCP server, the connector links Claude to it"],
+   "card": {"title": "ONE CONNECTOR, EVERY CLAUDE APP", "code": "claude.ai on the web   ✓\nClaude desktop app     ✓\nClaude mobile app      ✓\nClaude Code            ✓"},
+   "lines": [
+    {"say": "So, what is a connector?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "A connector links Claude to an outside app or service, like your documents, your calendar, your email, or your issue tracker.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "Once it's connected, Claude can find information there, and take actions for you.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "Under the hood, it's MCP, the Model Context Protocol. The service runs an MCP server, and the connector links Claude to it.", "do": [{"k": "show", "el": "item3"}]},
+    {"say": "Think of it like signing in to an app on your phone: you do it once, and it's saved to your Claude account, on the web, desktop, mobile, and in Claude Code.", "do": [{"k": "show", "el": "card"}], "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "How connectors work", "kicker": "**02** · How it works", "heading": "How a connector [[works]]",
+   "rows": [{"label": "The service runs an MCP server", "text": "Notion, Gmail, Google Drive, your issue tracker…"},
+            {"label": "You connect it once in claude.ai", "text": "Pick it in the directory, then sign in to the service"},
+            {"label": "Every Claude app can use it", "text": "Web, desktop, mobile, and Claude Code with the same account"}],
+   "banner": "✓ Connect once, use it everywhere you sign in",
+   "lines": [
+    {"say": "Here's how it works, in three parts.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "First, the service runs an MCP server. Notion, Gmail, Google Drive, and many others already have one.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "Second, you connect it once, in claude.ai. You pick it in the connectors directory, and sign in to the service. No API keys to copy.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "Third, it's saved to your account. So every Claude app you sign in to can use it, including Claude Code.", "do": [{"k": "show", "el": "row3"}]},
+    {"say": "Connect once, use it everywhere.", "do": [{"k": "show", "el": "banner"}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Connector or claude mcp add?", "kicker": "**03** · When to use it", "heading": "Connector or `claude mcp add`?",
+   "left": {"title": "Connector (added in claude.ai)", "body": "• Apps you sign in to:\n  Notion, Gmail, Calendar…\n• Added once, saved to your account\n• Works on web, desktop, mobile\n  and in Claude Code\n• You sign in, no keys to paste"},
+   "right": {"title": "claude mcp add (Claude Code)", "body": "• Stays on this one machine\n• Local tools, like a browser\n  for testing (Playwright)\n• Shared with your team\n  in the project's .mcp.json\n• Works with an API key login"},
+   "lines": [
+    {"say": "So when should you use a connector, and when should you add an MCP server directly in Claude Code?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Use a connector for online apps you sign in to, like Notion or Gmail, and that you want in every Claude app.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "Use claude mcp add for things that stay on one machine: local tools like a test browser, or servers you share with your team in the project's mcp dot json file.", "tts": "Use claude M C P add for things that stay on one machine: local tools like a test browser, or servers you share with your team in the project's M C P dot json file.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}]},
+    {"say": "I covered that in my MCP video. Today, we'll do the connector way.", "tts": "I covered that in my M C P video. Today, we'll do the connector way.", "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Our use case", "kicker": "**04** · Our use case", "heading": "Fix bugs straight from [[Notion]]",
+   "left": {"title": "Before: copy and paste", "body": "1. Open Notion, find the bug\n2. Copy the bug report\n3. Paste it into Claude Code\n4. Fix it, run the tests\n5. Go back, update Notion\n\n…for every bug, every time"},
+   "right": {"title": "After: one connector", "body": "\"Fix the top bug from our list\"\n\n✓ Claude reads Notion itself\n✓ Fixes the code\n✓ Runs the tests\n✓ Asks, then marks it fixed\n   in Notion"},
+   "lines": [
+    {"say": "Here's our use case. I run a small online shop, and I keep my bug list in a Notion page.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Before: for every bug, I open Notion, copy the report, paste it into Claude Code, and then go back to update the page.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "After: I just say, fix the top bug from our list. Claude reads Notion itself, fixes the code, runs the tests, and asks before it marks the bug as fixed.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "screen", "chapter": "The copy-paste problem", "project": "my-shop", "kicker": "**DEMO** · The copy-paste problem", "lines": [
+    {"say": "Let's see the problem first. Here's my shop project: the cart code, and its tests.", "do": [{"k": "file", "path": "tests/test_cart.py", "text": TESTS, "open": False}, {"k": "file", "path": "pytest.ini", "text": "[pytest]\npythonpath = .\n", "open": False}, {"k": "file", "path": "cart.py", "text": CART}]},
+    {"say": "I start Claude Code, and ask it to fix the top bug from my Notion bug list.", "do": [{"k": "claude"}, {"k": "cprompt", "at": 1.6, "text": "Fix the top bug from my Notion bug list", "cps": 30}]},
+    {"say": "Claude can't see Notion from here. So it asks me to paste the bug report.", "do": [{"k": "cout", "lines": ["ai:I can't access Notion from this session. Could you paste the bug report here?"], "dur": 0.6}, {"k": "callout", "at": 1.0, "dur": 5.0, "target": "term", "match": "access Notion", "label": "No access to Notion"}]},
+    {"say": "That's the copy and paste loop, for every single bug. Let's fix it, with a connector.", "hold": 0.5}]},
+
+  {"type": "browser", "project": "claude.ai", "navs": NAVS, "url": URL, "lines": [
+    {"say": "Step one: connect Notion in claude.ai. I go to Customize, then Connectors.", "do": [{"k": "step", "n": 1}, dict(BASE, tabs=["Your connectors", "Discover"], tab=0), {"k": "callout", "at": 2.4, "dur": 3.0, "target": "browser", "match": "Connectors", "pos": "right", "label": "Customize > Connectors"}]},
+    {"say": "The Discover tab is the connectors directory. It lists connectors from Anthropic and from other companies.", "do": [dict(BASE, tabs=["Your connectors", "Discover"], tab=1, search="", placeholder="Search connectors", rows=DIRECTORY), {"k": "callout", "at": 0.3, "dur": 3.5, "target": "browser", "match": "Discover", "pos": "right", "label": "The directory"}]},
+    {"say": "I search for Notion, and open it.", "do": [{"k": "btype", "text": "Notion", "cps": 8}, dict(BASE, at=1.2, tabs=["Your connectors", "Discover"], tab=1, search="Notion", rows=[NOTION])]},
+    {"say": "Then I click Connect to Claude.", "do": [{"k": "callout", "dur": 3.0, "target": "browser", "match": "Connect to Claude", "label": "Click here"}]},
+    {"say": "Claude sends me to Notion's own sign-in page. I sign in, review what Claude can access, and approve it.", "do": [{"k": "bmodal", "at": 0.4, "title": "Notion · Sign in", "lines": ["**Claude** wants to access your Notion workspace:", "• Search and read your pages", "• Create and update pages"], "btns": ["Cancel", "Allow access"]}, {"k": "callout", "at": 3.6, "dur": 3.0, "target": "browser", "match": "Allow access", "label": "Review, then approve"}]},
+    {"say": "Back on the Connectors page, Notion is under Your connectors, with the status Connected.", "do": [dict(BASE, tabs=["Your connectors", "Discover"], tab=0, rows=[dict(NOTION, btn=None, status="✓ Connected")]), {"k": "callout", "at": 1.6, "dur": 3.5, "target": "browser", "match": "Connected", "label": "Done, once for every Claude app"}]},
+    {"say": "That's it. I never copied a key or a token. And this connector is now saved to my Claude account.", "hold": 0.5}]},
+
+  {"type": "screen", "project": "my-shop", "lines": [
+    {"say": "Step two: check it in Claude Code.", "do": [{"k": "step", "n": 2}]},
+    {"say": "Claude Code loads your connectors when a session starts. So I start a new session, signed in with the same claude.ai account.", "do": [{"k": "clear"}, {"k": "claude", "at": 0.3}]},
+    {"say": "I type slash M C P, to see my MCP servers.", "tts": "I type slash M C P, to see my M C P servers.", "do": [{"k": "cprompt", "text": "/mcp", "cps": 8}, {"k": "cout", "at": 0.3, "lines": ["b:Manage MCP servers", "", "b:claude.ai", "  claude.ai Notion · ✔ connected", ""], "dur": 1.0}]},
+    {"say": "There it is: claude dot A I Notion, in its own claude dot A I section. I didn't run a single command to add it.", "tts": "There it is: Claude dot A I Notion, in its own Claude dot A I section. I didn't run a single command to add it.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "claude.ai Notion", "label": "From claude.ai"}]},
+    {"say": "If you don't see it, run slash status. Connectors only load when you're signed in with a claude.ai subscription, not with an API key.", "tts": "If you don't see it, run slash status. Connectors only load when you're signed in with a Claude dot A I subscription, not with an API key.", "do": [{"k": "note", "dur": 6.5, "title": "Connector missing?", "rows": [["`/status`", "check how you're signed in"], ["claude.ai account", "connectors load ✓"], ["API key, Bedrock…", "connectors don't load"], ["`/login`", "pick your claude.ai account"]]}], "hold": 0.4},
+
+    {"say": "Step three: tell Claude where things are.", "do": [{"k": "step", "n": 3}, {"k": "open", "path": "CLAUDE.md", "at": 0.6}]},
+    {"say": "Claude can use Notion now, but it doesn't know which page holds my bugs. So I add it to CLAUDE.md, the file Claude reads at the start of every session.", "tts": "Claude can use Notion now, but it doesn't know which page holds my bugs. So I add it to CLAUDE dot M D, the file Claude reads at the start of every session.", "do": [{"k": "type", "path": "CLAUDE.md", "text": MD_WHERE, "cps": 40}]},
+    {"say": "The bug reports live in Notion, on the page called my-shop bugs. And here's the test command.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "Bug reports live", "span": 2, "label": "Where the data lives"}]},
+    {"say": "Then two rules: fix one bug at a time, and ask before changing anything in Notion. Reading is fine, but changes need my OK.", "do": [{"k": "type", "path": "CLAUDE.md", "text": MD_RULES, "cps": 40}, {"k": "callout", "at": 3.0, "dur": 4.5, "target": "editor", "match": "Ask before you change", "label": "Changes need my OK"}], "hold": 0.4},
+
+    {"say": "Step four: use it. Same request as before.", "do": [{"k": "step", "n": 4}, {"k": "cprompt", "at": 1.4, "text": "Fix the top bug from our bug list", "cps": 30}]},
+    {"say": "This time, Claude calls the Notion connector. It searches for the page, then reads it. The top bug: no free shipping at exactly fifty.", "do": [{"k": "cout", "lines": ["tool:claude.ai Notion - notion-search (MCP)", "res:Found the page \"my-shop bugs\"", "tool:claude.ai Notion - notion-fetch (MCP)", "res:2 bugs · #1 High: no free shipping at exactly 50"], "dur": 2.0}, {"k": "callout", "at": 2.4, "dur": 5.0, "target": "term", "match": "notion-fetch", "span": 2, "label": "Reads Notion itself"}]},
+    {"say": "Then it reads the cart code, and finds the cause: greater than fifty, instead of greater than or equal to fifty.", "do": [{"k": "cout", "lines": ["tool:Read(cart.py)", "res:Read 15 lines", "tool:Edit(cart.py)", "res:total > 50  →  total >= 50"], "dur": 1.4}, {"k": "file", "at": 1.6, "path": "cart.py", "text": CART_FIXED}, {"k": "callout", "at": 2.0, "dur": 5.0, "target": "editor", "match": "total >= 50", "label": "The fix"}]},
+    {"say": "Following my CLAUDE.md, it runs the tests. All eight pass.", "tts": "Following my CLAUDE dot M D, it runs the tests. All eight pass.", "do": [{"k": "cout", "lines": ["tool:Bash(python -m pytest -q)", "res:8 passed", "ai:Fixed bug #1: shipping is now free from 50, with 50 included. Should I mark it as fixed in Notion?"], "dur": 1.6}, {"k": "callout", "at": 2.0, "dur": 4.5, "target": "term", "match": "8 passed", "label": "Tests pass"}]},
+    {"say": "And it asks before touching Notion, just like my rule says. I say yes.", "do": [{"k": "cprompt", "text": "Yes, mark it fixed", "cps": 24}]},
+    {"say": "Claude updates the bug in Notion. No copy, no paste, no switching apps.", "do": [{"k": "cout", "lines": ["tool:claude.ai Notion - notion-update-page (MCP)", "res:Bug #1 · Status: Fixed", "ai:Done. Bug #1 is marked as fixed in Notion."], "dur": 1.4}, {"k": "callout", "at": 1.8, "dur": 4.5, "target": "term", "match": "Status: Fixed", "label": "Updated in Notion"}], "hold": 0.6}]},
+
+  {"type": "browser", "project": "claude.ai", "navs": NAVS, "url": URL, "lines": [
+    {"say": "Step five: control what the connector can do.", "do": [{"k": "step", "n": 5}, dict(BASE, url=URL + "/notion", heading="Notion", sub="Connected · Tool permissions",
+      rows=[{"name": "Read tools", "icon": "R", "desc": "Search and read pages", "opts": ["Always allow", "Needs approval", "Blocked"], "sel": 0},
+            {"name": "Write tools", "icon": "W", "desc": "Create and update pages", "opts": ["Always allow", "Needs approval", "Blocked"], "sel": 1},
+            {"name": "Disconnect", "icon": "✕", "color": "#F87171", "desc": "Sign Claude out of Notion", "btn": "Disconnect", "ghost": True}])]},
+    {"say": "In claude.ai, open the connector's page. For each group of tools, you choose: always allow, needs approval, or blocked.", "do": [{"k": "callout", "at": 1.6, "dur": 5.0, "target": "browser", "match": "Needs approval", "big": False, "label": "You decide, per tool"}]},
+    {"say": "Here, Claude can read freely, but every change needs my approval.", "do": [{"k": "callout", "dur": 4.0, "target": "browser", "match": "Write tools", "big": True, "pos": "center", "label": "Changes need approval"}]},
+    {"say": "And Disconnect signs Claude out of the service, everywhere.", "do": [{"k": "callout", "dur": 3.5, "target": "browser", "match": "Disconnect", "label": "Off everywhere"}], "hold": 0.4}]},
+
+  {"type": "screen", "project": "my-shop", "lines": [
+    {"say": "In Claude Code, you have two more switches.", "do": [{"k": "note", "dur": 11.0, "title": "Turn connectors off in Claude Code", "rows": [["`/mcp`", "one connector, this project"], ["settings.json", "all of them, for a repo"]]}]},
+    {"say": "In slash M C P, you can turn one connector off for this project only. And a setting called disable Claude A I connectors turns them all off, for example in a repo that should never touch your apps.", "tts": "In slash M C P, you can turn one connector off for this project only. And a setting called disable Claude A I connectors turns them all off, for example in a repo that should never touch your apps.", "hold": 0.6}]},
+
+  {"type": "cards", "chapter": "Tips", "kicker": "**TIPS** · Before you connect more", "heading": "4 tips for [[connectors]]", "rail": True,
+   "cards": [{"title": "Connect what you trust", "text": "Verified, Community or Custom: check the label"},
+             {"title": "Not in Claude Code?", "text": "Run `/status`: use a claude.ai login, not an API key"},
+             {"title": "Not in the directory?", "text": "Add a custom connector with its server URL"},
+             {"title": "Team plan?", "text": "An Owner adds it, then you connect your own account"}],
+   "lines": [
+    {"say": "Before you connect more apps, four tips.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: only connect services you trust. The label shows how much Anthropic reviewed a connector: Verified, Community, or Custom, which means you added it yourself.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: if a connector doesn't show up in Claude Code, run slash status, and make sure you're signed in with your claude.ai account.", "tts": "Two: if a connector doesn't show up in Claude Code, run slash status, and make sure you're signed in with your Claude dot A I account.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: if an app isn't in the directory, but it has a remote MCP server, add it as a custom connector, with its URL.", "tts": "Three: if an app isn't in the directory, but it has a remote M C P server, add it as a custom connector, with its URL.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "And four: on a Team or Enterprise plan, an Owner adds the connector for everyone. Then each person connects their own account.", "do": [{"k": "show", "el": "card4"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["A connector links Claude to an app: it can **read** and **act** there",
+             "Connect it **once** in claude.ai, use it in **every** Claude app",
+             "Point Claude to your data in `CLAUDE.md`, and [[control the tools]]"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "A connector links Claude to an outside app, so it can find information there, and act for you.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "You connect it once in claude.ai, and it works in every Claude app, including Claude Code.", "tts": "You connect it once in Claude dot A I, and it works in every Claude app, including Claude Code.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "Then tell Claude where your data lives in CLAUDE.md, and choose which tools need your approval.", "tts": "Then tell Claude where your data lives in CLAUDE dot M D, and choose which tools need your approval.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Thanks for [[watching]]", "subtitle": "The demo project, the Notion page and a cheat sheet are in the description", "lines": [
+    {"say": "The demo project, the Notion bug page, and a one-page cheat sheet are linked in the description.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")
