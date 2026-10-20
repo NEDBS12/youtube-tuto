@@ -1,0 +1,14 @@
+{
+  "name": "my-marketplace",
+  "description": "Plugins for my team",
+  "owner": {
+    "name": "Zero Cost AI"
+  },
+  "plugins": [
+    {
+      "name": "team-kit",
+      "source": "./plugins/team-kit",
+      "description": "Protects .env files, runs tests, writes YouTube descriptions"
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+1
+00:00:00,600 --> 00:00:06,893
+You've built great tools for Claude Code: a hook, a subagent, a skill. Now your teammate wants them too.
+
+2
+00:00:07,343 --> 00:00:12,033
+Copying files into every project by hand? There's a better way: plugins.
+
+3
+00:00:12,483 --> 00:00:17,914
+I'll explain what a plugin is, when to use one, and then we'll build one and share it, step by step.
+
+4
+00:00:19,464 --> 00:00:20,399
+So, what is a plugin?
+
+5
+00:00:20,849 --> 00:00:28,244
+A plugin bundles skills, subagents, hooks, and MCP servers into one package, that installs as one unit.
+
+6
+00:00:28,694 --> 00:00:33,900
+A small file called a manifest, plugin dot JSON, gives it a name and a description.
+
+7
+00:00:34,350 --> 00:00:40,936
+And a marketplace is a catalog, usually a Git repository, where people find your plugin and install it by name.
+
+8
+00:00:42,386 --> 00:00:44,633
+Here's the whole journey, in three parts.
+
+9
+00:00:45,083 --> 00:00:49,403
+First, build: put your components in one folder, with a manifest.
+
+10
+00:00:49,853 --> 00:00:54,718
+Second, list it in a marketplace: a small catalog file in a Git repository.
+
+11
+00:00:55,168 --> 00:01:00,530
+Third, install: one command, and every component in the plugin loads in Claude Code.
+
+12
+00:01:00,980 --> 00:01:06,422
+Each skill and subagent gets the plugin's name as a prefix, so nothing clashes with your own tools.
+
+13
+00:01:07,872 --> 00:01:08,955
+So when do you need a plugin?
+
+14
+00:01:09,405 --> 00:01:17,389
+Skills, subagents, hooks, and MCP servers all work on their own. If it's one tool, just for you, you don't need a plugin.
+
+15
+00:01:17,839 --> 00:01:25,143
+Use a plugin when you want several pieces packaged together: to share with teammates, reuse in many projects, or ship updates.
+
+16
+00:01:26,593 --> 00:01:28,274
+Our example: a team kit.
+
+17
+00:01:28,724 --> 00:01:38,949
+In earlier videos, we built a hook that protects your secrets, a test-runner subagent, and a YouTube description skill. Sharing them means copying files, project by project.
+
+18
+00:01:39,399 --> 00:01:45,859
+We'll pack all three into one plugin, called team-kit, so anyone can install everything with a single command.
+
+19
+00:01:47,409 --> 00:01:49,206
+Step one: create the plugin.
+
+20
+00:01:49,656 --> 00:01:55,481
+I'm in my project. I make a folder called team-kit, with a dot claude plugin folder inside it.
+
+21
+00:01:55,931 --> 00:01:59,063
+Inside, the manifest: plugin dot JSON.
+
+22
+00:02:01,131 --> 00:02:07,745
+The name is required. It becomes the prefix on every skill and subagent in the plugin. No spaces.
+
+23
+00:02:08,195 --> 00:02:13,804
+The description is what people see when they browse plugins. And the version lets you release updates.
+
+24
+00:02:14,254 --> 00:02:18,782
+Only plugin dot JSON goes in that hidden folder. Everything else goes next to it.
+
+25
+00:02:19,532 --> 00:02:21,478
+Step two: add the components.
+
+26
+00:02:21,928 --> 00:02:26,602
+Each type has its own folder: agents, hooks, scripts, and skills.
+
+27
+00:02:27,052 --> 00:02:32,399
+I copy in the three tools from earlier videos: the subagent, the hook script, and the skill.
+
+28
+00:02:33,461 --> 00:02:40,810
+The hook needs one file: hooks, slash hooks dot JSON. It's the same format as the hooks section in a settings file.
+
+29
+00:02:41,260 --> 00:02:47,783
+One difference: the script path starts with the plugin root variable. It always points to wherever the plugin is installed.
+
+30
+00:02:48,633 --> 00:02:51,048
+Step three: test it, before sharing.
+
+31
+00:02:51,498 --> 00:02:55,953
+First, claude plugin validate checks the manifest and every component.
+
+32
+00:02:56,403 --> 00:03:01,583
+Then I load it for one session with the plugin dir flag. No install needed while you're building.
+
+33
+00:03:02,033 --> 00:03:05,883
+Let's try the hook. I ask Claude to add a comment to my dot env file.
+
+34
+00:03:06,333 --> 00:03:11,226
+Blocked, by the hook inside the plugin. Now, the subagent: run the tests.
+
+35
+00:03:11,676 --> 00:03:16,930
+Claude delegates to team-kit colon test-runner. Notice the plugin's name, as a prefix.
+
+36
+00:03:17,380 --> 00:03:23,643
+And the skill is ready too, as slash team-kit colon youtube-description. Everything works. Time to share it.
+
+37
+00:03:24,493 --> 00:03:27,187
+Step four: share it, with a marketplace.
+
+38
+00:03:27,637 --> 00:03:34,933
+A marketplace is just a folder with a catalog file, and your plugins inside. I create one, and copy team-kit into it.
+
+39
+00:03:35,383 --> 00:03:40,925
+The catalog is marketplace dot JSON: a name, an owner, and the list of plugins.
+
+40
+00:03:42,668 --> 00:03:48,357
+Each plugin entry has a name, and a source: the path to the plugin, from the marketplace folder.
+
+41
+00:03:48,807 --> 00:03:53,780
+I validate it, then push the my-marketplace folder to GitHub, as its own repository.
+
+42
+00:03:54,230 --> 00:04:00,923
+Now, any teammate runs two commands. Add the marketplace, using the GitHub owner and repository name.
+
+43
+00:04:01,373 --> 00:04:05,507
+Then install the plugin: its name, at, the marketplace name.
+
+44
+00:04:05,957 --> 00:04:11,425
+That's it. The hook, the subagent, and the skill, in every project, from one install.
+
+45
+00:04:12,975 --> 00:04:15,877
+Step five: go further. Here are four tips.
+
+46
+00:04:16,327 --> 00:04:23,853
+One: type slash plugin in Claude Code. The Discover tab lists plugins from Anthropic's official marketplace, ready to install.
+
+47
+00:04:24,303 --> 00:04:34,665
+Two: check the cost. An enabled plugin adds its descriptions to every session. Claude plugin details shows how many tokens. Our team-kit adds about ninety.
+
+48
+00:04:35,115 --> 00:04:41,092
+Three: only install plugins you trust. A plugin runs code with your permissions, so review it first.
+
+49
+00:04:41,542 --> 00:04:46,920
+Four: when you improve your plugin, bump the version in the manifest, and your teammates get the update.
+
+50
+00:04:48,470 --> 00:04:49,124
+Let's recap.
+
+51
+00:04:49,574 --> 00:04:55,298
+A plugin packages skills, subagents, hooks, and MCP servers into one unit.
+
+52
+00:04:55,748 --> 00:05:01,929
+You build it with a plugin dot JSON manifest and a folder per component, and test it with the plugin dir flag.
+
+53
+00:05:02,379 --> 00:05:07,013
+And you share it through a marketplace, so anyone can install the whole kit with one command.
+
+54
+00:05:08,463 --> 00:05:14,677
+The team-kit plugin and the marketplace from this video are linked in the description. Copy them, and make them yours.
+
+55
+00:05:15,127 --> 00:05:21,958
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+

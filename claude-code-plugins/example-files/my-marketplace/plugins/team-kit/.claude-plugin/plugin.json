@@ -1,0 +1,8 @@
+{
+  "name": "team-kit",
+  "description": "Protects .env files, runs tests, writes YouTube descriptions",
+  "version": "1.0.0",
+  "author": {
+    "name": "Zero Cost AI"
+  }
+}
