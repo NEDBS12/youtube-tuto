@@ -1,0 +1,232 @@
+1
+00:00:00,600 --> 00:00:07,874
+Do you have jobs you keep doing by hand? Running the tests every morning, checking new pull requests, reacting after every deploy?
+
+2
+00:00:08,324 --> 00:00:14,642
+Routines let Claude Code do them for you, in the cloud, on a schedule, even when your laptop is closed.
+
+3
+00:00:15,092 --> 00:00:20,795
+In this video, you'll learn what routines are, when to use them, and how to set one up, step by step.
+
+4
+00:00:22,345 --> 00:00:23,436
+So, what is a routine?
+
+5
+00:00:23,886 --> 00:00:32,374
+A routine is a saved Claude Code setup: a prompt, one or more GitHub repositories, and the connectors it may use. You package it once.
+
+6
+00:00:32,824 --> 00:00:39,715
+Then it runs automatically, on Anthropic's cloud, as a full Claude Code session. Your computer doesn't need to be on.
+
+7
+00:00:40,165 --> 00:00:53,250
+One naming note: routines are now called scheduled tasks. The old name still appears in the web address, and in the slash routines command. It's a research preview, on Pro, Max, Team and Enterprise plans.
+
+8
+00:00:54,700 --> 00:00:58,633
+A routine starts when one of its triggers fires. There are three kinds.
+
+9
+00:00:59,083 --> 00:01:04,109
+A schedule: hourly, daily, weekly, or just once, at a set time.
+
+10
+00:01:04,559 --> 00:01:11,128
+An API trigger: your own script, like a deploy pipeline, calls the routine's URL with a secret token.
+
+11
+00:01:11,578 --> 00:01:16,007
+And a GitHub trigger: a pull request or a release event on your repository.
+
+12
+00:01:16,457 --> 00:01:21,427
+And you can combine them. The same routine can run every morning, and after every deploy.
+
+13
+00:01:22,877 --> 00:01:24,136
+When should you use a routine?
+
+14
+00:01:24,586 --> 00:01:33,843
+For jobs that are unattended, repeatable, and have a clear outcome. They run in the cloud, on a fresh copy of your GitHub repository, at most once an hour.
+
+15
+00:01:34,293 --> 00:01:43,124
+If the job needs files on your computer, use a Desktop scheduled task. For quick polling while you work, use slash loop. Both need your machine to be on.
+
+16
+00:01:44,574 --> 00:01:48,374
+Our use case: a test guard, for my small shop's code on GitHub.
+
+17
+00:01:48,824 --> 00:01:57,282
+Before: every morning, I open the project and run the tests. I notice a failure only when I remember to check, and only when I'm at my desk.
+
+18
+00:01:57,732 --> 00:02:06,945
+After: a routine runs the tests every weekday morning, and after every deploy. If something fails, it fixes it on a new branch, and reports what it did.
+
+19
+00:02:08,395 --> 00:02:13,550
+Here's the project: the cart code, its tests, and a short CLAUDE.md with my rules.
+
+20
+00:02:14,000 --> 00:02:18,428
+Someone merged a change yesterday. I run the tests by hand, and one fails.
+
+21
+00:02:18,878 --> 00:02:23,538
+I only found it because I happened to check. Let's make Claude check, every day, without me.
+
+22
+00:02:24,488 --> 00:02:27,867
+Step one: write the prompt. This is the most important part.
+
+23
+00:02:28,317 --> 00:02:39,584
+The routine runs unattended. Nobody is watching. So the prompt must be self-contained, and say what success looks like. First: run the tests, and if they pass, report the count.
+
+24
+00:02:40,034 --> 00:02:47,016
+If a test fails: find the cause, don't touch the tests, fix it on a new claude branch, and report the details.
+
+25
+00:02:47,466 --> 00:02:57,492
+And a rule for the API trigger: text sent with it arrives in a routine fire payload block, labeled as untrusted. My prompt says to use it only as context.
+
+26
+00:02:58,342 --> 00:03:03,116
+Step two: create the routine, right from Claude Code, with slash schedule.
+
+27
+00:03:03,566 --> 00:03:08,948
+I describe it in plain English: every weekday at 9:07, run the test guard prompt.
+
+28
+00:03:09,398 --> 00:03:16,458
+Claude asks a few follow-up questions: the repository, the prompt, the time. Then it saves the routine to my account.
+
+29
+00:03:16,908 --> 00:03:21,804
+I confirm, and it's saved: weekdays at 9:07, in my own time zone.
+
+30
+00:03:23,254 --> 00:03:28,999
+Step three: review it on the web, at claude dot A I, slash code, slash routines.
+
+31
+00:03:29,449 --> 00:03:35,955
+Here's the routine I made in the terminal. The web, the desktop app, and the CLI all share the same list.
+
+32
+00:03:36,405 --> 00:03:44,106
+On its page: the schedule, the repository it clones on every run, and the environment, which controls network access.
+
+33
+00:03:44,556 --> 00:03:50,822
+The default environment is trusted: only an allowlist of package registries and common developer sites.
+
+34
+00:03:51,272 --> 00:04:02,571
+Now, connectors. All your connectors are included by default, and a routine can use every tool in them, even writes, without asking. My test guard doesn't need any, so I remove them.
+
+35
+00:04:03,021 --> 00:04:11,286
+Remember: every run acts as you. Commits carry your GitHub name, and connector actions use your accounts. So give it only what it needs.
+
+36
+00:04:12,136 --> 00:04:17,381
+Step four: add more triggers. I open Edit, and in the trigger row, I click plus.
+
+37
+00:04:17,831 --> 00:04:27,681
+A GitHub event: when a pull request is opened, and it's not a draft. A pull request run starts from that pull request's code, so the guard tests the change before I merge it.
+
+38
+00:04:28,131 --> 00:04:34,170
+This needs the Claude GitHub App installed on the repository. The web page asks you to install it if it's missing.
+
+39
+00:04:34,820 --> 00:04:39,184
+Then an API trigger. I copy the fire URL, and generate a token.
+
+40
+00:04:39,634 --> 00:04:46,762
+The token is shown only once. I store it straight away, in my deploy pipeline's secrets. Never in the repository.
+
+41
+00:04:48,112 --> 00:04:51,423
+Now my deploy script can start the routine. Here's the script.
+
+42
+00:04:55,140 --> 00:05:06,878
+A POST to the fire URL, with the token as a bearer header, and the routines beta header. Both come from secrets, not the file. The text field adds context, like which version just shipped.
+
+43
+00:05:07,328 --> 00:05:12,167
+I run it after a deploy. The response is a new session, with a link to watch it live.
+
+44
+00:05:13,017 --> 00:05:17,237
+Step five: check the runs. Here's what happened at 9:07 this morning.
+
+45
+00:05:17,687 --> 00:05:23,839
+I ask Claude directly: what did my test guard do this morning? Claude reads the run's log, and explains.
+
+46
+00:05:24,289 --> 00:05:32,321
+The test guard found the failing test, fixed the cause, ran the tests again, and pushed a claude branch. I just review it, and merge.
+
+47
+00:05:32,771 --> 00:05:43,213
+One warning: in the runs list, a green status only means the session started and exited. It doesn't mean the work succeeded. Always open the run, and read what Claude did.
+
+48
+00:05:44,763 --> 00:05:46,469
+Four tips before you automate more.
+
+49
+00:05:46,919 --> 00:05:55,494
+One: scope what it can reach. Runs have no permission prompts, so choose only the repositories, network access, and connectors the job needs.
+
+50
+00:05:55,944 --> 00:06:00,598
+Two: schedule a few minutes past the hour, because on-the-hour runs can start late.
+
+51
+00:06:01,048 --> 00:06:08,413
+Three: treat API text as data. It arrives labeled as untrusted, and your saved prompt decides how to use it.
+
+52
+00:06:08,863 --> 00:06:20,724
+And four: mind the limits. The minimum interval is one hour, and runs use your subscription, just like normal sessions. Slash schedule also needs a claude dot A I login, not an API key.
+
+53
+00:06:22,274 --> 00:06:22,928
+Let's recap.
+
+54
+00:06:23,378 --> 00:06:30,422
+A routine is a saved prompt, repositories, and connectors, that runs in the cloud, even with your laptop closed.
+
+55
+00:06:30,872 --> 00:06:36,331
+It starts on a schedule, from an API call, or on a GitHub event, or any mix of the three.
+
+56
+00:06:36,781 --> 00:06:42,044
+Write a prompt that works with nobody watching, give it only what it needs, and always read the runs.
+
+57
+00:06:43,494 --> 00:06:49,132
+The test guard prompt, the fire script, the demo project, and a cheat sheet are linked in the description.
+
+58
+00:06:49,582 --> 00:06:56,413
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
