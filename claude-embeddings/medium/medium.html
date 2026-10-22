@@ -1,0 +1,170 @@
+<h1>Embeddings and Vector Normalization Explained Simply (With Python)</h1>
+<h4>What an embedding vector is, why every vector gets length 1, and how to search by meaning with Voyage AI</h4>
+<p>A customer writes: <em>"The package never showed up."</em> Your FAQ says: <em>"Where is my order?"</em> Not one word in common.</p>
+<p>Keyword search misses it. <strong>Embeddings</strong> find it. In this article you'll learn what an embedding is, what normalizing a vector means, why it matters, and how to build a small FAQ search in Python, step by step.</p>
+<p>🎥 <strong>Prefer video?</strong> Watch the full tutorial here:</p>
+<h2><strong>▶ VIDEO: paste the YouTube link on this line, then press Enter to embed it.</strong></h2>
+<h2>What is an embedding?</h2>
+<p>An <strong>embedding</strong> is a list of numbers that captures what a text means. A list of numbers like this is called a <strong>vector</strong>.</p>
+<ul>
+<li>Texts with similar meaning get vectors that <strong>point in a similar direction</strong>, even when they use different words.</li>
+<li>Embeddings come from an <strong>embedding model</strong>, not from Claude itself. Anthropic doesn't make one; its docs point to Voyage AI.</li>
+<li>Voyage's latest models (voyage-4) return <strong>1,024 numbers</strong> per text by default.</li>
+</ul>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/01-what-is-an-embedding.jpg" alt="What is an embedding: one text becomes one vector"><figcaption>What is an embedding: one text becomes one vector</figcaption></figure>
+<h2>Direction is meaning: length, cosine and normalization</h2>
+<p>Picture each vector as an arrow. Two things matter: its <strong>direction</strong> and its <strong>length</strong>.</p>
+<ul>
+<li><strong>Length (the L2 norm):</strong> the square root of the sum of the squares of its numbers.</li>
+<li><strong>Cosine similarity:</strong> compares only the direction. 1 means the same direction, 0 means unrelated.</li>
+<li><strong>Normalizing:</strong> dividing a vector by its length. The direction stays the same, but the length becomes exactly 1.</li>
+</ul>
+<p>The payoff: <strong>when every vector has length 1, the plain dot product gives the same number as cosine similarity</strong>, and it's faster to compute.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/02-direction-is-meaning.jpg" alt="Direction is meaning: length, cosine similarity and normalization"><figcaption>Direction is meaning: length, cosine similarity and normalization</figcaption></figure>
+<h2>Two kinds of normalization (don't mix them up)</h2>
+<ul>
+<li><strong>Normalizing embeddings</strong> (this article): scale each vector to length 1 before comparing vectors. Voyage vectors already come normalized.</li>
+<li><strong>Normalization inside LLMs:</strong> layers like LayerNorm and RMSNorm rescale the numbers between the layers of the network, to keep training stable. They're built into the model; you never call them yourself.</li>
+</ul>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/03-two-kinds.jpg" alt="Two kinds of normalization: embeddings vs. layers inside LLMs"><figcaption>Two kinds of normalization: embeddings vs. layers inside LLMs</figcaption></figure>
+<h2>When to use embeddings</h2>
+<p><strong>Use embeddings for:</strong> search by meaning, finding the right chunks for RAG, spotting duplicates, recommendations, and grouping similar texts.</p>
+<p><strong>Keyword search is better for:</strong> exact codes, IDs and rare names, like "order 1042". Real systems often combine both.</p>
+<h2>Our use case: an FAQ search for Maple Mugs</h2>
+<p>Maple Mugs is the small (made-up) online shop from my RAG tutorial. With keyword search, <em>"The package never showed up"</em> shares zero words with <em>"Where is my order?"</em>, so there's no match. With embeddings, both questions become vectors that point the same way, so the right answer comes first.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/04-use-case.jpg" alt="Our use case: keyword search vs. embedding search"><figcaption>Our use case: keyword search vs. embedding search</figcaption></figure>
+<h2>Step 1: Measure length (and normalize)</h2>
+<p>Start with the math, in plain Python, no libraries (<code>vectors.py</code>):</p>
+<pre><code class="language-python">import math
+ 
+ 
+def length(v):
+    &quot;&quot;&quot;The vector's length (L2 norm): sqrt of the sum of squares.&quot;&quot;&quot;
+    return math.sqrt(sum(x * x for x in v))
+ 
+ 
+def normalize(v):
+    &quot;&quot;&quot;Scale the vector to length 1. Its direction doesn't change.&quot;&quot;&quot;
+    n = length(v)
+    return [x / n for x in v]
+</code></pre>
+<p>A vector like <code>[3, 4]</code> has length 5. Normalized, it becomes <code>[0.6, 0.8]</code>: same direction, length 1.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/05-step1-length.jpg" alt="Step 1: length and normalize in plain Python"><figcaption>Step 1: length and normalize in plain Python</figcaption></figure>
+<h2>Step 2: Compare vectors</h2>
+<p>Add the dot product and cosine similarity to the same file:</p>
+<pre><code class="language-python">def dot(a, b):
+    &quot;&quot;&quot;Dot product: multiply number by number, then add it all up.&quot;&quot;&quot;
+    return sum(x * y for x, y in zip(a, b))
+ 
+ 
+def cosine(a, b):
+    &quot;&quot;&quot;Cosine similarity: 1 = same direction, 0 = unrelated.&quot;&quot;&quot;
+    return dot(a, b) / (length(a) * length(b))
+</code></pre>
+<p>The <strong>dot product</strong> multiplies the numbers pair by pair and adds them up. <strong>Cosine</strong> divides that by both lengths, so only the direction counts.</p>
+<p>Now a tiny example with arrows of just two numbers (<code>toy.py</code>). A points the same way as the query. B points elsewhere, but it's longer:</p>
+<pre><code class="language-python">from vectors import length, normalize, dot, cosine
+ 
+query = [1, 1]
+docs = {&quot;A&quot;: [2, 2], &quot;B&quot;: [5, 1]}  # A points the same way as the query
+ 
+print(&quot;doc  length   dot  cosine&quot;)
+for name, v in docs.items():
+    ln, d, c = length(v), dot(query, v), cosine(query, v)
+    print(f&quot;{name}     {ln:.2f}  {d:.2f}  {c:.3f}&quot;)
+ 
+print(&quot;\nAfter normalizing to length 1:&quot;)
+q = normalize(query)
+for name, v in docs.items():
+    u = normalize(v)
+    print(f&quot;{name}     length {length(u):.2f}  dot {dot(q, u):.3f}&quot;)
+</code></pre>
+<pre><code class="language-text">$ python toy.py
+doc  length   dot  cosine
+A     2.83  4.00  1.000
+B     5.10  6.00  0.832
+ 
+After normalizing to length 1:
+A     length 1.00  dot 1.000
+B     length 1.00  dot 0.832
+</code></pre>
+<p>Look at the first table: <strong>the raw dot product prefers B, only because B is longer.</strong> Cosine gets it right: A is a perfect match, 1.0.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/06-step2-compare.jpg" alt="Step 2: the raw dot product is fooled by length"><figcaption>Step 2: the raw dot product is fooled by length</figcaption></figure>
+<h2>Step 3: Normalize</h2>
+<p>The second half of the output does the same comparison, but normalizes the query and both documents first. Every length is now 1, and <strong>the dot product gives exactly the cosine values</strong>. No division needed when you compare.</p>
+<p>That's why embedding providers normalize their vectors: you store them once, and every comparison is a fast dot product.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/07-step3-normalize.jpg" alt="Step 3: after normalizing, dot product = cosine"><figcaption>Step 3: after normalizing, dot product = cosine</figcaption></figure>
+<h2>Step 4: Embed the FAQ</h2>
+<p>Now real embeddings with Voyage AI (<code>pip install -U voyageai</code>, and a Voyage API key in <code>VOYAGE_API_KEY</code>). Here's the first part of <code>search.py</code>:</p>
+<pre><code class="language-python">import sys
+import voyageai
+from vectors import length, dot
+ 
+vo = voyageai.Client()  # reads your VOYAGE_API_KEY
+FAQ = [
+    &quot;Where is my order?&quot;,
+    &quot;How do I return a mug?&quot;,
+    &quot;Is shipping free?&quot;,
+    &quot;Are your mugs dishwasher safe?&quot;,
+    &quot;Can I change my delivery address?&quot;,
+]
+ 
+# 1. Embed the FAQ once: one vector per question
+docs = vo.embed(FAQ, model=&quot;voyage-4-lite&quot;,
+                input_type=&quot;document&quot;).embeddings
+print(f&quot;{len(docs)} vectors, {len(docs[0])} numbers each, &quot;
+      f&quot;length {length(docs[0]):.3f}&quot;)
+</code></pre>
+<ul>
+<li><code>embed</code> sends the five FAQ questions and gets back five vectors.</li>
+<li>Note <code>input_type="document"</code>: what you store is a document; what you search with is a query.</li>
+<li>The print line shows the size of each vector, and its length.</li>
+</ul>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/08-step4-embed.jpg" alt="Step 4: embedding the FAQ with Voyage AI"><figcaption>Step 4: embedding the FAQ with Voyage AI</figcaption></figure>
+<h2>Step 5: Search by meaning</h2>
+<pre><code class="language-python"># 2. Embed the customer's question
+question = sys.argv[1]
+q = vo.embed([question], model=&quot;voyage-4-lite&quot;,
+             input_type=&quot;query&quot;).embeddings[0]
+ 
+# 3. Length 1 already, so the dot product IS the cosine
+ranked = sorted(zip((dot(q, d) for d in docs), FAQ), reverse=True)
+for score, text in ranked[:3]:
+    print(f&quot;{score:.3f}  {text}&quot;)
+</code></pre>
+<p>I embed the customer's question with <code>input_type="query"</code>, score every FAQ with a dot product, and print the top three. Why a dot product and not cosine? <strong>Voyage vectors already have length 1, so the dot product <em>is</em> the cosine.</strong></p>
+<pre><code class="language-text">$ python search.py &quot;The package never showed up&quot;
+5 vectors, 1024 numbers each, length 1.000
+0.712  Where is my order?
+0.486  Can I change my delivery address?
+0.441  Is shipping free?
+</code></pre>
+<p>Five vectors of 1,024 numbers, each with length 1: already normalized. And the top match is "Where is my order?", with zero words in common. That's search by meaning. (Your exact scores will differ.)</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/09-step5-search.jpg" alt="Step 5: the top match shares no words with the question"><figcaption>Step 5: the top match shares no words with the question</figcaption></figure>
+<p>The files also include an offline test you can run without an API key: <code>python -m pytest -q</code> (5 passed).</p>
+<h2>4 tips for embeddings</h2>
+<ol>
+<li><strong>One model for everything.</strong> Embed your documents and your queries with the same model. Vectors from different models can't be compared.</li>
+<li><strong>Set <code>input_type</code>.</strong> Voyage's docs say to use <code>document</code> for what you store and <code>query</code> for what you search with. Don't leave it out.</li>
+<li><strong>Shortened? Normalize again.</strong> If you shorten vectors you already stored (for example to 256 numbers), their length drops below 1. Normalize them again.</li>
+<li><strong>Store normalized vectors,</strong> so every comparison is a fast dot product.</li>
+</ol>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/claude-embeddings/images/10-tips.jpg" alt="4 tips for embeddings"><figcaption>4 tips for embeddings</figcaption></figure>
+<h2>Recap</h2>
+<ul>
+<li>An embedding is a vector of numbers, and its <strong>direction carries the meaning</strong>.</li>
+<li>Normalizing divides a vector by its length, so it has <strong>length 1</strong>.</li>
+<li>With length 1 everywhere, the <strong>dot product is the cosine similarity</strong>: simple, and fast.</li>
+</ul>
+<h2>Get the files</h2>
+<p>The code, a cheat sheet, and an offline test you can run <strong>without an API key</strong> are free on GitHub:</p>
+<p>👉 <strong>Files:</strong> <a href="https://github.com/NEDBS12/youtube-tuto/tree/main/claude-embeddings">https://github.com/NEDBS12/youtube-tuto/tree/main/claude-embeddings</a></p>
+<p>🎥 <strong>Watch the video tutorial:</strong> <strong>[PASTE THE YOUTUBE LINK HERE]</strong></p>
+<p><strong>Docs:</strong></p>
+<ul>
+<li>Embeddings (Claude docs): <a href="https://platform.claude.com/docs/en/build-with-claude/embeddings">https://platform.claude.com/docs/en/build-with-claude/embeddings</a></li>
+<li>Voyage AI models: <a href="https://www.mongodb.com/docs/voyageai/models/">https://www.mongodb.com/docs/voyageai/models/</a></li>
+</ul>
+<p><em>Screenshots are from the Zero Cost AI video. The math scripts and their output are real; the Voyage AI search run on screen is a recreation (the code was tested offline with a simulated API), and your scores will differ.</em></p>
+<hr />
+<p><em>I'm Zero Cost AI: I build free AI tools and write beginner-friendly guides. Follow me here on Medium and subscribe on YouTube for more.</em></p>

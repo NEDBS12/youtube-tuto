@@ -1,0 +1,25 @@
+{
+ "title": "Embeddings and Vector Normalization Explained Simply (With Python)",
+ "subtitle": "What an embedding vector is, why every vector gets length 1, and how to search by meaning with Voyage AI",
+ "tags": [
+  "Artificial Intelligence",
+  "Machine Learning",
+  "Python",
+  "Embedding",
+  "AI"
+ ],
+ "video": "pending",
+ "slug": "claude-embeddings",
+ "captions": [
+  "What is an embedding: one text becomes one vector",
+  "Direction is meaning: length, cosine similarity and normalization",
+  "Two kinds of normalization: embeddings vs. layers inside LLMs",
+  "Our use case: keyword search vs. embedding search",
+  "Step 1: length and normalize in plain Python",
+  "Step 2: the raw dot product is fooled by length",
+  "Step 3: after normalizing, dot product = cosine",
+  "Step 4: embedding the FAQ with Voyage AI",
+  "Step 5: the top match shares no words with the question",
+  "4 tips for embeddings"
+ ]
+}

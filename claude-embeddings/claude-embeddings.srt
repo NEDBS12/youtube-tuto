@@ -1,0 +1,220 @@
+1
+00:00:00,600 --> 00:00:07,175
+A customer writes: the package never showed up. Your FAQ says: where is my order? Not one word in common.
+
+2
+00:00:07,625 --> 00:00:16,117
+Keyword search misses it. Embeddings find it. In this video, you'll learn what an embedding is, what normalizing a vector means, and why it matters.
+
+3
+00:00:16,567 --> 00:00:20,110
+Then we'll build a small FAQ search in Python, step by step.
+
+4
+00:00:21,660 --> 00:00:22,689
+So, what is an embedding?
+
+5
+00:00:23,139 --> 00:00:29,339
+An embedding is a list of numbers that captures what a text means. A list of numbers like this is called a vector.
+
+6
+00:00:29,789 --> 00:00:35,843
+Texts with similar meaning get vectors that point in a similar direction, even when they use different words.
+
+7
+00:00:36,293 --> 00:00:46,545
+They come from an embedding model. Anthropic doesn't make one; its docs point to Voyage AI. Voyage's latest models return one thousand and twenty-four numbers per text by default.
+
+8
+00:00:47,995 --> 00:00:53,078
+Picture each vector as an arrow. Two things matter: its direction, and its length.
+
+9
+00:00:53,528 --> 00:00:59,252
+The length, also called the L2 norm, is the square root of the sum of the squares of its numbers.
+
+10
+00:00:59,702 --> 00:01:08,163
+Meaning lives in the direction. Cosine similarity compares only the direction: one means the same direction, zero means unrelated.
+
+11
+00:01:08,613 --> 00:01:15,628
+Normalizing means dividing a vector by its length. The direction stays the same, but the length becomes exactly one.
+
+12
+00:01:16,078 --> 00:01:24,751
+And here's the payoff: when every vector has length one, the simple dot product gives the same number as cosine similarity, and it's faster to compute.
+
+13
+00:01:26,201 --> 00:01:29,897
+Careful: normalization means two different things in AI.
+
+14
+00:01:30,347 --> 00:01:36,675
+For embeddings, it means scaling each vector to length one before you compare vectors. That's today's topic.
+
+15
+00:01:37,125 --> 00:01:48,565
+Inside a language model, normalization layers like LayerNorm and RMS Norm rescale the numbers between layers, to keep training stable. They're built into the model. You never call them yourself.
+
+16
+00:01:50,015 --> 00:01:51,367
+When should you use embeddings?
+
+17
+00:01:51,817 --> 00:01:59,435
+To search by meaning, to find the right chunks for RAG, to spot duplicates, for recommendations, and to group similar texts.
+
+18
+00:01:59,885 --> 00:02:06,620
+But for exact codes, IDs and rare names, keyword search is better. Real systems often combine both.
+
+19
+00:02:08,070 --> 00:02:13,628
+Our use case: an FAQ search for Maple Mugs, the small online shop from my RAG video.
+
+20
+00:02:14,078 --> 00:02:19,794
+With keyword search, the package never showed up shares zero words with where is my order. No match.
+
+21
+00:02:20,244 --> 00:02:26,047
+With embeddings, both questions become vectors that point the same way, so the right answer comes first.
+
+22
+00:02:27,497 --> 00:02:30,959
+Let's start with the math, in plain Python. No libraries.
+
+23
+00:02:31,409 --> 00:02:37,026
+Length is the square root of the sum of squares. Normalize divides every number by that length.
+
+24
+00:02:37,476 --> 00:02:46,076
+So a vector like three, four has length five. Normalized, it becomes zero point six, zero point eight: same direction, length one.
+
+25
+00:02:46,926 --> 00:02:48,826
+Step two: compare vectors.
+
+26
+00:02:49,276 --> 00:02:57,482
+The dot product multiplies the numbers pair by pair, and adds them up. Cosine divides that by both lengths, so only the direction counts.
+
+27
+00:02:57,932 --> 00:03:05,311
+Now a tiny example with arrows of just two numbers. A points the same way as the query. B points elsewhere, but it's longer.
+
+28
+00:03:05,761 --> 00:03:07,538
+Let's run it, and look at the numbers.
+
+29
+00:03:07,988 --> 00:03:16,390
+Look: the raw dot product prefers B, only because B is longer. Cosine gets it right: A is a perfect match, one point zero.
+
+30
+00:03:17,240 --> 00:03:18,931
+Step three: normalize.
+
+31
+00:03:19,381 --> 00:03:25,619
+The second half of the output does the same comparison, but normalizes the query and both documents first.
+
+32
+00:03:26,069 --> 00:03:33,220
+Every length is now one, and the dot product gives exactly the cosine values. No division needed when you compare.
+
+33
+00:03:33,670 --> 00:03:40,468
+That's why embedding providers normalize their vectors. You store them once, and every comparison is a fast dot product.
+
+34
+00:03:41,818 --> 00:03:45,217
+Step four: embed the FAQ with real embeddings.
+
+35
+00:03:45,667 --> 00:03:52,655
+With the Voyage AI package installed, I create a client. It reads your Voyage API key from an environment variable.
+
+36
+00:03:55,284 --> 00:04:03,412
+Embed sends the five FAQ questions, and gets back five vectors. Note input type: document. Questions you search with use query.
+
+37
+00:04:03,862 --> 00:04:07,053
+The print line shows the size of each vector, and its length.
+
+38
+00:04:07,903 --> 00:04:09,836
+Step five: search by meaning.
+
+39
+00:04:10,286 --> 00:04:17,980
+I embed the customer's question, with input type query. Then I score every FAQ with a dot product, and print the top three.
+
+40
+00:04:18,430 --> 00:04:25,055
+Why a dot product, not cosine? Voyage vectors already have length one, so the dot product is the cosine.
+
+41
+00:04:25,505 --> 00:04:27,217
+Let's run it with our customer's question.
+
+42
+00:04:29,555 --> 00:04:35,068
+Five vectors of one thousand and twenty-four numbers, each with length one. Already normalized.
+
+43
+00:04:35,518 --> 00:04:40,558
+And the top match is where is my order, with zero words in common. That's search by meaning.
+
+44
+00:04:41,008 --> 00:04:46,852
+Your exact scores will differ. The files also include an offline test, with no API key needed.
+
+45
+00:04:48,402 --> 00:04:48,990
+Four tips.
+
+46
+00:04:49,440 --> 00:04:55,859
+One: embed your documents and your queries with the same model. Vectors from different models can't be compared.
+
+47
+00:04:56,309 --> 00:05:03,766
+Two: set input type. Voyage's docs say to use document for what you store, and query for what you search with. Don't leave it out.
+
+48
+00:05:04,216 --> 00:05:13,083
+Three: if you shorten vectors you already stored, for example to two hundred and fifty-six numbers, their length drops below one. Normalize them again.
+
+49
+00:05:13,533 --> 00:05:18,594
+And four: store normalized vectors, so every comparison is a fast dot product.
+
+50
+00:05:20,144 --> 00:05:20,798
+Let's recap.
+
+51
+00:05:21,248 --> 00:05:25,239
+An embedding is a vector of numbers, and its direction carries the meaning.
+
+52
+00:05:25,689 --> 00:05:29,279
+Normalizing divides a vector by its length, so it has length one.
+
+53
+00:05:29,729 --> 00:05:35,485
+And with length one everywhere, the dot product is the cosine similarity: simple, and fast.
+
+54
+00:05:36,935 --> 00:05:42,938
+The code, a cheat sheet, and an offline test you can run without an API key are linked in the description.
+
+55
+00:05:43,388 --> 00:05:50,219
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
