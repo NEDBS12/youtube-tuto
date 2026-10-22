@@ -1,0 +1,143 @@
+"""Generates script.json for the RAG with Claude tutorial from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+EX = HERE / "example-files" / "help-desk"
+read = lambda f: (EX / f).read_text(encoding="utf-8")
+RAG, NO_RAG = read("rag.py"), read("no_rag.py")
+RETURNS, SHIPPING, CARE = read("docs/returns.md"), read("docs/shipping.md"), read("docs/care.md")
+c2, c3, c4 = RAG.index("# 2. Retrieve"), RAG.index("# 3. Augment"), RAG.index("    # 4. Generate")
+R1, R2, R3, R4 = RAG[:c2], RAG[c2:c3], RAG[c3:c4], RAG[c4:]
+
+Q1 = "Can I return a mug after 40 days?"
+Q2 = "Can my gold rim mug go in the dishwasher?"
+Q3 = "Do you sell gift cards?"
+
+script = {
+ "title": "claude-rag",
+ "steps": ["Chunk the docs", "Retrieve", "Augment", "Generate & cite", "Test it"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude API tutorial · step by step",
+   "title": "RAG with Claude\n[[Retrieval-Augmented Generation]]", "subtitle": "Make Claude answer from your own documents, and show its sources",
+   "lines": [
+    {"say": "Ask Claude about your shop's return policy, and it has no idea. It's never seen your documents."},
+    {"say": "RAG fixes that. In this video, you'll learn what RAG is, how it works, when to use it, and when you don't need it."},
+    {"say": "Then we'll build a small help desk in Python that answers from real documents, and cites them.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is RAG?", "kicker": "**01** · The concept", "heading": "What is [[RAG]]?",
+   "items": ["**Retrieve:** find the passages that match the question",
+             "**Augment:** put those passages in the prompt",
+             "**Generate:** Claude answers from them, and cites them"],
+   "card": {"title": "THINK OF IT AS", "code": "An open-book exam:\n\nClaude doesn't memorize\nyour documents.\nIt looks up the right page,\nthen answers."},
+   "lines": [
+    {"say": "So, what is RAG?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "RAG stands for retrieval augmented generation. It's three steps, and the name tells you all three.", "do": [{"k": "show", "el": "card", "at": 1.5}]},
+    {"say": "Retrieve: when a question comes in, your code searches your documents for the passages that match.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "Augment: you put those passages in the prompt, next to the question.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "Generate: Claude writes the answer from those passages. Think of it as an open-book exam.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "How RAG works", "kicker": "**02** · How it works", "heading": "How RAG [[works]]",
+   "rows": [{"label": "Once: prepare", "text": "Split your documents into small **chunks**"},
+            {"label": "Each question: search", "text": "Find the chunks that match best: the **top results**"},
+            {"label": "Each question: answer", "text": "Send chunks + question → an answer **with sources**"}],
+   "banner": "Search finds the facts. Claude writes the answer.",
+   "lines": [
+    {"say": "Here's how it works in practice.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Once, ahead of time, you split your documents into small pieces called chunks. A chunk is a section or a paragraph.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "For each question, you search the chunks and keep the best few. Big systems search by meaning, with embeddings. Anthropic doesn't make an embedding model; its docs point to Voyage AI.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "Today we'll use simple keyword search. It's free, and you can read every line.", "hold": 0.2},
+    {"say": "Finally, you send the chunks and the question to Claude, and get an answer with its sources.", "do": [{"k": "show", "el": "row3"}]},
+    {"say": "The key idea: search finds the facts, and Claude writes the answer.", "do": [{"k": "show", "el": "banner"}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "When to use RAG", "kicker": "**03** · When to use it", "heading": "When to use [[RAG]]",
+   "left": {"title": "Use RAG when…", "body": "• Your documents are too big\n  for one prompt\n• They change often\n• Answers must show sources\n• The data is private:\n  policies, wikis, tickets"},
+   "right": {"title": "You don't need it when…", "body": "• Your docs are small: under\n  ~200,000 tokens (~500 pages)\n  → put them all in the prompt,\n     with prompt caching\n• Claude needs to act,\n  not look up → use tools"},
+   "lines": [
+    {"say": "When should you use RAG?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "When your documents are too big for one prompt, when they change often, when answers must show their sources, and when the data is private, like your policies or your wiki.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "But here's what many tutorials skip. Anthropic says if your knowledge base is under about two hundred thousand tokens, around five hundred pages, you can just put all of it in the prompt.", "tts": "But here's what many tutorials skip. Anthropic says if your knowledge base is under about two hundred thousand tokens, around five hundred pages, you can just put all of it in the prompt.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}]},
+    {"say": "With prompt caching, that's faster and cheaper on repeat questions. RAG is for when it doesn't fit.", "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Our use case", "kicker": "**04** · Our use case", "heading": "A help desk for [[Maple Mugs]]",
+   "left": {"title": "Without RAG", "body": f"Customer: \"{Q1}\"\n\nClaude has never seen\nthe shop's policy.\nIt can only give a general\nanswer, or guess."},
+   "right": {"title": "With RAG", "body": "Search finds \"Return window\"\n→ Claude: \"No: returns are\n   accepted within 30 days\n   of delivery.\"\n\n✓ Source: returns.md"},
+   "lines": [
+    {"say": "Our use case: a help desk for a small online shop, Maple Mugs. Its policies are three short documents: returns, shipping, and care.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Without RAG, Claude has never seen those policies. It can only answer in general, or guess.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "With RAG, our search finds the return window section, and Claude answers from it, with the source.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "screen", "chapter": "The problem: no RAG", "project": "help-desk", "kicker": "**DEMO** · Without RAG", "lines": [
+    {"say": "Here's the project: a docs folder with the three policy files, written in Markdown.", "tts": "Here's the project: a docs folder with the three policy files, written in Markdown.",
+     "do": [{"k": "file", "path": "docs/shipping.md", "text": SHIPPING, "open": False}, {"k": "file", "path": "docs/care.md", "text": CARE, "open": False}, {"k": "file", "path": "docs/returns.md", "text": RETURNS}]},
+    {"say": "Each file has sections with a double hash heading. The return window is thirty days. Remember that.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "within 30 days", "label": "The real policy"}]},
+    {"say": "First, I ask Claude without RAG. Just the question.", "do": [{"k": "file", "path": "no_rag.py", "text": NO_RAG},
+      {"k": "cmd", "at": 2.0, "text": f"python no_rag.py \"{Q1}\"", "out": ["Return windows are usually 14 to 30 days, but I", "can't see Maple Mugs' policy. Please check the", "returns page or contact support."]}]},
+    {"say": "Claude is honest, but it can't help. It doesn't know the policy. Let's give it the documents, with RAG.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "Return windows are usually", "span": 3, "label": "It can't see your docs"}], "hold": 0.5},
+
+    {"say": "Step one: chunk the documents.", "do": [{"k": "step", "n": 1}, {"k": "open", "path": "rag.py", "at": 0.6}]},
+    {"say": "In rag dot py, I create the client, and a short list of stop words: common words we'll ignore when searching.", "tts": "In rag dot pie, I create the client, and a short list of stop words: common words we'll ignore when searching.",
+     "do": [{"k": "type", "path": "rag.py", "text": R1, "cps": 60}]},
+    {"say": "Load chunks reads every Markdown file, and splits it at each double hash heading. So each section becomes one chunk.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "for section in text.split", "label": "One chunk per section"}]},
+    {"say": "Each chunk keeps its file name and title. That's what we'll show as the source.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "chunks.append(", "span": 2, "label": "Source + title + text"}]},
+    {"say": "Why small chunks? So we only send Claude what's relevant, not every document.", "hold": 0.4},
+
+    {"say": "Step two: retrieve.", "do": [{"k": "step", "n": 2}]},
+    {"say": "The words function lowercases the text, splits it into words, drops a final s, and removes the stop words.", "do": [{"k": "type", "path": "rag.py", "text": R2, "cps": 60}]},
+    {"say": "Search scores each chunk by how many words it shares with the question, sorts them, and keeps the top three.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "scored = [(len(q & words", "span": 2, "label": "Shared words = score"}]},
+    {"say": "Chunks with a score of zero are dropped. If nothing matches, we send nothing. That matters later.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "if score > 0", "label": "No match, no chunk"}]},
+    {"say": "This is basic keyword search. Real systems use better scoring, or embeddings. The rest of the pipeline stays the same.", "hold": 0.4},
+
+    {"say": "Step three: augment the prompt.", "do": [{"k": "step", "n": 3}]},
+    {"say": "Ask runs the search, prints what it found, and turns each chunk into a search result block.", "do": [{"k": "type", "path": "rag.py", "text": R3, "cps": 60}]},
+    {"say": "A search result is a content block made for RAG. It needs a source, a title, and the content as text blocks.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "\"type\": \"search_result\"", "span": 4, "label": "Built for RAG"}]},
+    {"say": "With citations enabled, Claude cites these blocks automatically. All search results in a request must use the same citation setting.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "\"citations\": {\"enabled\": True}", "label": "Citations on"}]},
+    {"say": "And if nothing was found, we send a plain text block that says: no results found. The docs recommend that over raising an error.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "if not results:", "span": 2, "label": "Empty search"}], "hold": 0.4},
+
+    {"say": "Step four: generate, and cite.", "do": [{"k": "step", "n": 4}]},
+    {"say": "I call the Messages API. The system prompt says: use only the search results, and if the answer isn't there, say you don't know.", "do": [{"k": "type", "path": "rag.py", "text": R4, "cps": 60}]},
+    {"say": "The search results go in the user message, before the question.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "messages=[{\"role\": \"user\", \"content\": results", "span": 2, "label": "Chunks, then question"}]},
+    {"say": "Then I print each text block, and collect its citations. Each citation has the source and title we passed in.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "for cite in block.citations", "span": 2, "label": "Where it came from"}], "hold": 0.4}]},
+
+  {"type": "screen", "project": "help-desk", "lines": [
+    {"say": "Step five: test it. Same question as before.", "do": [{"k": "step", "n": 5}, {"k": "clear"},
+      {"k": "cmd", "at": 1.2, "text": f"python rag.py \"{Q1}\"", "out": ["[retrieved] returns.md > Refunds", "[retrieved] returns.md > Return window", "[retrieved] returns.md > Damaged items", "No, sorry. Mugs can be returned within 30 days of", "delivery, so 40 days is past the return window.", "", "Sources: returns.md > Return window"]}]},
+    {"say": "Search found three chunks from the returns file, including the return window.", "do": [{"k": "callout", "dur": 4.5, "target": "term", "match": "[retrieved] returns.md > Refunds", "span": 3, "label": "Retrieved"}]},
+    {"say": "And Claude answers from it: thirty days, so forty is too late. The source is right there.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "Sources: returns.md", "label": "Cited source"}]},
+    {"say": "Another one, from a different file.", "do": [
+      {"k": "cmd", "at": 0.8, "text": f"python rag.py \"{Q2}\"", "out": ["[retrieved] care.md > Dishwasher and microwave", "[retrieved] returns.md > Refunds", "[retrieved] care.md > Glaze guarantee", "No. Mugs with a gold rim are hand wash only, and", "they should never go in the microwave.", "", "Sources: care.md > Dishwasher and microwave"]}]},
+    {"say": "Correct, and it even adds the microwave rule from the same section.", "do": [{"k": "callout", "dur": 4.5, "target": "term", "match": "Sources: care.md", "label": "Right file, right section"}]},
+    {"say": "Now a question the documents don't answer.", "do": [
+      {"k": "cmd", "at": 0.8, "text": f"python rag.py \"{Q3}\"", "out": ["Sorry, I don't know. I couldn't find anything", "about gift cards in our documents.", "", "Sources: none"]}]},
+    {"say": "Nothing was retrieved, so Claude says it doesn't know, instead of inventing a gift card policy. That's what you want.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": "Sorry, I don't know", "span": 2, "label": "No guessing"}]},
+    {"say": "Claude's wording will differ for you. The files also include an offline test you can run without an API key.", "do": [
+      {"k": "cmd", "at": 1.0, "text": "python -m pytest -q", "out": [".....                                    [100%]", "5 passed in 3.06s"]}], "hold": 0.6}]},
+
+  {"type": "cards", "chapter": "Tips", "kicker": "**05** · Tips", "heading": "4 tips for better [[RAG]]", "rail": True,
+   "cards": [{"title": "Chunk by meaning", "text": "Split at sections, keep each chunk self-contained"},
+             {"title": "Mix keyword + meaning", "text": "Combine keyword search with embeddings"},
+             {"title": "Don't retrieve too little", "text": "Anthropic found top 20 chunks beat 5 or 10"},
+             {"title": "Allow \"I don't know\"", "text": "And show sources so people can check"}],
+   "lines": [
+    {"say": "Four tips for better RAG.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: chunk by meaning. Split at sections or paragraphs, so each chunk makes sense on its own.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: mix keyword search and meaning. Keywords catch exact terms like product codes; embeddings catch different wording. Anthropic's research found combining both retrieves better.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: don't retrieve too little. In Anthropic's tests, passing the top twenty chunks beat five or ten. We used three because our docs are tiny.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "And four: tell Claude it may say I don't know, and show the sources, so people can check the answer.", "do": [{"k": "show", "el": "card4"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["RAG = **retrieve** the right chunks, **augment** the prompt, **generate**",
+             "Small docs (under ~200K tokens)? Put them all in the prompt",
+             "Send chunks as `search_result` blocks to get [[citations]]"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "RAG means: retrieve the right chunks, add them to the prompt, and let Claude generate the answer.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "If your documents are small, you may not need it: put them all in the prompt.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "And send your chunks as search result blocks, with citations on, so every answer shows its source.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Thanks for [[watching]]", "subtitle": "The code and an offline test are in the description", "lines": [
+    {"say": "The help desk code, the policy documents, and an offline test you can run without an API key are linked in the description.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")
