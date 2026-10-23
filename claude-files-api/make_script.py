@@ -1,0 +1,128 @@
+"""Generates script.json for the Files API tutorial from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+EX = HERE / "example-files" / "handbook-files"
+read = lambda f: (EX / f).read_text(encoding="utf-8")
+NO_FILES, UPLOAD, ASK, FILES = read("no_files.py"), read("upload.py"), read("ask.py"), read("files.py")
+FID = "file_011CUz4mQ8RfY2nK7pLwT3aB"
+Q1, Q2 = "Are your mugs dishwasher safe?", "Is shipping free?"
+ANS1 = "Yes! All our mugs are dishwasher and microwave safe. They're not oven safe, though."
+ANS2 = "Standard US shipping is free on orders over $60. Otherwise it's $6."
+
+script = {
+ "title": "claude-files-api",
+ "steps": ["Upload the PDF", "Use the file ID", "Ask again", "List and delete"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude API · step by step",
+   "title": "The Files API\n[[Upload once, use everywhere]]", "subtitle": "Stop sending the same PDF to Claude with every request",
+   "lines": [
+    {"say": "Every time your app asks Claude about a PDF, it sends the whole file again. Every question, every time."},
+    {"say": "The Files API fixes that. In this video, you'll learn what it is, how it works, and when to use it."},
+    {"say": "Then we'll upload a real PDF, use it in Python, step by step, and clean up after ourselves.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is the Files API?", "kicker": "**01** · The concept", "heading": "What is the [[Files API]]?",
+   "items": ["**Upload** a file once, get back a **file ID**",
+             "Use that ID in **any message**, as often as you like",
+             "**List**, check and **delete** your files"],
+   "card": {"title": "UPLOAD ONCE", "code": "up = client.files.upload(\n  file=(\"handbook.pdf\", f,\n        \"application/pdf\"))\n\nup.id\n→ \"file_011CUz4m...\""},
+   "lines": [
+    {"say": "So, what is the Files API?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "It lets you upload a file to Anthropic once. You get back a file ID, a short name for that file.", "do": [{"k": "show", "el": "item1"}, {"k": "show", "el": "card", "at": 1.5}]},
+    {"say": "Then you use that ID in your messages, as many times as you like, instead of sending the file again.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "Think of a library card number. You don't carry the book around: you just give the number.", "hold": 0.2},
+    {"say": "And you can list your files, check them, and delete them when you're done.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "How it works", "kicker": "**02** · How it works", "heading": "Upload, [[reference]], manage",
+   "rows": [{"label": "Upload", "text": "Send the file once → get a **file_id**"},
+            {"label": "Reference", "text": "A **document** or **image** block with the file_id"},
+            {"label": "Manage", "text": "**List**, get details, **delete**, or let it **expire**"}],
+   "banner": "File operations are free; the content still counts as input tokens",
+   "lines": [
+    {"say": "Here's how it works, in three parts.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Upload: you send the file once, and the API gives you a file ID. Files can be up to five hundred megabytes each.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "Reference: in a message, you add a document block for a PDF or a text file, or an image block for a picture, with the file ID as the source.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "Manage: you can list your files, get their details, and delete them. Or set an expiration when you upload, and they disappear on their own.", "do": [{"k": "show", "el": "row3"}]},
+    {"say": "Uploading, listing and deleting are free. But when a message uses the file, its content still counts as input tokens, like before.", "do": [{"k": "show", "el": "banner"}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "When to use it", "kicker": "**03** · When to use it", "heading": "When to use the [[Files API]]",
+   "left": {"title": "Use it when…", "body": "• The same file is used\n  in many requests\n• Large PDFs and images\n• Datasets for the code\n  execution tool\n• Agents with many steps"},
+   "right": {"title": "Skip it when…", "body": "• A short text, used once:\n  just paste it in\n• Word or Excel files:\n  .docx / .xlsx aren't read\n  as documents. Convert\n  them to text first"},
+   "lines": [
+    {"say": "When should you use it?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "When the same file is used in many requests: large PDFs and images, datasets for the code execution tool, or agents that work in many steps.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "Skip it for a short text you use once: just paste it into the message. And Word or Excel files aren't read as documents. Convert them to text first.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "Our use case", "kicker": "**04** · Our use case", "heading": "The [[Maple Mugs]] handbook, as a PDF",
+   "left": {"title": "Without the Files API", "body": "Every question sends\nthe whole PDF again:\n120,004 characters\n\n✗ Every time"},
+   "right": {"title": "With the Files API", "body": "Upload the PDF once\n\nEvery question sends\na short file ID\n\n✓ \"file_011CUz4m...\""},
+   "lines": [
+    {"say": "Our use case: the Maple Mugs help desk from my last videos. This time, the store handbook is a three-page PDF.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Without the Files API, every question sends the whole PDF again: more than a hundred and twenty thousand characters.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "With the Files API, we upload it once. Every question just sends a short file ID.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "screen", "chapter": "The problem", "project": "handbook-files", "kicker": "**DEMO** · The problem", "lines": [
+    {"say": "Here's our folder, with the handbook PDF, and a script that asks Claude about it the usual way.", "do": [{"k": "tree", "path": "handbook.pdf"}, {"k": "file", "path": "no_files.py", "text": NO_FILES, "at": 0.8}]},
+    {"say": "It reads the PDF, turns it into base64 text, and puts all of it into the message.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "data = Path(\"handbook.pdf\")", "span": 2, "label": "The whole PDF, as text"}]},
+    {"say": "Let's ask two questions.", "do": [
+      {"k": "cmd", "at": 0.4, "text": f"python no_files.py \"{Q1}\"", "out": ["Sending 120,004 characters of PDF data...", ANS1]},
+      {"k": "cmd", "at": 3.0, "text": f"python no_files.py \"{Q2}\"", "out": ["Sending 120,004 characters of PDF data...", ANS2]}]},
+    {"say": "Both answers are right. But each question sent the whole file again. With a big PDF, or many users, that's a lot of data going back and forth, for nothing.", "do": [{"k": "callout", "dur": 7.0, "target": "term", "match": "Sending 120,004 characters", "label": "Again and again"}], "hold": 0.4}]},
+
+  {"type": "screen", "project": "handbook-files", "lines": [
+    {"say": "Step one: upload the PDF.", "do": [{"k": "step", "n": 1}, {"k": "clear"}, {"k": "open", "path": "upload.py", "at": 0.6}]},
+    {"say": "I open the file, and call files dot upload, with three things: the file name, the file itself, and its type, application slash PDF.", "do": [{"k": "type", "path": "upload.py", "text": UPLOAD, "cps": 60}]},
+    {"say": "The expiration is optional. Here, the file deletes itself after thirty days. You can choose anything from one hour to ninety days.", "do": [{"k": "callout", "dur": 6.0, "target": "editor", "match": "expires_in_seconds=", "label": "Optional: auto-delete"}]},
+    {"say": "Then I save the file ID. That ID is all we need from now on.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "Path(\"file_id.txt\").write_text", "label": "Keep the ID"}]},
+    {"say": "Let's run it, once.", "do": [{"k": "cmd", "at": 0.3, "text": "python upload.py", "out": ["Uploaded handbook.pdf: 90,001 bytes", f"file_id: {FID}"]}, {"k": "tree", "path": "file_id.txt", "at": 2.0}]},
+    {"say": "Uploaded: ninety kilobytes, and here's our file ID. It starts with file, underscore.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": f"file_id: {FID}", "label": "Our file ID"}], "hold": 0.4},
+
+    {"say": "Step two: use the file ID.", "do": [{"k": "step", "n": 2}, {"k": "open", "path": "ask.py", "at": 0.6}]},
+    {"say": "This script reads the saved ID, and asks Claude a question about the handbook.", "do": [{"k": "type", "path": "ask.py", "text": ASK, "cps": 60}]},
+    {"say": "Here's the key part: a document block, whose source has type file, and our file ID. No base64, no file. Just the ID.", "do": [{"k": "callout", "dur": 6.5, "target": "editor", "match": "{\"type\": \"document\",", "span": 2, "label": "By reference"}]},
+    {"say": "The question goes after the document, in a normal text block.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "{\"type\": \"text\", \"text\": sys.argv[1]}", "label": "The question"}], "hold": 0.4},
+
+    {"say": "Step three: ask again, as many times as you like.", "do": [{"k": "step", "n": 3}]},
+    {"say": "Same two questions as before.", "do": [
+      {"k": "cmd", "at": 0.3, "text": f"python ask.py \"{Q1}\"", "out": [ANS1]},
+      {"k": "cmd", "at": 2.6, "text": f"python ask.py \"{Q2}\"", "out": [ANS2]}]},
+    {"say": "Same correct answers. But this time, each request only sent the file ID. The PDF was uploaded once, and it stays there.", "do": [{"k": "callout", "dur": 6.5, "target": "term", "match": "Standard US shipping is free", "label": "Uploaded once, used twice"}]},
+    {"say": "One thing doesn't change: Claude still reads the PDF, so its content is billed as input tokens on every question. To pay less for that, combine it with prompt caching, from my last video.", "hold": 0.4},
+
+    {"say": "Step four: list and delete.", "do": [{"k": "step", "n": 4}, {"k": "file", "path": "files.py", "text": FILES}]},
+    {"say": "This small script lists your files. Or, with delete and a file ID, removes one.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "client.files.delete(sys.argv[2])", "label": "Delete by ID"}]},
+    {"say": "Let's list them.", "do": [{"k": "cmd", "at": 0.3, "text": "python files.py", "out": [f"{FID}  handbook.pdf  90,001 bytes"]}]},
+    {"say": "There's our handbook. When we're done with it, we delete it.", "do": [{"k": "cmd", "at": 0.6, "text": f"python files.py delete {FID}", "out": [f"Deleted {FID}"]}]},
+    {"say": "Gone. Deleted files can't be recovered, so delete only what you no longer need.", "do": [{"k": "callout", "dur": 5.0, "target": "term", "match": f"Deleted {FID}", "label": "Cleaned up"}]},
+    {"say": "The files also include an offline test, so you can try everything with no API key.", "do": [
+      {"k": "cmd", "at": 0.8, "text": "python -m pytest -q", "out": [".....                                    [100%]", "5 passed in 0.42s"]}], "hold": 0.6}]},
+
+  {"type": "cards", "chapter": "Tips", "kicker": "**05** · Tips", "heading": "4 tips for the [[Files API]]", "rail": True,
+   "cards": [{"title": "Never trust user file IDs", "text": "Files belong to the **whole workspace**"},
+             {"title": "Set an expiration", "text": "`expires_in_seconds`: 1 hour to 90 days"},
+             {"title": "Can't edit a file", "text": "Upload a new one, **delete** the old one"},
+             {"title": "Add prompt caching", "text": "The content is still billed as input tokens"}],
+   "lines": [
+    {"say": "Four tips.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: files belong to your whole workspace. Any API key in it can use any file. So never accept a file ID from your users. Keep track of which file belongs to whom in your own app.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: set an expiration for temporary files, so you don't pile up old ones.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: files can't be edited or renamed. To change one, upload a new file and delete the old one.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "And four: the content still counts as input tokens. For a file you reuse a lot, add prompt caching.", "do": [{"k": "show", "el": "card4"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["Upload once with **files.upload** → a **file_id**",
+             "Use it in a **document** or **image** block",
+             "List, delete, or [[let it expire]]"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Upload a file once with files dot upload, and keep its file ID.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "Use the ID in a document block or an image block, in as many messages as you like.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "And when you're done, delete it, or let it expire.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Thanks for [[watching]]", "subtitle": "The code and an offline test are in the description", "lines": [
+    {"say": "The code, the handbook PDF, a cheat sheet, and an offline test you can run without an API key are linked in the description.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")

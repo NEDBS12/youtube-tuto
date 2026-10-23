@@ -1,0 +1,216 @@
+1
+00:00:00,600 --> 00:00:06,693
+Every time your app asks Claude about a PDF, it sends the whole file again. Every question, every time.
+
+2
+00:00:07,143 --> 00:00:13,212
+The Files API fixes that. In this video, you'll learn what it is, how it works, and when to use it.
+
+3
+00:00:13,662 --> 00:00:19,710
+Then we'll upload a real PDF, use it in Python, step by step, and clean up after ourselves.
+
+4
+00:00:21,260 --> 00:00:22,775
+So, what is the Files API?
+
+5
+00:00:23,225 --> 00:00:28,749
+It lets you upload a file to Anthropic once. You get back a file ID, a short name for that file.
+
+6
+00:00:29,199 --> 00:00:34,832
+Then you use that ID in your messages, as many times as you like, instead of sending the file again.
+
+7
+00:00:35,282 --> 00:00:39,956
+Think of a library card number. You don't carry the book around: you just give the number.
+
+8
+00:00:40,606 --> 00:00:44,031
+And you can list your files, check them, and delete them when you're done.
+
+9
+00:00:45,481 --> 00:00:47,446
+Here's how it works, in three parts.
+
+10
+00:00:47,896 --> 00:00:55,095
+Upload: you send the file once, and the API gives you a file ID. Files can be up to five hundred megabytes each.
+
+11
+00:00:55,545 --> 00:01:04,485
+Reference: in a message, you add a document block for a PDF or a text file, or an image block for a picture, with the file ID as the source.
+
+12
+00:01:04,935 --> 00:01:12,989
+Manage: you can list your files, get their details, and delete them. Or set an expiration when you upload, and they disappear on their own.
+
+13
+00:01:13,439 --> 00:01:22,240
+Uploading, listing and deleting are free. But when a message uses the file, its content still counts as input tokens, like before.
+
+14
+00:01:23,690 --> 00:01:24,564
+When should you use it?
+
+15
+00:01:25,014 --> 00:01:34,203
+When the same file is used in many requests: large PDFs and images, datasets for the code execution tool, or agents that work in many steps.
+
+16
+00:01:34,653 --> 00:01:43,796
+Skip it for a short text you use once: just paste it into the message. And Word or Excel files aren't read as documents. Convert them to text first.
+
+17
+00:01:45,246 --> 00:01:52,439
+Our use case: the Maple Mugs help desk from my last videos. This time, the store handbook is a three-page PDF.
+
+18
+00:01:52,889 --> 00:01:59,795
+Without the Files API, every question sends the whole PDF again: more than a hundred and twenty thousand characters.
+
+19
+00:02:00,245 --> 00:02:05,447
+With the Files API, we upload it once. Every question just sends a short file ID.
+
+20
+00:02:06,897 --> 00:02:12,098
+Here's our folder, with the handbook PDF, and a script that asks Claude about it the usual way.
+
+21
+00:02:12,548 --> 00:02:18,636
+It reads the PDF, turns it into base64 text, and puts all of it into the message.
+
+22
+00:02:19,086 --> 00:02:20,268
+Let's ask two questions.
+
+23
+00:02:23,658 --> 00:02:32,931
+Both answers are right. But each question sent the whole file again. With a big PDF, or many users, that's a lot of data going back and forth, for nothing.
+
+24
+00:02:34,281 --> 00:02:36,253
+Step one: upload the PDF.
+
+25
+00:02:36,703 --> 00:02:45,735
+I open the file, and call files dot upload, with three things: the file name, the file itself, and its type, application slash PDF.
+
+26
+00:02:47,536 --> 00:02:55,414
+The expiration is optional. Here, the file deletes itself after thirty days. You can choose anything from one hour to ninety days.
+
+27
+00:02:55,864 --> 00:02:59,647
+Then I save the file ID. That ID is all we need from now on.
+
+28
+00:03:00,097 --> 00:03:01,219
+Let's run it, once.
+
+29
+00:03:02,347 --> 00:03:07,889
+Uploaded: ninety kilobytes, and here's our file ID. It starts with file, underscore.
+
+30
+00:03:08,739 --> 00:03:10,836
+Step two: use the file ID.
+
+31
+00:03:11,286 --> 00:03:15,771
+This script reads the saved ID, and asks Claude a question about the handbook.
+
+32
+00:03:18,625 --> 00:03:27,161
+Here's the key part: a document block, whose source has type file, and our file ID. No base64, no file. Just the ID.
+
+33
+00:03:27,611 --> 00:03:31,037
+The question goes after the document, in a normal text block.
+
+34
+00:03:31,887 --> 00:03:35,197
+Step three: ask again, as many times as you like.
+
+35
+00:03:35,647 --> 00:03:37,235
+Same two questions as before.
+
+36
+00:03:40,385 --> 00:03:48,320
+Same correct answers. But this time, each request only sent the file ID. The PDF was uploaded once, and it stays there.
+
+37
+00:03:48,770 --> 00:04:00,367
+One thing doesn't change: Claude still reads the PDF, so its content is billed as input tokens on every question. To pay less for that, combine it with prompt caching, from my last video.
+
+38
+00:04:01,217 --> 00:04:03,301
+Step four: list and delete.
+
+39
+00:04:03,751 --> 00:04:09,271
+This small script lists your files. Or, with delete and a file ID, removes one.
+
+40
+00:04:09,721 --> 00:04:10,389
+Let's list them.
+
+41
+00:04:11,921 --> 00:04:14,789
+There's our handbook. When we're done with it, we delete it.
+
+42
+00:04:16,271 --> 00:04:21,071
+Gone. Deleted files can't be recovered, so delete only what you no longer need.
+
+43
+00:04:21,521 --> 00:04:26,333
+The files also include an offline test, so you can try everything with no API key.
+
+44
+00:04:27,883 --> 00:04:28,472
+Four tips.
+
+45
+00:04:28,922 --> 00:04:40,346
+One: files belong to your whole workspace. Any API key in it can use any file. So never accept a file ID from your users. Keep track of which file belongs to whom in your own app.
+
+46
+00:04:40,796 --> 00:04:45,479
+Two: set an expiration for temporary files, so you don't pile up old ones.
+
+47
+00:04:45,929 --> 00:04:52,067
+Three: files can't be edited or renamed. To change one, upload a new file and delete the old one.
+
+48
+00:04:52,517 --> 00:04:59,251
+And four: the content still counts as input tokens. For a file you reuse a lot, add prompt caching.
+
+49
+00:05:00,801 --> 00:05:01,455
+Let's recap.
+
+50
+00:05:01,905 --> 00:05:05,622
+Upload a file once with files dot upload, and keep its file ID.
+
+51
+00:05:06,072 --> 00:05:11,359
+Use the ID in a document block or an image block, in as many messages as you like.
+
+52
+00:05:11,809 --> 00:05:14,624
+And when you're done, delete it, or let it expire.
+
+53
+00:05:16,074 --> 00:05:23,588
+The code, the handbook PDF, a cheat sheet, and an offline test you can run without an API key are linked in the description.
+
+54
+00:05:24,038 --> 00:05:30,869
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
