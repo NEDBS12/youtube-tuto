@@ -1,0 +1,216 @@
+1
+00:00:00,600 --> 00:00:07,474
+Your help desk bot sends the same long handbook to Claude with every single question. And you pay for it every single time.
+
+2
+00:00:07,924 --> 00:00:13,820
+Prompt caching fixes that. In this video, you'll learn what it is, how it works, and when to use it.
+
+3
+00:00:14,270 --> 00:00:18,687
+Then we'll add it to a real Python app, step by step, and measure the savings.
+
+4
+00:00:20,237 --> 00:00:21,443
+So, what is prompt caching?
+
+5
+00:00:21,893 --> 00:00:29,100
+Claude reads your whole prompt on every request. With prompt caching, it stores the start of the prompt, called the prefix.
+
+6
+00:00:29,550 --> 00:00:35,124
+The next request that starts with exactly the same prefix reuses it, instead of processing it again.
+
+7
+00:00:35,574 --> 00:00:41,227
+Think of a teacher who already read the textbook. For the next question, they don't reread it from page one.
+
+8
+00:00:41,877 --> 00:00:50,985
+Reading from the cache costs much less, and Claude starts answering faster. The easiest way to turn it on is one field: cache control, type ephemeral.
+
+9
+00:00:52,435 --> 00:00:53,280
+Here's how it works.
+
+10
+00:00:53,730 --> 00:01:03,918
+Claude reads a request in a fixed order: tools, then the system prompt, then the messages. The prefix is everything up to a point you mark, called the cache breakpoint.
+
+11
+00:01:04,368 --> 00:01:11,378
+The first request writes the prefix to the cache. That costs a little more: one and a quarter times the normal input price.
+
+12
+00:01:11,828 --> 00:01:20,083
+Every request after that reads it, for a tenth of the price. On the newest models, like Claude Sonnet 5.5, it's even a twentieth.
+
+13
+00:01:20,533 --> 00:01:26,189
+The cache lives five minutes by default, and every time it's used, the timer starts again, for free.
+
+14
+00:01:27,639 --> 00:01:28,514
+When should you use it?
+
+15
+00:01:28,964 --> 00:01:38,519
+When the start of your prompt stays the same across many requests: long instructions, a handbook, documents, tool definitions, long chats and agents.
+
+16
+00:01:38,969 --> 00:01:51,344
+Skip it for short prompts. Under the minimum, 512 tokens on the newest models, nothing is cached at all. And skip it when the start of the prompt changes every time, or for one-off requests far apart.
+
+17
+00:01:52,794 --> 00:02:01,148
+Our use case: a help desk bot for Maple Mugs, the small online shop from my earlier videos. It answers customers using the store's handbook.
+
+18
+00:02:01,598 --> 00:02:07,720
+Without caching, every question sends the whole handbook, about 1,500 tokens, at full price.
+
+19
+00:02:08,170 --> 00:02:14,314
+With caching, the handbook is written once. Then every question reads it, for a twentieth of the price.
+
+20
+00:02:15,764 --> 00:02:21,357
+Here's the handbook: products, shipping, returns, care. About a thousand words.
+
+21
+00:02:21,807 --> 00:02:28,500
+And here's the bot without caching. The handbook goes into the system prompt, and the customer's question into the message.
+
+22
+00:02:28,950 --> 00:02:31,824
+Let's ask two questions, and look at the input tokens.
+
+23
+00:02:34,974 --> 00:02:44,562
+Almost 1,500 input tokens, each time. The question is only a few words. The rest is the same handbook, processed and billed again and again.
+
+24
+00:02:45,912 --> 00:02:48,174
+Step one: put the stable part first.
+
+25
+00:02:48,624 --> 00:02:56,249
+Same start as before. But this time, the system prompt is a list of two text blocks: the short instruction, then the whole handbook.
+
+26
+00:02:57,191 --> 00:03:04,350
+Why this order? The cache only matches the start of a prompt. So everything that's the same in every request goes first.
+
+27
+00:03:05,200 --> 00:03:07,523
+Step two: mark the cache breakpoint.
+
+28
+00:03:07,973 --> 00:03:17,778
+On the handbook block, I add cache control, type ephemeral. That's the breakpoint. Everything up to here, and including this block, is the prefix that gets cached.
+
+29
+00:03:18,228 --> 00:03:24,782
+Then the request. The customer's question changes every time, so it goes after the breakpoint, in the messages.
+
+30
+00:03:25,232 --> 00:03:31,130
+That's the key rule: put the breakpoint on the last block that stays the same. Never on the part that changes.
+
+31
+00:03:31,980 --> 00:03:33,882
+Step three: check the usage.
+
+32
+00:03:34,332 --> 00:03:43,633
+Every response tells you what happened with the cache. I print three numbers: tokens written to the cache, tokens read from it, and new tokens after the breakpoint.
+
+33
+00:03:44,083 --> 00:03:45,328
+Let's ask the first question.
+
+34
+00:03:47,833 --> 00:03:54,075
+The first request wrote about 1,500 tokens to the cache. Only twelve tokens were new: the question.
+
+35
+00:03:54,525 --> 00:03:57,008
+Now a second question, within five minutes.
+
+36
+00:03:57,625 --> 00:04:02,767
+This time, the whole handbook was read from the cache. Nothing written. That's a cache hit.
+
+37
+00:04:03,217 --> 00:04:09,981
+If both numbers are zero, nothing was cached. Usually the prompt is too short, or something changed in the prefix.
+
+38
+00:04:10,831 --> 00:04:12,757
+Step four: count the savings.
+
+39
+00:04:13,207 --> 00:04:21,024
+This little script does the math for a thousand questions a day, using Claude Sonnet 5.5 prices, for the handbook part of the prompt.
+
+40
+00:04:21,474 --> 00:04:29,067
+Without caching, every question pays the base price. With caching, one write, then 999 cheap reads.
+
+41
+00:04:29,517 --> 00:04:31,571
+Let's run it, and compare the two numbers.
+
+42
+00:04:32,021 --> 00:04:38,827
+Three dollars become fifteen cents. Ninety-five percent saved on that part, and the bigger the handbook, the more you save.
+
+43
+00:04:39,277 --> 00:04:44,089
+The files also include an offline test, so you can try everything with no API key.
+
+44
+00:04:45,639 --> 00:04:46,227
+Four tips.
+
+45
+00:04:46,677 --> 00:04:55,071
+One: stable content first, changing content last. A date or a timestamp at the top of your prompt breaks the cache on every request.
+
+46
+00:04:55,521 --> 00:05:01,835
+Two: always check the usage. If both cache numbers are zero, nothing was cached, and you get no error.
+
+47
+00:05:02,285 --> 00:05:08,708
+Three: for parallel requests, send one first. The cache is only there once the first response starts.
+
+48
+00:05:09,158 --> 00:05:17,107
+And four: if requests come more than five minutes apart, you can use a one-hour cache. Writing it costs twice the normal input price.
+
+49
+00:05:18,657 --> 00:05:19,311
+Let's recap.
+
+50
+00:05:19,761 --> 00:05:24,149
+Prompt caching stores the prefix, the start of your prompt, for five minutes.
+
+51
+00:05:24,599 --> 00:05:28,614
+Put the stable part first, and mark its last block with cache control.
+
+52
+00:05:29,064 --> 00:05:33,616
+You pay for one write, then cheap reads. And the usage numbers tell you if it worked.
+
+53
+00:05:35,066 --> 00:05:41,902
+The code, the handbook, a cheat sheet, and an offline test you can run without an API key are linked in the description.
+
+54
+00:05:42,352 --> 00:05:49,182
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
