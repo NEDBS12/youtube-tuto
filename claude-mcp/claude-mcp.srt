@@ -1,0 +1,224 @@
+1
+00:00:00,600 --> 00:00:06,742
+Claude can write code and answer questions. But it can't see your orders, your database, or your own tools.
+
+2
+00:00:07,192 --> 00:00:14,680
+MCP fixes that. In this video, you'll learn what an MCP server and an MCP client are, and when to build each one.
+
+3
+00:00:15,130 --> 00:00:21,109
+Then we'll build a real MCP server and a real client in Python, and connect the server to Claude Code.
+
+4
+00:00:22,659 --> 00:00:23,762
+So, what is MCP?
+
+5
+00:00:24,212 --> 00:00:37,678
+MCP, the Model Context Protocol, is an open standard that connects AI apps to data and tools. The official docs compare it to a USB-C port for AI apps: one standard plug, for everything.
+
+6
+00:00:38,128 --> 00:00:44,289
+An MCP server is a program that offers things to the AI: tools it can call, and data it can read.
+
+7
+00:00:44,739 --> 00:00:53,169
+An MCP client is the connector inside the AI app. The app, called the host, creates one client for each server it connects to.
+
+8
+00:00:54,619 --> 00:00:56,114
+Here's how the pieces fit together.
+
+9
+00:00:56,564 --> 00:01:01,730
+The host is the AI app you use, like Claude Code, Claude Desktop, or VS Code.
+
+10
+00:01:02,180 --> 00:01:12,532
+A server offers three kinds of things: tools, which are actions the AI can call; resources, which is read-only data; and prompts, which are ready-made templates.
+
+11
+00:01:12,982 --> 00:01:24,286
+They talk over a transport. With stdio, the client starts the server as a program on your own machine. With Streamable HTTP, the server runs remotely, on the internet.
+
+12
+00:01:24,736 --> 00:01:30,135
+And that's the big idea: you build a server once, and every app that speaks MCP can use it.
+
+13
+00:01:31,585 --> 00:01:32,633
+So when do you build what?
+
+14
+00:01:33,083 --> 00:01:44,556
+Build an MCP server when your data or your tool should work in many AI apps: Claude Code, Claude Desktop, VS Code, and others, without writing one integration for each.
+
+15
+00:01:45,006 --> 00:01:51,500
+Build an MCP client when you're making your own AI app or agent, and you want it to use servers that already exist.
+
+16
+00:01:51,950 --> 00:01:58,703
+If a server already exists, for GitHub, Notion or Sentry for example, you don't build anything. You just add it.
+
+17
+00:01:59,153 --> 00:02:06,848
+And if it's one script, in one app, with one or two tools, skip MCP. Plain tool use in the Claude API is simpler.
+
+18
+00:02:08,398 --> 00:02:15,380
+Our use case: Maple Mugs, the small online shop from my earlier videos. Customers keep asking: where is my order?
+
+19
+00:02:15,830 --> 00:02:22,967
+Without MCP, Claude can't reach the orders database. You look up the order yourself, and copy-paste it. Every time.
+
+20
+00:02:23,417 --> 00:02:32,111
+With an MCP server, Claude gets a get order tool. It calls it, and answers directly. In Claude Code, or in any app that speaks MCP.
+
+21
+00:02:33,561 --> 00:02:39,789
+Here are our orders: three of them, each with a customer, an item, a status and a delivery date.
+
+22
+00:02:40,239 --> 00:02:49,379
+In a real shop, orders live in a database or an online store system, not in a file next to your code. Here, this small JSON file plays that role.
+
+23
+00:02:49,829 --> 00:02:59,565
+Claude Code, Claude Desktop and VS Code can't reach that database on their own. And writing a separate integration for each app means doing the same work three times.
+
+24
+00:03:00,215 --> 00:03:04,815
+So let's wrap the order lookup in one MCP server, and every app can use it.
+
+25
+00:03:06,165 --> 00:03:07,907
+Step one: build the server.
+
+26
+00:03:08,357 --> 00:03:17,544
+First, install the MCP Python SDK with pip install mcp. Then I create an MCP server, and give it a name: maple mugs.
+
+27
+00:03:20,324 --> 00:03:32,033
+The tool decorator turns a normal Python function into an MCP tool. The type hint and the docstring become the tool's description and input schema. That's what Claude reads, to decide when to call it.
+
+28
+00:03:32,483 --> 00:03:37,368
+Then a resource: read-only data, here the shipping policy, with its own address.
+
+29
+00:03:38,900 --> 00:03:46,045
+And at the bottom, run over stdio. The client will start this file as a program, and talk to it through its input and output.
+
+30
+00:03:46,895 --> 00:03:48,517
+Step two: build a client.
+
+31
+00:03:48,967 --> 00:03:55,597
+A client is what an AI app uses to talk to a server. Writing a tiny one is also the best way to test your server.
+
+32
+00:03:59,061 --> 00:04:04,518
+First, how to start the server: a command and its arguments, just like typing it in a terminal.
+
+33
+00:04:04,968 --> 00:04:12,569
+Then, async with Client. Entering this block launches the server and agrees on the protocol. Leaving it shuts the server down.
+
+34
+00:04:13,019 --> 00:04:18,369
+Inside, I list the server's tools, and call get order by name, with its arguments.
+
+35
+00:04:19,219 --> 00:04:20,516
+Step three: run it.
+
+36
+00:04:20,966 --> 00:04:22,716
+Let's look up order 1042.
+
+37
+00:04:23,466 --> 00:04:31,309
+The client started the server, found one tool, get order, and called it. Here's the order: shipped, arriving October twenty-fifth.
+
+38
+00:04:31,759 --> 00:04:34,285
+And an order that doesn't exist gets a clear message.
+
+39
+00:04:34,735 --> 00:04:43,736
+No API key needed so far. MCP is just a protocol between two programs. The files include tests that run this same server and client.
+
+40
+00:04:44,686 --> 00:04:46,687
+Step four: connect Claude Code.
+
+41
+00:04:47,137 --> 00:04:54,857
+One command: claude mcp add, the stdio transport, a name, then two dashes, and the command that starts the server.
+
+42
+00:04:55,307 --> 00:05:03,024
+Everything after the two dashes is passed to the server, untouched. Now Claude Code is the host, and it creates a client for our server.
+
+43
+00:05:03,474 --> 00:05:06,132
+Now let's ask Claude where order 1042 is.
+
+44
+00:05:06,582 --> 00:05:11,988
+Claude calls the get order tool from our server. The first time, Claude Code asks for your permission.
+
+45
+00:05:12,438 --> 00:05:18,057
+And there's the answer, straight from our order data. Same server, now used by a real AI app.
+
+46
+00:05:19,607 --> 00:05:20,195
+Four tips.
+
+47
+00:05:20,645 --> 00:05:29,683
+One: in a stdio server, never use print. Standard output carries the protocol messages, and a print breaks them. Use the logging module instead.
+
+48
+00:05:30,133 --> 00:05:35,978
+Two: write clear docstrings. They're what Claude reads, to decide which tool to call, and when.
+
+49
+00:05:36,428 --> 00:05:43,554
+Three: test your server with a small client, like ours, or with the MCP Inspector, before you connect it to an app.
+
+50
+00:05:44,004 --> 00:05:50,709
+And four: only connect servers you trust. A server that fetches outside content can expose you to prompt injection.
+
+51
+00:05:52,259 --> 00:05:52,913
+Let's recap.
+
+52
+00:05:53,363 --> 00:06:00,060
+An MCP server offers tools and data. An MCP client, inside the AI app, connects to it.
+
+53
+00:06:00,510 --> 00:06:07,304
+Build a server when your data should work in many AI apps. Build a client when your own app should use existing servers.
+
+54
+00:06:07,754 --> 00:06:12,178
+And to use a server in Claude Code, it's one command: claude mcp add.
+
+55
+00:06:13,628 --> 00:06:20,346
+The server, the client, a cheat sheet, and the tests are linked in the description. They run with no API key.
+
+56
+00:06:20,796 --> 00:06:27,627
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+
