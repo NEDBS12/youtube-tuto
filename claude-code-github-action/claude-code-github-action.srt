@@ -1,0 +1,292 @@
+1
+00:00:00,600 --> 00:00:03,374
+What if you could fix a bug just by writing a comment on GitHub?
+
+2
+00:00:03,824 --> 00:00:10,815
+With the Claude Code GitHub Action, you type @claude in an issue, and Claude reads your code, fixes it, and pushes the change.
+
+3
+00:00:11,265 --> 00:00:19,989
+This video is a lab. I'll explain how it works, then we'll set it up together on a real repository. Every file is linked in the description, so you can follow along.
+
+4
+00:00:21,539 --> 00:00:22,993
+So, what is the Claude Code Action?
+
+5
+00:00:23,443 --> 00:00:29,523
+It's a GitHub Action, an automated job that GitHub runs for you, that starts Claude Code inside your repository.
+
+6
+00:00:29,973 --> 00:00:37,549
+You mention @claude in an issue or a pull request. Claude reads the code, makes changes, commits them, and replies in a comment.
+
+7
+00:00:37,999 --> 00:00:41,386
+It all runs on GitHub's servers. Your laptop can be closed.
+
+8
+00:00:41,836 --> 00:00:47,234
+And the setup is just three pieces: a workflow file, the Claude GitHub App, and one secret.
+
+9
+00:00:48,684 --> 00:00:52,116
+The action has two modes, and it picks one from your workflow file.
+
+10
+00:00:52,566 --> 00:00:59,168
+Interactive mode: if you don't give it a prompt, Claude waits for someone to write @claude in a comment, then answers that request.
+
+11
+00:00:59,618 --> 00:01:06,331
+Automation mode: if you give it a prompt, it runs on its own, for example on every new pull request, or every morning.
+
+12
+00:01:06,781 --> 00:01:14,908
+In both modes, only people with write access can trigger it, and bots are blocked. And under the hood, it's the same Claude Code you use in your terminal.
+
+13
+00:01:16,358 --> 00:01:20,155
+What can you ask it to do? Answer questions about your code, right in the issue.
+
+14
+00:01:20,605 --> 00:01:25,320
+Fix bugs, and build features from an issue description, then push the changes to a branch.
+
+15
+00:01:25,770 --> 00:01:28,058
+Review pull requests and comment on the code.
+
+16
+00:01:28,508 --> 00:01:33,334
+Run on a schedule, like a daily summary of commits. And run your own skills or plugins.
+
+17
+00:01:34,784 --> 00:01:35,615
+When should you use it?
+
+18
+00:01:36,065 --> 00:01:45,236
+Use the action for small, clearly described tasks, reviews on every pull request, and recurring jobs. Especially when your team already lives in GitHub.
+
+19
+00:01:45,686 --> 00:01:51,096
+Stay in your terminal for big, open-ended changes, or when you want to steer every step yourself.
+
+20
+00:01:52,546 --> 00:01:57,247
+Here's our lab: a small shop project with a shipping bug, reported in a GitHub issue.
+
+21
+00:01:57,697 --> 00:02:04,777
+Normally, you read the issue, pull the code, find the bug, fix it, push, and open a pull request. By hand.
+
+22
+00:02:05,227 --> 00:02:10,815
+With the action, you write one comment. Claude finds the cause and pushes the fix. You just review it.
+
+23
+00:02:12,365 --> 00:02:16,353
+Here's the starter project. You can copy it from the GitHub link in the description.
+
+24
+00:02:16,803 --> 00:02:22,584
+shipping.py has one rule: orders of fifty dollars or more ship free. But look at this line.
+
+25
+00:02:23,034 --> 00:02:28,063
+Let's run the tests. One fails: an order of exactly fifty is still charged shipping.
+
+26
+00:02:28,513 --> 00:02:35,412
+The project also has a Tests workflow, so GitHub runs these tests on every push. That's how we'll prove Claude's fix works.
+
+27
+00:02:35,862 --> 00:02:42,255
+And a CLAUDE.md file with project rules. The action reads it on every run, just like Claude Code does locally.
+
+28
+00:02:43,105 --> 00:02:45,207
+Step one: put the project on GitHub.
+
+29
+00:02:45,657 --> 00:02:50,615
+I commit the files, then create a new repository with the GitHub command line, and push.
+
+30
+00:02:51,065 --> 00:02:55,287
+You need to be an admin of the repo for the next steps. On your own repo, you are.
+
+31
+00:02:56,637 --> 00:03:02,956
+Step two: install the Claude GitHub App. It lets Claude comment, push branches, and work with pull requests.
+
+32
+00:03:03,406 --> 00:03:06,300
+I click install, and choose only the lab repository.
+
+33
+00:03:06,750 --> 00:03:15,696
+Claude mainly needs read and write access to contents, issues and pull requests. The app asks for a few more permissions, used by other Claude features.
+
+34
+00:03:16,146 --> 00:03:26,170
+Tip: there's also a shortcut. Run slash install-github-app inside Claude Code, and it does steps two to four for you. Here, we do it by hand, so you see every piece.
+
+35
+00:03:27,520 --> 00:03:31,159
+Step three: add a secret, so the action can log in to Claude.
+
+36
+00:03:31,609 --> 00:03:37,861
+With a Pro or Max subscription, run claude setup-token. It creates a long-lived token for your subscription.
+
+37
+00:03:38,311 --> 00:03:43,937
+Then I save it as a repository secret named CLAUDE_CODE_OAUTH_TOKEN, and paste the token when asked.
+
+38
+00:03:44,387 --> 00:03:50,151
+Secrets are encrypted by GitHub. The workflow can use them, but nobody can read them back. Not even you.
+
+39
+00:03:50,601 --> 00:03:55,986
+Prefer an API key from the Claude Console? Name the secret ANTHROPIC_API_KEY instead.
+
+40
+00:03:56,836 --> 00:04:00,509
+Step four: add the workflow file. This is the heart of the setup.
+
+41
+00:04:00,959 --> 00:04:05,615
+Workflows live in dot github slash workflows. I call this one claude.yml.
+
+42
+00:04:06,065 --> 00:04:11,961
+The on section says when it runs: every new comment, on an issue, or on a pull request review.
+
+43
+00:04:12,411 --> 00:04:17,537
+This if line skips every comment that doesn't mention @claude, so you don't waste runner minutes.
+
+44
+00:04:17,987 --> 00:04:29,901
+Permissions: write access to contents, pull requests and issues, so Claude can push and comment. Id-token is needed to log in as the Claude app. And actions read lets Claude see your CI results.
+
+45
+00:04:30,351 --> 00:04:33,203
+The checkout step gives Claude a copy of your code to work on.
+
+46
+00:04:34,001 --> 00:04:38,709
+And here's the action itself: anthropics slash claude-code-action, version one.
+
+47
+00:04:40,684 --> 00:04:44,669
+It reads the token from our secret. Never paste the token itself in this file.
+
+48
+00:04:45,119 --> 00:04:52,695
+Claude args passes normal Claude Code options. Max turns ten caps how much work one run can do, which keeps costs under control.
+
+49
+00:04:53,145 --> 00:04:57,530
+There's no prompt line. So this is interactive mode: it waits for @claude.
+
+50
+00:04:58,280 --> 00:05:02,407
+I commit the workflow and push it. Workflows only run once they're on GitHub.
+
+51
+00:05:03,757 --> 00:05:09,630
+Step five: test it. On GitHub, I open an issue describing the bug, just like a customer report.
+
+52
+00:05:10,080 --> 00:05:13,003
+Then I add a comment: @claude, please fix this bug.
+
+53
+00:05:13,453 --> 00:05:17,993
+Within seconds, Claude replies with a progress comment, and a link to the running job.
+
+54
+00:05:18,443 --> 00:05:27,915
+In the Actions tab, you can watch the Claude Code workflow run. It checks out the code, starts Claude, and Claude reads CLAUDE.md, the issue, and shipping.py.
+
+55
+00:05:28,365 --> 00:05:37,697
+About a minute later, the comment updates. Claude explains the cause in one sentence, exactly as our CLAUDE.md asked, and pushes the fix to a new branch.
+
+56
+00:05:38,147 --> 00:05:42,048
+Its reply links to the branch, so I create the pull request with one click.
+
+57
+00:05:42,498 --> 00:05:50,360
+And here's the proof. The pull request changes one character, greater than becomes greater or equal, and the Tests workflow is now green.
+
+58
+00:05:50,810 --> 00:05:55,712
+Claude fixed the code, not the test, as our rules said. I review it, and merge.
+
+59
+00:05:56,462 --> 00:06:05,679
+You can also talk to it inside the pull request. For example, @claude, review this change, or @claude, add a test for an order of forty-nine ninety-nine.
+
+60
+00:06:07,229 --> 00:06:11,012
+Back on my computer, I pull the merged fix, and run the tests once more.
+
+61
+00:06:11,462 --> 00:06:16,239
+All green. Bug reported, fixed and verified, without me opening an editor.
+
+62
+00:06:17,789 --> 00:06:19,324
+Before you go, five tips.
+
+63
+00:06:19,774 --> 00:06:25,543
+One: write a CLAUDE.md. Claude reads it on every run, so keep it short and specific.
+
+64
+00:06:25,993 --> 00:06:33,732
+Two: cap every run, with max turns, and a timeout on the job. Each run uses GitHub Actions minutes, and Claude usage.
+
+65
+00:06:34,182 --> 00:06:38,355
+Three: keep tokens and keys in secrets. Never in the workflow file.
+
+66
+00:06:38,805 --> 00:06:48,716
+Four: add a prompt input, and the same action runs on its own, on every pull request, or on a schedule. The examples folder of the action's repo has ready-made workflows.
+
+67
+00:06:49,166 --> 00:06:53,364
+And five: Claude pushes to branches. You still review and merge.
+
+68
+00:06:54,914 --> 00:06:55,539
+Let's recap.
+
+69
+00:06:55,989 --> 00:06:59,491
+The Claude Code Action runs Claude Code inside your GitHub workflows.
+
+70
+00:06:59,941 --> 00:07:04,321
+You set it up with the GitHub App, one secret, and a claude.yml workflow file.
+
+71
+00:07:04,771 --> 00:07:08,116
+Then you comment @claude, review what it pushes, and merge.
+
+72
+00:07:09,566 --> 00:07:16,265
+Now it's your turn. The starter project and a step-by-step lab guide are linked in the description. It takes about fifteen minutes.
+
+73
+00:07:16,715 --> 00:07:23,162
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+

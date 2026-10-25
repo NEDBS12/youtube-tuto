@@ -1,0 +1,216 @@
+"""Generates script.json for the Claude Code GitHub Action lab from the real example files."""
+import json, pathlib
+
+HERE = pathlib.Path(__file__).parent
+LAB = HERE / "example-files" / "claude-action-lab"
+rd = lambda p: (LAB / p).read_text(encoding="utf-8")
+SHIP = rd("shipping.py")
+FIXED = SHIP.replace("if order_total > FREE_SHIPPING_FROM:", "if order_total >= FREE_SHIPPING_FROM:")
+TESTS = rd("tests/test_shipping.py")
+CLAUDE_MD = rd("CLAUDE.md")
+TESTS_YML = rd(".github/workflows/tests.yml")
+WF = rd(".github/workflows/claude.yml")
+W = ".github/workflows/claude.yml"
+cut = lambda a, b=None: WF[WF.index(a):(WF.index(b) if b else None)]
+WF1 = cut("name:", "jobs:")
+WF2 = cut("jobs:", "    permissions:")
+WF3 = cut("    permissions:", "    steps:")
+WF4 = cut("    steps:", "      - uses: anthropics")
+WF5 = cut("      - uses: anthropics")
+assert WF1 + WF2 + WF3 + WF4 + WF5 == WF
+
+REPO = "github.com/you/claude-action-lab"
+NAV = ["<> Code", "Issues", "Pull requests", "Actions", "-", "Settings", "  Secrets"]
+ISSUE_H = "Orders of exactly $50 still pay shipping **#1**"
+ME = {"name": "you", "icon": "Y", "color": "#818CF8", "badge": "Author",
+      "desc": "A customer with a **$50.00** order was charged **$4.99** shipping. Free shipping should start at $50."}
+ASK = {"name": "you · comment", "icon": "Y", "color": "#818CF8",
+       "desc": "**@claude** please fix this bug."}
+WORKING = {"name": "claude", "icon": "C", "color": "#D97757", "badge": "bot",
+           "desc": "Claude Code is working… ⏳  [View job run]"}
+DONE = {"name": "claude", "icon": "C", "color": "#D97757", "badge": "bot",
+        "desc": "✓ **Fixed.** Cause: `shipping.py` used `>` instead of `>=`, so exactly $50 did not qualify.\nBranch: `claude/issue-1` · **Create PR ➔**"}
+
+script = {
+ "title": "claude-code-github-action",
+ "rate": "+6%",
+ "steps": ["Create the repo", "Install the app", "Add the secret", "Add the workflow", "Test with @claude"],
+ "scenes": [
+  {"type": "title", "chapter": "Introduction", "kicker": "Claude Code tutorial · hands-on lab",
+   "title": "Claude Code GitHub Action\n[[Your AI Teammate on GitHub]]",
+   "subtitle": "What it does, how it works, and a lab you can reproduce step by step",
+   "lines": [
+    {"say": "What if you could fix a bug just by writing a comment on GitHub?"},
+    {"say": "With the Claude Code GitHub Action, you type @claude in an issue, and Claude reads your code, fixes it, and pushes the change.", "tts": "With the Claude Code GitHub Action, you type at claude in an issue, and Claude reads your code, fixes it, and pushes the change."},
+    {"say": "This video is a lab. I'll explain how it works, then we'll set it up together on a real repository. Every file is linked in the description, so you can follow along.", "hold": 0.6}]},
+
+  {"type": "bullets", "chapter": "What is the Claude Code Action?", "kicker": "**01** · The concept",
+   "heading": "What is [[Claude Code Action]]?",
+   "items": ["A **GitHub Action** that runs Claude Code inside your repository's workflows",
+             "Mention `@claude` in an issue or pull request: Claude **reads, edits, commits** and replies",
+             "Runs on **GitHub's servers**: no laptop, no terminal needed",
+             "One workflow file + one GitHub App + one secret"],
+   "card": {"title": ".GITHUB/WORKFLOWS/CLAUDE.YML", "code": "on:\n  issue_comment:\n    types: [created]\njobs:\n  claude:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v6\n      - uses: anthropics/\n          claude-code-action@v1"},
+   "lines": [
+    {"say": "So, what is the Claude Code Action?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "It's a GitHub Action, an automated job that GitHub runs for you, that starts Claude Code inside your repository.", "do": [{"k": "show", "el": "item1"}, {"k": "show", "el": "card", "at": 1.0}]},
+    {"say": "You mention @claude in an issue or a pull request. Claude reads the code, makes changes, commits them, and replies in a comment.", "tts": "You mention at claude in an issue or a pull request. Claude reads the code, makes changes, commits them, and replies in a comment.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "It all runs on GitHub's servers. Your laptop can be closed.", "do": [{"k": "show", "el": "item3"}]},
+    {"say": "And the setup is just three pieces: a workflow file, the Claude GitHub App, and one secret.", "do": [{"k": "show", "el": "item4"}], "hold": 0.5}]},
+
+  {"type": "rows", "chapter": "How it works: two modes", "kicker": "**02** · How it works",
+   "heading": "Two [[modes]], picked for you",
+   "rows": [{"label": "Interactive mode", "text": "No `prompt` input: Claude waits for **@claude** in a comment"},
+            {"label": "Automation mode", "text": "With a `prompt`: runs on any event, like a new PR or a schedule"},
+            {"label": "Safety checks", "text": "Only users with **write access** can trigger it; bots are blocked"}],
+   "banner": "✓ Same Claude Code you use locally, now inside your GitHub workflow",
+   "lines": [
+    {"say": "The action has two modes, and it picks one from your workflow file.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Interactive mode: if you don't give it a prompt, Claude waits for someone to write @claude in a comment, then answers that request.", "tts": "Interactive mode: if you don't give it a prompt, Claude waits for someone to write at claude in a comment, then answers that request.", "do": [{"k": "show", "el": "row1"}]},
+    {"say": "Automation mode: if you give it a prompt, it runs on its own, for example on every new pull request, or every morning.", "do": [{"k": "show", "el": "row2"}]},
+    {"say": "In both modes, only people with write access can trigger it, and bots are blocked. And under the hood, it's the same Claude Code you use in your terminal.", "do": [{"k": "show", "el": "row3"}, {"k": "show", "el": "banner", "at": 4.5}], "hold": 0.5}]},
+
+  {"type": "cards", "chapter": "What it can do", "kicker": "**03** · What it offers", "heading": "What you can [[ask it to do]]",
+   "cards": [{"title": "Answer questions", "text": "\"@claude how does login work here?\""},
+             {"title": "Fix bugs", "text": "From an issue to a branch with the fix"},
+             {"title": "Build features", "text": "Implement what the issue describes"},
+             {"title": "Review PRs", "text": "Comments on the code it finds risky"},
+             {"title": "Scheduled jobs", "text": "A daily report with a cron trigger"},
+             {"title": "Run skills", "text": "Your `.claude/skills` or a plugin"}],
+   "lines": [
+    {"say": "What can you ask it to do? Answer questions about your code, right in the issue.", "do": [{"k": "show", "el": "heading"}, {"k": "show", "el": "card1", "at": 1.6}]},
+    {"say": "Fix bugs, and build features from an issue description, then push the changes to a branch.", "do": [{"k": "show", "el": "card2"}, {"k": "show", "el": "card3", "at": 1.2}]},
+    {"say": "Review pull requests and comment on the code.", "do": [{"k": "show", "el": "card4"}]},
+    {"say": "Run on a schedule, like a daily summary of commits. And run your own skills or plugins.", "do": [{"k": "show", "el": "card5"}, {"k": "show", "el": "card6", "at": 1.8}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "When to use it", "kicker": "**04** · When to use it", "heading": "Use it [[when…]]",
+   "left": {"title": "Use the GitHub Action", "body": "• Small, clear bugs and tasks in issues\n• Reviews on every pull request\n• Recurring jobs: reports, triage\n• Your team works in GitHub"},
+   "right": {"title": "Stay in your terminal", "body": "• Big, open-ended changes\n• You want to steer each step\n• You need to run the app and look\n• Quick experiments"},
+   "lines": [
+    {"say": "When should you use it?", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Use the action for small, clearly described tasks, reviews on every pull request, and recurring jobs. Especially when your team already lives in GitHub.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "Stay in your terminal for big, open-ended changes, or when you want to steer every step yourself.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.4}], "hold": 0.5}]},
+
+  {"type": "compare", "chapter": "The lab", "kicker": "**05** · Our lab", "heading": "Lab: [[fix a bug from an issue]]",
+   "left": {"title": "Without the action", "body": "1. Read the issue\n2. Pull the code, find the bug\n3. Fix it, commit, push\n4. Open a pull request\n\n**Every bug, by hand**"},
+   "right": {"title": "With the action", "body": "1. Comment **@claude please fix this**\n2. Claude finds the cause\n3. Pushes a branch with the fix\n4. You open the PR, tests go green\n\n**You review, Claude does the work**"},
+   "lines": [
+    {"say": "Here's our lab: a small shop project with a shipping bug, reported in a GitHub issue.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "Normally, you read the issue, pull the code, find the bug, fix it, push, and open a pull request. By hand.", "do": [{"k": "show", "el": "left"}]},
+    {"say": "With the action, you write one comment. Claude finds the cause and pushes the fix. You just review it.", "do": [{"k": "show", "el": "arrow"}, {"k": "show", "el": "right", "at": 0.5}], "hold": 0.6}]},
+
+  {"type": "screen", "chapter": "The lab project", "project": "claude-action-lab", "kicker": "**LAB** · The starter project", "lines": [
+    {"say": "Here's the starter project. You can copy it from the GitHub link in the description.", "do": [
+      {"k": "file", "path": "tests/test_shipping.py", "text": TESTS, "open": False},
+      {"k": "file", "path": "pytest.ini", "text": "[pytest]\npythonpath = .\n", "open": False},
+      {"k": "file", "path": ".github/workflows/tests.yml", "text": TESTS_YML, "open": False},
+      {"k": "file", "path": "CLAUDE.md", "text": CLAUDE_MD, "open": False},
+      {"k": "file", "path": "shipping.py", "text": SHIP}]},
+    {"say": "shipping.py has one rule: orders of fifty dollars or more ship free. But look at this line.", "tts": "shipping dot P Y has one rule: orders of fifty dollars or more ship free. But look at this line.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "if order_total >", "label": "Bug: > instead of >="}]},
+    {"say": "Let's run the tests. One fails: an order of exactly fifty is still charged shipping.", "do": [{"k": "cmd", "text": "python -m pytest -q", "cps": 18, "out": ["..F                                     [100%]", "FAILED tests/test_shipping.py::test_exactly_50_ships_free", "  assert 4.99 == 0", "1 failed, 2 passed in 0.02s"]}, {"k": "callout", "at": 2.4, "dur": 4.5, "target": "term", "match": "1 failed", "label": "The bug, proven"}]},
+    {"say": "The project also has a Tests workflow, so GitHub runs these tests on every push. That's how we'll prove Claude's fix works.", "do": [{"k": "open", "path": ".github/workflows/tests.yml"}, {"k": "callout", "at": 0.6, "dur": 5.5, "target": "editor", "match": "python -m pytest", "label": "Runs on every push and PR"}]},
+    {"say": "And a CLAUDE.md file with project rules. The action reads it on every run, just like Claude Code does locally.", "tts": "And a CLAUDE dot M D file with project rules. The action reads it on every run, just like Claude Code does locally.", "do": [{"k": "open", "path": "CLAUDE.md"}, {"k": "callout", "at": 0.6, "dur": 5.5, "target": "editor", "match": "Never edit a test", "label": "Rules Claude follows"}], "hold": 0.4},
+
+    {"say": "Step one: put the project on GitHub.", "do": [{"k": "step", "n": 1}, {"k": "clear"}]},
+    {"say": "I commit the files, then create a new repository with the GitHub command line, and push.", "do": [
+      {"k": "cmd", "text": "git init && git add . && git commit -m \"Starter\"", "cps": 30, "out": ["[main (root-commit) 3f2a1c9] Starter", " 6 files changed, 52 insertions(+)"]},
+      {"k": "cmd", "text": "gh repo create claude-action-lab --public --source=. --push", "cps": 30, "out": ["✓ Created repository you/claude-action-lab on GitHub", "✓ Pushed commits to https://github.com/you/claude-action-lab.git"]}]},
+    {"say": "You need to be an admin of the repo for the next steps. On your own repo, you are.", "hold": 0.4}]},
+
+  {"type": "browser", "navs": NAV, "url": "github.com/apps/claude", "lines": [
+    {"say": "Step two: install the Claude GitHub App. It lets Claude comment, push branches, and work with pull requests.", "do": [{"k": "step", "n": 2},
+      {"k": "bview", "url": "github.com/apps/claude", "heading": "Claude", "sub": "GitHub App by Anthropic", "rows": [
+        {"name": "Claude", "icon": "C", "color": "#D97757", "desc": "Lets Claude work in your repositories", "btn": "Install"}]}]},
+    {"say": "I click install, and choose only the lab repository.", "do": [{"k": "callout", "dur": 3.0, "target": "browser", "match": "Install", "label": "Install the app"},
+      {"k": "bmodal", "at": 2.4, "title": "Install Claude", "lines": ["○ All repositories", "● Only select repositories: **claude-action-lab**", "", "Contents · Issues · Pull requests: **read and write**"], "btns": ["Cancel", "Install"]}]},
+    {"say": "Claude mainly needs read and write access to contents, issues and pull requests. The app asks for a few more permissions, used by other Claude features.", "do": [{"k": "callout", "dur": 6.0, "target": "browser", "match": "read and write", "label": "What the action uses"}]},
+    {"say": "Tip: there's also a shortcut. Run slash install-github-app inside Claude Code, and it does steps two to four for you. Here, we do it by hand, so you see every piece.", "do": [{"k": "bmodal", "title": "Quick setup (optional)", "lines": ["Run `/install-github-app` inside Claude Code.", "It installs the app, saves the secret,", "and opens a pull request with the workflow."], "btns": ["Got it"]}], "hold": 0.4}]},
+
+  {"type": "screen", "project": "claude-action-lab", "lines": [
+    {"say": "Step three: add a secret, so the action can log in to Claude.", "do": [{"k": "step", "n": 3}, {"k": "clear"}]},
+    {"say": "With a Pro or Max subscription, run claude setup-token. It creates a long-lived token for your subscription.", "do": [{"k": "cmd", "text": "claude setup-token", "cps": 16, "out": ["Opening browser to sign in…", "✓ Long-lived authentication token created:", "sk-ant-oat01-••••••••••••••••••••", "Store this token securely."]}, {"k": "callout", "at": 2.4, "dur": 4.0, "target": "term", "match": "sk-ant-oat01", "label": "Copy it. Never commit it."}]},
+    {"say": "Then I save it as a repository secret named CLAUDE_CODE_OAUTH_TOKEN, and paste the token when asked.", "tts": "Then I save it as a repository secret named CLAUDE CODE OAUTH TOKEN, and paste the token when asked.", "do": [{"k": "cmd", "text": "gh secret set CLAUDE_CODE_OAUTH_TOKEN", "cps": 22, "out": ["? Paste your secret: ****************", "✓ Set Actions secret CLAUDE_CODE_OAUTH_TOKEN for you/claude-action-lab"]}]},
+    {"say": "Secrets are encrypted by GitHub. The workflow can use them, but nobody can read them back. Not even you.", "do": [{"k": "note", "dur": 8.5, "title": "Two ways to log in", "rows": [["`CLAUDE_CODE_OAUTH_TOKEN`", "your Claude subscription"], ["`ANTHROPIC_API_KEY`", "pay-as-you-go API key"]]}]},
+    {"say": "Prefer an API key from the Claude Console? Name the secret ANTHROPIC_API_KEY instead.", "tts": "Prefer an API key from the Claude Console? Name the secret ANTHROPIC API KEY instead.", "hold": 0.4},
+
+    {"say": "Step four: add the workflow file. This is the heart of the setup.", "do": [{"k": "step", "n": 4}, {"k": "clear"}, {"k": "open", "path": W, "at": 0.6}]},
+    {"say": "Workflows live in dot github slash workflows. I call this one claude.yml.", "tts": "Workflows live in dot github, slash workflows. I call this one claude dot yaml.", "do": [{"k": "type", "path": W, "text": WF1, "cps": 30}]},
+    {"say": "The on section says when it runs: every new comment, on an issue, or on a pull request review.", "do": [{"k": "callout", "dur": 5.5, "target": "editor", "match": "issue_comment:", "span": 4, "label": "When the workflow starts"}]},
+    {"say": "This if line skips every comment that doesn't mention @claude, so you don't waste runner minutes.", "tts": "This if line skips every comment that doesn't mention at claude, so you don't waste runner minutes.", "do": [{"k": "type", "path": W, "text": WF2, "cps": 30}, {"k": "callout", "at": 2.4, "dur": 5.0, "target": "editor", "match": "if: contains", "label": "Only when @claude is mentioned"}]},
+    {"say": "Permissions: write access to contents, pull requests and issues, so Claude can push and comment. Id-token is needed to log in as the Claude app. And actions read lets Claude see your CI results.", "do": [{"k": "type", "path": W, "text": WF3, "cps": 34}, {"k": "callout", "at": 2.6, "dur": 7.5, "target": "editor", "match": "permissions:", "span": 6, "label": "What the job may do"}]},
+    {"say": "The checkout step gives Claude a copy of your code to work on.", "do": [{"k": "type", "path": W, "text": WF4, "cps": 30}, {"k": "callout", "at": 1.6, "dur": 4.0, "target": "editor", "match": "actions/checkout", "label": "Your code on the runner"}]},
+    {"say": "And here's the action itself: anthropics slash claude-code-action, version one.", "do": [{"k": "type", "path": W, "text": WF5, "cps": 30}, {"k": "callout", "at": 3.6, "dur": 4.5, "target": "editor", "match": "claude-code-action@v1", "label": "The Claude Code Action"}]},
+    {"say": "It reads the token from our secret. Never paste the token itself in this file.", "do": [{"k": "callout", "dur": 5.0, "target": "editor", "match": "claude_code_oauth_token", "label": "From the secret, not plain text"}]},
+    {"say": "Claude args passes normal Claude Code options. Max turns ten caps how much work one run can do, which keeps costs under control.", "do": [{"k": "callout", "dur": 6.0, "target": "editor", "match": "claude_args", "label": "Limit each run"}]},
+    {"say": "There's no prompt line. So this is interactive mode: it waits for @claude.", "tts": "There's no prompt line. So this is interactive mode: it waits for at claude.", "hold": 0.3},
+    {"say": "I commit the workflow and push it. Workflows only run once they're on GitHub.", "do": [{"k": "cmd", "text": "git add . && git commit -m \"Add Claude workflow\" && git push", "cps": 32, "out": ["[main 8b41d07] Add Claude workflow", " 1 file changed, 24 insertions(+)", "To https://github.com/you/claude-action-lab.git"]}], "hold": 0.4}]},
+
+  {"type": "browser", "navs": NAV, "url": REPO + "/issues/1", "lines": [
+    {"say": "Step five: test it. On GitHub, I open an issue describing the bug, just like a customer report.", "do": [{"k": "step", "n": 5},
+      {"k": "bview", "nav": "Issues", "url": REPO + "/issues/1", "heading": ISSUE_H, "sub": "Open · opened by you", "rows": [ME]}]},
+    {"say": "Then I add a comment: @claude, please fix this bug.", "tts": "Then I add a comment: at claude, please fix this bug.", "do": [
+      {"k": "bview", "at": 0.4, "nav": "Issues", "url": REPO + "/issues/1", "heading": ISSUE_H, "sub": "Open · opened by you", "rows": [ME, ASK]},
+      {"k": "callout", "at": 1.0, "dur": 4.0, "target": "browser", "match": "please fix this bug", "label": "The trigger"}]},
+    {"say": "Within seconds, Claude replies with a progress comment, and a link to the running job.", "do": [
+      {"k": "bview", "at": 0.6, "nav": "Issues", "url": REPO + "/issues/1", "heading": ISSUE_H, "sub": "Open · opened by you", "rows": [ME, ASK, WORKING]}]},
+    {"say": "In the Actions tab, you can watch the Claude Code workflow run. It checks out the code, starts Claude, and Claude reads CLAUDE.md, the issue, and shipping.py.", "tts": "In the Actions tab, you can watch the Claude Code workflow run. It checks out the code, starts Claude, and Claude reads CLAUDE dot M D, the issue, and shipping dot P Y.", "do": [
+      {"k": "bview", "nav": "Actions", "url": REPO + "/actions", "heading": "All workflows", "rows": [
+        {"name": "Claude Code", "icon": "▶", "color": "#D97757", "desc": "issue_comment · #1 Orders of exactly $50 still pay shipping", "status": "⏳ Running"},
+        {"name": "Tests", "icon": "✗", "color": "#F87171", "desc": "push · main · Add Claude workflow", "status": "✗ Failed"}]},
+      {"k": "callout", "at": 5.5, "dur": 4.5, "target": "browser", "match": "✗ Failed", "label": "main is still broken"}]},
+    {"say": "About a minute later, the comment updates. Claude explains the cause in one sentence, exactly as our CLAUDE.md asked, and pushes the fix to a new branch.", "tts": "About a minute later, the comment updates. Claude explains the cause in one sentence, exactly as our CLAUDE dot M D asked, and pushes the fix to a new branch.", "do": [
+      {"k": "bview", "nav": "Issues", "url": REPO + "/issues/1", "heading": ISSUE_H, "sub": "Open · opened by you", "rows": [ME, ASK, DONE]},
+      {"k": "callout", "at": 1.0, "dur": 6.0, "target": "browser", "match": "Cause:", "label": "One-sentence cause"}]},
+    {"say": "Its reply links to the branch, so I create the pull request with one click.", "do": [{"k": "callout", "dur": 4.0, "target": "browser", "match": "Create PR", "label": "One click"}]},
+    {"say": "And here's the proof. The pull request changes one character, greater than becomes greater or equal, and the Tests workflow is now green.", "do": [
+      {"k": "bview", "nav": "Pull requests", "url": REPO + "/pull/2", "heading": "Fix free shipping for orders of exactly $50 **#2**", "sub": "claude/issue-1 → main · Fixes #1", "tabs": ["Conversation", "Commits 1", "Checks 2", "Files changed 1"], "tab": 0, "rows": [
+        {"name": "shipping.py", "icon": "±", "color": "#22D3EE", "desc": "`- if order_total > FREE_SHIPPING_FROM:`\n`+ if order_total >= FREE_SHIPPING_FROM:`"},
+        {"name": "Tests", "icon": "✓", "color": "#34D399", "desc": "3 passed", "status": "✓ Passed"}]},
+      {"k": "callout", "at": 3.0, "dur": 4.5, "target": "browser", "match": "+ if order_total", "label": "The fix"},
+      {"k": "callout", "at": 7.6, "dur": 4.0, "target": "browser", "match": "✓ Passed", "label": "CI proves it"}]},
+    {"say": "Claude fixed the code, not the test, as our rules said. I review it, and merge.", "hold": 0.3},
+    {"say": "You can also talk to it inside the pull request. For example, @claude, review this change, or @claude, add a test for an order of forty-nine ninety-nine.", "tts": "You can also talk to it inside the pull request. For example, at claude, review this change. Or at claude, add a test for an order of forty-nine ninety-nine.", "do": [
+      {"k": "bview", "nav": "Pull requests", "url": REPO + "/pull/2", "heading": "Fix free shipping for orders of exactly $50 **#2**", "sub": "claude/issue-1 → main · Fixes #1", "tabs": ["Conversation", "Commits 1", "Checks 2", "Files changed 1"], "tab": 0, "rows": [
+        {"name": "you · comment", "icon": "Y", "color": "#818CF8", "desc": "**@claude** add a test for an order of 49.99"},
+        {"name": "claude", "icon": "C", "color": "#D97757", "badge": "bot", "desc": "✓ Added `test_just_under_50_pays_shipping` and pushed to this branch."}]}], "hold": 0.6}]},
+
+  {"type": "screen", "project": "claude-action-lab", "lines": [
+    {"say": "Back on my computer, I pull the merged fix, and run the tests once more.", "do": [{"k": "clear"}, {"k": "open", "path": "shipping.py"},
+      {"k": "cmd", "text": "git pull && python -m pytest -q", "cps": 24, "out": ["Updating 8b41d07..c71e5a2", " shipping.py | 2 +-", "...                                     [100%]", "3 passed in 0.01s"]},
+      {"k": "file", "at": 2.4, "path": "shipping.py", "text": FIXED},
+      {"k": "callout", "at": 3.4, "dur": 4.0, "target": "term", "match": "3 passed", "label": "Lab complete ✓"}]},
+    {"say": "All green. Bug reported, fixed and verified, without me opening an editor.", "do": [{"k": "callout", "dur": 4.5, "target": "editor", "match": "if order_total >=", "label": "Fixed by Claude"}], "hold": 0.6}]},
+
+  {"type": "cards", "chapter": "Tips and going further", "kicker": "**GO FURTHER** · Tips", "heading": "5 tips for the [[Claude Code Action]]", "rail": True,
+   "cards": [{"title": "Write a CLAUDE.md", "text": "Your rules, read on every run. Keep it short."},
+             {"title": "Cap every run", "text": "`--max-turns` and a job `timeout-minutes`"},
+             {"title": "Secrets only", "text": "Never put a token or key in the YAML"},
+             {"title": "Automate with prompt", "text": "Add `prompt:` to run on PRs or a cron schedule"},
+             {"title": "Review before merge", "text": "Claude pushes branches; you decide what lands"}],
+   "lines": [
+    {"say": "Before you go, five tips.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "One: write a CLAUDE.md. Claude reads it on every run, so keep it short and specific.", "tts": "One: write a CLAUDE dot M D. Claude reads it on every run, so keep it short and specific.", "do": [{"k": "show", "el": "card1"}]},
+    {"say": "Two: cap every run, with max turns, and a timeout on the job. Each run uses GitHub Actions minutes, and Claude usage.", "do": [{"k": "show", "el": "card2"}]},
+    {"say": "Three: keep tokens and keys in secrets. Never in the workflow file.", "do": [{"k": "show", "el": "card3"}]},
+    {"say": "Four: add a prompt input, and the same action runs on its own, on every pull request, or on a schedule. The examples folder of the action's repo has ready-made workflows.", "do": [{"k": "show", "el": "card4"}]},
+    {"say": "And five: Claude pushes to branches. You still review and merge.", "do": [{"k": "show", "el": "card5"}], "hold": 0.6}]},
+
+  {"type": "checks", "chapter": "Recap", "heading": "Recap",
+   "items": ["Claude Code Action = Claude Code running **inside GitHub Actions**",
+             "Setup: **GitHub App** + **secret** + `claude.yml`",
+             "Comment [[@claude]], review the branch, merge"],
+   "lines": [
+    {"say": "Let's recap.", "do": [{"k": "show", "el": "heading"}]},
+    {"say": "The Claude Code Action runs Claude Code inside your GitHub workflows.", "do": [{"k": "show", "el": "item1"}]},
+    {"say": "You set it up with the GitHub App, one secret, and a claude.yml workflow file.", "tts": "You set it up with the GitHub App, one secret, and a claude dot yaml workflow file.", "do": [{"k": "show", "el": "item2"}]},
+    {"say": "Then you comment @claude, review what it pushes, and merge.", "tts": "Then you comment at claude, review what it pushes, and merge.", "do": [{"k": "show", "el": "item3"}], "hold": 0.5}]},
+
+  {"type": "outro", "title": "Your turn: [[run the lab]]", "subtitle": "The starter repo and the step-by-step lab guide are in the description",
+   "cta": "Subscribe to Zero Cost AI for more free AI tutorials",
+   "lines": [
+    {"say": "Now it's your turn. The starter project and a step-by-step lab guide are linked in the description. It takes about fifteen minutes.", "do": [{"k": "show", "el": "line1"}]},
+    {"say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!", "do": [{"k": "show", "el": "line2"}], "hold": 1.5}]},
+ ]}
+
+(HERE / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False), encoding="utf-8")
+print("script.json written:", sum(len(s["lines"]) for s in script["scenes"]), "lines")
