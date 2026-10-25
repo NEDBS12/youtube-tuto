@@ -1,0 +1,210 @@
+<h1>Build Your First AI Agent in Java with Claude (Step by Step)</h1>
+<h4>An AI agent is just an LLM, some tools and a loop. Here's how to build one in plain Java with the official Anthropic SDK, no framework needed.</h4>
+<p>Everyone talks about AI agents. But if you're a Java developer, most tutorials you'll find are in Python.</p>
+<p>In this article, you'll build your first agent in plain Java, with the official Anthropic Java SDK. There's no framework and no magic, just about a hundred lines of code you'll understand completely.</p>
+<p>By the end, you'll have a small agent that reads your computer's clock and does exact math. More importantly, you'll understand the loop at the heart of every agent.</p>
+<p>🎥 <strong>Prefer video?</strong> Watch the full tutorial here:</p>
+<h2>▶ <strong>VIDEO:</strong> paste the YouTube link on this line, then press Enter to embed it.</h2>
+<h2>What is an agent?</h2>
+<p>An <strong>agent</strong> is three things:</p>
+<ul>
+<li><strong>An LLM:</strong> Claude, the brain that reads and decides.</li>
+<li><strong>Tools:</strong> normal Java methods that Claude is allowed to ask for.</li>
+<li><strong>A loop:</strong> your program keeps talking to Claude until the job is done.</li>
+</ul>
+<p>Think of Claude as a smart manager with no hands. It decides what to do. Your code does it.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/01-what-is-an-agent.jpg" alt="An agent = LLM + tools + loop"><figcaption>An agent = LLM + tools + loop</figcaption></figure>
+<h2>How the agent loop works</h2>
+<p>Every agent repeats the same three moves:</p>
+<ol>
+<li><strong>You send</strong> Claude the question, plus a list of the tools it may use.</li>
+<li><strong>Claude replies</strong> with either an answer, or <code>stop_reason: tool_use</code>, which means "please run this tool for me".</li>
+<li><strong>You run the tool</strong> in Java, send the result back, and ask again.</li>
+</ol>
+<p>You repeat while the stop reason is <code>TOOL_USE</code>. That's the whole agent.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/02-the-loop.jpg" alt="The agent loop: repeat while stop_reason is TOOL_USE"><figcaption>The agent loop: repeat while stop_reason is TOOL_USE</figcaption></figure>
+<h3>When to build an agent (and when not)</h3>
+<p>Build an agent when:</p>
+<ul>
+<li>Claude needs live data: the time, files, your database</li>
+<li>it must act: calculate, send, update</li>
+<li>the steps aren't known in advance</li>
+</ul>
+<p>If Claude can answer from text alone, like a summary or a translation, one simple API call is enough. Start simple.</p>
+<h2>Our use case: a time and math helper</h2>
+<p>The example is small on purpose. A plain chatbot can't see your computer's clock. And with big numbers, it's better to compute than to guess.</p>
+<p>So our agent gets two tools: one reads the clock, and one does the math in Java. Claude decides when to use each.</p>
+<p>Here's the "before": a plain chatbot with one question, one answer, and no tools.</p>
+<pre><code class="language-java">Message reply = client.messages().create(
+    MessageCreateParams.builder()
+        .model(&quot;claude-opus-5-5&quot;)
+        .maxTokens(16000L)
+        .addUserMessage(&quot;What time is it right now?&quot;)
+        .build());
+</code></pre>
+<p>Claude answers that it can't see the current time. It's honest, but not helpful. Let's fix that with an agent.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/03-no-tools.jpg" alt="Without tools, Claude can't see your clock"><figcaption>Without tools, Claude can't see your clock</figcaption></figure>
+<h2>Step 1: Add the SDK</h2>
+<p>It's a normal Maven project. The only dependency is <code>anthropic-java</code>, the official SDK:</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.anthropic&lt;/groupId&gt;
+    &lt;artifactId&gt;anthropic-java&lt;/artifactId&gt;
+    &lt;version&gt;2.71.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>The project also uses the <code>exec-maven-plugin</code>, so you can run the agent with one Maven command.</p>
+<p>The SDK reads your API key from an environment variable called <code>ANTHROPIC_API_KEY</code>. Never put the key in your code.</p>
+<pre><code>$env:ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;      # Windows PowerShell
+export ANTHROPIC_API_KEY=&quot;sk-ant-...&quot;    # macOS / Linux
+</code></pre>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/04-add-the-sdk.jpg" alt="The pom.xml with the official Anthropic Java SDK"><figcaption>The pom.xml with the official Anthropic Java SDK</figcaption></figure>
+<h2>Step 2: Write the tools</h2>
+<p>A tool is just a Java method. In a class called <code>Tools</code>, one method returns the current date and time, and the other does exact math on two numbers:</p>
+<pre><code class="language-java">    // 1. Plain Java methods that do the real work
+    static String getCurrentTime() {
+        return LocalDateTime.now().withNano(0).toString();
+    }
+ 
+    static String calculate(String op, double a, double b) {
+        return switch (op) {
+            case &quot;add&quot; -&gt; String.valueOf(a + b);
+            case &quot;subtract&quot; -&gt; String.valueOf(a - b);
+            case &quot;multiply&quot; -&gt; String.valueOf(a * b);
+            case &quot;divide&quot; -&gt; b == 0 ? &quot;Error: divide by zero&quot;
+                                    : String.valueOf(a / b);
+            default -&gt; &quot;Error: unknown operation &quot; + op;
+        };
+    }
+</code></pre>
+<p>Notice they return text. Claude reads the result as text, even errors like "divide by zero".</p>
+<p>And remember: Claude never runs these methods itself. It can only ask. Your program runs them.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/05-write-the-tools.jpg" alt="The tools are plain Java methods that return text"><figcaption>The tools are plain Java methods that return text</figcaption></figure>
+<h2>Step 3: Describe the tools</h2>
+<p>Claude can't read your Java code, so each tool gets a <strong>name</strong>, a <strong>description</strong>, and an <strong>input schema</strong> (the inputs it takes). Here's the calculator:</p>
+<pre><code class="language-java">    static final Tool CALCULATOR = Tool.builder()
+            .name(&quot;calculate&quot;)
+            .description(&quot;Does exact math on two numbers. &quot;
+                    + &quot;Use it for any arithmetic.&quot;)
+            .inputSchema(Tool.InputSchema.builder()
+                .properties(Tool.InputSchema.Properties.builder()
+                    .putAdditionalProperty(&quot;op&quot;, JsonValue.from(Map.of(
+                        &quot;type&quot;, &quot;string&quot;,
+                        &quot;enum&quot;, List.of(&quot;add&quot;, &quot;subtract&quot;,
+                                        &quot;multiply&quot;, &quot;divide&quot;))))
+                    .putAdditionalProperty(&quot;a&quot;, JsonValue.from(
+                        Map.of(&quot;type&quot;, &quot;number&quot;)))
+                    .putAdditionalProperty(&quot;b&quot;, JsonValue.from(
+                        Map.of(&quot;type&quot;, &quot;number&quot;)))
+                    .build())
+                .required(List.of(&quot;op&quot;, &quot;a&quot;, &quot;b&quot;))
+                .build())
+            .build();
+</code></pre>
+<p>The calculator takes an operation and two numbers, <code>a</code> and <code>b</code>. All three are required. The <code>TIME</code> tool is the same idea, with no inputs.</p>
+<p>The description is the most important part. Claude reads it to decide <strong>when</strong> to use the tool, so say what it does, and when to use it.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/06-describe-the-tools.jpg" alt="The description tells Claude when to use the tool"><figcaption>The description tells Claude when to use the tool</figcaption></figure>
+<h2>Step 4: Route tool calls</h2>
+<p>When Claude asks for a tool, your program has to run the right method. The <code>run</code> method takes Claude's tool call, reads its inputs, and picks the method by name:</p>
+<pre><code class="language-java">    // 3. Run the tool Claude asked for, return the result as text
+    @SuppressWarnings(&quot;unchecked&quot;)
+    static String run(ToolUseBlock call) {
+        Map&lt;String, Object&gt; in = call._input().convert(Map.class);
+        return switch (call.name()) {
+            case &quot;get_current_time&quot; -&gt; getCurrentTime();
+            case &quot;calculate&quot; -&gt; calculate((String) in.get(&quot;op&quot;),
+                    ((Number) in.get(&quot;a&quot;)).doubleValue(),
+                    ((Number) in.get(&quot;b&quot;)).doubleValue());
+            default -&gt; &quot;Error: unknown tool &quot; + call.name();
+        };
+    }
+</code></pre>
+<p>Claude sends the inputs as JSON. We convert them to a map, then call <code>calculate</code> with the operation and the numbers. An unknown tool name returns an error message instead of crashing.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/07-route-tool-calls.jpg" alt="run() maps the tool name to a Java method"><figcaption>run() maps the tool name to a Java method</figcaption></figure>
+<h2>Step 5: Build the loop</h2>
+<p>This is the heart of every agent. In <code>MyFirstAgent</code>, we create the client (it reads the API key), read the user's question, and build the conversation: the model, the two tools, and the question.</p>
+<pre><code class="language-java">        // The conversation: model, tools, and the user's question
+        MessageCreateParams.Builder chat =
+            MessageCreateParams.builder()
+                .model(&quot;claude-opus-5-5&quot;)
+                .maxTokens(16000L)
+                .addTool(Tools.TIME)
+                .addTool(Tools.CALCULATOR)
+                .addUserMessage(question);
+</code></pre>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/08-conversation.jpg" alt="The conversation holds the model, the tools and the question"><figcaption>The conversation holds the model, the tools and the question</figcaption></figure>
+<p>Now the loop itself:</p>
+<pre><code class="language-java">        // The agent loop
+        while (true) {
+            Message reply = client.messages().create(chat.build());
+            chat.addMessage(reply); // no memory: keep the history
+ 
+            for (ContentBlock block : reply.content()) {
+                block.text().ifPresent(t -&gt;
+                        System.out.println(&quot;Claude: &quot; + t.text()));
+            }
+ 
+            // No tool requested? Then Claude is done.
+            StopReason why = reply.stopReason().orElse(null);
+            if (why != StopReason.TOOL_USE) {
+                break;
+            }
+ 
+            // Run every tool Claude asked for, send all results back
+            List&lt;ContentBlockParam&gt; results = new ArrayList&lt;&gt;();
+            for (ContentBlock block : reply.content()) {
+                block.toolUse().ifPresent(call -&gt; {
+                    String result = Tools.run(call);
+                    System.out.println(&quot;  [tool] &quot; + call.name()
+                            + &quot; -&gt; &quot; + result);
+                    results.add(ContentBlockParam.ofToolResult(
+                            ToolResultBlockParam.builder()
+                                    .toolUseId(call.id())
+                                    .content(result)
+                                    .build()));
+                });
+            }
+            chat.addUserMessageOfBlockParams(results);
+        }
+</code></pre>
+<p>Three details matter here:</p>
+<ul>
+<li><strong>Keep the history.</strong> Claude has no memory between calls, so we save every reply with <code>chat.addMessage(reply)</code> and send the full history every time.</li>
+<li><strong>The exit.</strong> If the stop reason isn't <code>TOOL_USE</code>, Claude is done, so we break out of the loop.</li>
+<li><strong>All results, one message.</strong> We run every tool Claude asked for and send all the results back together, in one message. Each result carries the id of the call it answers (<code>toolUseId</code>).</li>
+</ul>
+<p>Then the loop starts again, and Claude sees the results.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/09-the-loop.jpg" alt="All tool results go back in one message"><figcaption>All tool results go back in one message</figcaption></figure>
+<h2>Test it</h2>
+<p>First, an offline check of the tools, with no API key needed:</p>
+<pre><code>mvn -q compile exec:java -Dexec.mainClass=agent.ToolsCheck
+</code></pre>
+<p>Both tools work, and the errors come back as text. Now the real agent:</p>
+<pre><code>mvn -q compile exec:java
+</code></pre>
+<p>Ask it: <em>"What time is it, and what is 1234 times 5678?"</em></p>
+<p>Claude asks for both tools. Our Java code runs them and sends back the results. Then Claude uses the real time and the exact number in one clear answer. That's your first agent.</p>
+<figure><img src="https://raw.githubusercontent.com/NEDBS12/youtube-tuto/main/articles/java-first-agent/images/10-test-it.jpg" alt="Claude asked for both tools, Java ran them, and Claude answered"><figcaption>Claude asked for both tools, Java ran them, and Claude answered</figcaption></figure>
+<h2>4 tips for your next agent</h2>
+<ul>
+<li><strong>Describe tools well:</strong> say what each tool does and when to use it. The descriptions decide when Claude uses each tool.</li>
+<li><strong>Return errors as text:</strong> instead of throwing, return a message. Claude reads it and can try again.</li>
+<li><strong>Limit the loop:</strong> in a real app, stop after a maximum number of turns, so it can never run forever.</li>
+<li><strong>Keep tools small:</strong> one job per tool, with clear inputs.</li>
+</ul>
+<h2>Recap</h2>
+<ul>
+<li>An agent = <strong>LLM + tools + a loop</strong>.</li>
+<li>Tools are plain Java methods. Claude <strong>asks</strong>, your code <strong>runs</strong> them.</li>
+<li>The loop continues while <code>stop_reason</code> is <code>TOOL_USE</code>, sending the full history every time.</li>
+</ul>
+<h2>Get the files</h2>
+<p>The full Java project (with the offline tool check and a step-by-step README) is free on GitHub: <a href="https://github.com/NEDBS12/youtube-tuto/tree/main/java-first-agent">https://github.com/NEDBS12/youtube-tuto/tree/main/java-first-agent</a></p>
+<p>Try adding your own tool, like a weather tool: write the method and its description in <code>Tools.java</code>, add a <code>case</code> in <code>run()</code>, and <code>.addTool(...)</code> it in <code>MyFirstAgent.java</code>.</p>
+<p>🎥 <strong>Watch the video tutorial:</strong> <strong>[PASTE THE YOUTUBE LINK HERE]</strong></p>
+<p>Learn more:</p>
+<ul>
+<li>Tool use with Claude (official docs): <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview">https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview</a></li>
+<li>Anthropic Java SDK: <a href="https://github.com/anthropics/anthropic-sdk-java">https://github.com/anthropics/anthropic-sdk-java</a></li>
+</ul>
+<p><em>The editor and terminal screenshots come from the video and are simplified recreations; the run results are illustrative.</em></p>
+<p><em>I'm Zero Cost AI: I build free AI apps and beginner-friendly tutorials. Follow me here on Medium and subscribe on YouTube for more.</em></p>

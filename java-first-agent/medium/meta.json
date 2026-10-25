@@ -1,0 +1,25 @@
+{
+ "title": "Build Your First AI Agent in Java with Claude (Step by Step)",
+ "subtitle": "An AI agent is just an LLM, some tools and a loop. Here's how to build one in plain Java with the official Anthropic SDK, no framework needed.",
+ "tags": [
+  "Java",
+  "Artificial Intelligence",
+  "AI Agents",
+  "Claude",
+  "Programming"
+ ],
+ "video": "pending",
+ "slug": "java-first-agent",
+ "captions": [
+  "An agent = LLM + tools + loop",
+  "The agent loop: repeat while stop_reason is TOOL_USE",
+  "Without tools, Claude can't see your clock",
+  "The pom.xml with the official Anthropic Java SDK",
+  "The tools are plain Java methods that return text",
+  "The description tells Claude when to use the tool",
+  "run() maps the tool name to a Java method",
+  "The conversation holds the model, the tools and the question",
+  "All tool results go back in one message",
+  "Claude asked for both tools, Java ran them, and Claude answered"
+ ]
+}

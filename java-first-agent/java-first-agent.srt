@@ -1,0 +1,252 @@
+1
+00:00:00,600 --> 00:00:05,926
+Everyone talks about AI agents. But if you're a Java developer, most tutorials are in Python.
+
+2
+00:00:06,376 --> 00:00:11,629
+Today, you'll build your first agent in plain Java, with the official Anthropic SDK.
+
+3
+00:00:12,079 --> 00:00:16,393
+No framework, no magic. About a hundred lines you'll understand completely.
+
+4
+00:00:17,943 --> 00:00:18,857
+So, what is an agent?
+
+5
+00:00:19,307 --> 00:00:26,585
+An agent is three things. First, a large language model. Here, Claude. It reads, thinks, and decides.
+
+6
+00:00:27,035 --> 00:00:31,557
+Second, tools. Normal Java methods that Claude is allowed to ask for.
+
+7
+00:00:32,007 --> 00:00:36,671
+And third, a loop. Your program keeps talking to Claude until the job is done.
+
+8
+00:00:37,121 --> 00:00:42,355
+Think of Claude as a smart manager with no hands. It decides what to do. Your code does it.
+
+9
+00:00:43,805 --> 00:00:44,919
+Here's how the loop works.
+
+10
+00:00:45,369 --> 00:00:49,427
+One: you send Claude the question, plus a list of the tools it may use.
+
+11
+00:00:49,877 --> 00:00:57,042
+Two: Claude either answers, or replies with stop reason, tool use. That means: please run this tool for me.
+
+12
+00:00:57,492 --> 00:01:01,327
+Three: your Java code runs the tool, and sends the result back.
+
+13
+00:01:01,777 --> 00:01:06,625
+Then you ask again. You repeat while the stop reason is tool use. That's the whole agent.
+
+14
+00:01:08,075 --> 00:01:09,205
+When should you build an agent?
+
+15
+00:01:09,655 --> 00:01:16,735
+When Claude needs live data, like the time or your database. When it must act. Or when the steps aren't known in advance.
+
+16
+00:01:17,185 --> 00:01:24,476
+If Claude can answer from text alone, like a summary or a translation, one simple call is enough. Start simple.
+
+17
+00:01:25,926 --> 00:01:31,430
+Our use case is small on purpose: a helper that knows the time, and does exact math.
+
+18
+00:01:31,880 --> 00:01:37,637
+A plain chatbot can't see your computer's clock. And with big numbers, it's better to compute than to guess.
+
+19
+00:01:38,087 --> 00:01:45,001
+Our agent gets two tools: one reads the clock, one does the math in Java. Claude decides when to use each.
+
+20
+00:01:46,451 --> 00:01:50,812
+Here's a plain chatbot first. One question, one answer, no tools.
+
+21
+00:01:51,262 --> 00:01:52,534
+I ask Claude what time it is.
+
+22
+00:01:52,984 --> 00:01:58,816
+Claude answers that it can't see the current time. It's honest, but not helpful. Let's fix that with an agent.
+
+23
+00:02:00,266 --> 00:02:03,342
+Step one: add the Anthropic Java SDK.
+
+24
+00:02:03,792 --> 00:02:09,940
+It's a normal Maven project. The only dependency is anthropic java, the official SDK.
+
+25
+00:02:10,390 --> 00:02:13,955
+And the exec plugin lets us run the agent with one Maven command.
+
+26
+00:02:14,405 --> 00:02:23,694
+The SDK reads your API key from an environment variable, called ANTHROPIC_API_KEY. Never put the key in your code.
+
+27
+00:02:25,144 --> 00:02:28,816
+Step two: write the tools. I create a class called Tools.
+
+28
+00:02:29,266 --> 00:02:36,256
+A tool is just a Java method. This one returns the current date and time. This one does exact math on two numbers.
+
+29
+00:02:39,516 --> 00:02:45,545
+Notice they return text. Claude reads the result as text, even errors like divide by zero.
+
+30
+00:02:45,995 --> 00:02:50,835
+Claude never runs these methods itself. It can only ask. Your program runs them.
+
+31
+00:02:52,185 --> 00:02:54,637
+Step three: describe the tools to Claude.
+
+32
+00:02:55,087 --> 00:03:00,154
+Each tool gets a name, a description, and an input schema: the inputs it takes.
+
+33
+00:03:11,393 --> 00:03:16,838
+The calculator takes an operation, and two numbers, a and b. All three are required.
+
+34
+00:03:17,288 --> 00:03:24,481
+The description is the most important part. Claude reads it to decide when to use the tool. So say what it does, and when to use it.
+
+35
+00:03:25,831 --> 00:03:29,994
+Step four: when Claude asks for a tool, we need to run the right method.
+
+36
+00:03:30,444 --> 00:03:35,334
+The run method takes Claude's tool call, reads its inputs, and picks the method by name.
+
+37
+00:03:38,184 --> 00:03:44,743
+Claude sends the inputs as JSON. I convert them to a map, then call calculate with the operation and the numbers.
+
+38
+00:03:45,193 --> 00:03:49,080
+An unknown tool name returns an error message, instead of crashing.
+
+39
+00:03:50,430 --> 00:03:55,291
+Step five, the heart of every agent: the loop. I create MyFirstAgent.
+
+40
+00:03:55,741 --> 00:04:00,995
+First, the client, which reads the API key. Then I read the user's question.
+
+41
+00:04:09,702 --> 00:04:16,732
+The builder holds the whole conversation: the model, Claude Opus five point five, the two tools, and the question.
+
+42
+00:04:17,182 --> 00:04:23,727
+Now the loop. I send the conversation, and save Claude's reply in the history. Then I print any text Claude wrote.
+
+43
+00:04:24,177 --> 00:04:29,372
+This matters: Claude has no memory between calls. We send the full history every time.
+
+44
+00:04:29,822 --> 00:04:35,833
+Next, the exit. If the stop reason isn't tool use, Claude is done, so we break out of the loop.
+
+45
+00:04:36,283 --> 00:04:40,517
+Otherwise, I run every tool Claude asked for, and collect the results.
+
+46
+00:04:46,011 --> 00:04:52,481
+Then I send all the results back together, in one message. Each result carries the id of the call it answers.
+
+47
+00:04:52,931 --> 00:04:55,993
+Then the loop starts again, and Claude sees the results.
+
+48
+00:04:57,443 --> 00:05:02,304
+Time to test. First, an offline check of the tools. No API key needed.
+
+49
+00:05:02,754 --> 00:05:07,018
+Both tools work, and the errors come back as text. Now the real agent.
+
+50
+00:05:07,468 --> 00:05:12,386
+I ask: what time is it, and what is twelve thirty four times fifty six seventy eight?
+
+51
+00:05:12,836 --> 00:05:17,467
+Claude asked for both tools. Our Java code ran them, and sent back the results.
+
+52
+00:05:17,917 --> 00:05:23,231
+Then Claude used the real time and the exact number in one clear answer. That's your first agent.
+
+53
+00:05:24,781 --> 00:05:26,086
+Four tips for your next agent.
+
+54
+00:05:26,536 --> 00:05:31,388
+One: write clear tool descriptions. They decide when Claude uses each tool.
+
+55
+00:05:31,838 --> 00:05:37,373
+Two: return errors as text, instead of throwing. Claude reads them, and can try again.
+
+56
+00:05:37,823 --> 00:05:44,445
+Three: limit the loop. In a real app, stop after a maximum number of turns, so it can never run forever.
+
+57
+00:05:44,895 --> 00:05:49,470
+And four: keep each tool small, with one job and clear inputs.
+
+58
+00:05:51,020 --> 00:05:51,673
+Let's recap.
+
+59
+00:05:52,123 --> 00:05:55,550
+An agent is an LLM, plus tools, plus a loop.
+
+60
+00:05:56,000 --> 00:05:59,730
+Tools are plain Java methods. Claude asks, your code runs them.
+
+61
+00:06:00,180 --> 00:06:05,327
+And the loop continues while the stop reason is tool use, sending the full history every time.
+
+62
+00:06:06,777 --> 00:06:13,594
+The full Java project, with the offline check, is linked in the description. Try adding your own tool, like a weather tool.
+
+63
+00:06:14,044 --> 00:06:20,875
+If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!
+

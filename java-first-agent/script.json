@@ -1,0 +1,891 @@
+{
+ "title": "java-first-agent",
+ "voice": "en-US-AndrewNeural",
+ "steps": [
+  "Add the SDK",
+  "Write the tools",
+  "Describe the tools",
+  "Route tool calls",
+  "Build the loop"
+ ],
+ "brand": {
+  "name": "Zero Cost AI"
+ },
+ "scenes": [
+  {
+   "type": "title",
+   "chapter": "Introduction",
+   "kicker": "Claude API tutorial · Java · step by step",
+   "title": "Build Your First [[AI Agent]]\nin Java",
+   "subtitle": "LLM + tools + a loop, with the official Anthropic Java SDK",
+   "lines": [
+    {
+     "say": "Everyone talks about AI agents. But if you're a Java developer, most tutorials are in Python."
+    },
+    {
+     "say": "Today, you'll build your first agent in plain Java, with the official Anthropic SDK."
+    },
+    {
+     "say": "No framework, no magic. About a hundred lines you'll understand completely.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "chapter": "What is an agent?",
+   "kicker": "**01** · The concept",
+   "heading": "What is an [[agent]]?",
+   "items": [
+    "An **LLM**: Claude, the brain that reads and decides",
+    "**Tools**: Java methods Claude can ask you to run",
+    "A **loop**: keep going until Claude has its answer"
+   ],
+   "card": {
+    "title": "THE FORMULA",
+    "code": "agent = LLM + tools + loop"
+   },
+   "lines": [
+    {
+     "say": "So, what is an agent?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "card",
+       "at": 0.8
+      }
+     ]
+    },
+    {
+     "say": "An agent is three things. First, a large language model. Here, Claude. It reads, thinks, and decides.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Second, tools. Normal Java methods that Claude is allowed to ask for.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "And third, a loop. Your program keeps talking to Claude until the job is done.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ]
+    },
+    {
+     "say": "Think of Claude as a smart manager with no hands. It decides what to do. Your code does it.",
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "How the loop works",
+   "kicker": "**02** · How it works",
+   "heading": "The agent [[loop]]",
+   "rows": [
+    {
+     "label": "You send",
+     "text": "The question, plus the list of tools"
+    },
+    {
+     "label": "Claude replies",
+     "text": "An answer, or `stop_reason: tool_use`"
+    },
+    {
+     "label": "You run the tool",
+     "text": "Send the result back, then ask again"
+    }
+   ],
+   "banner": "↻ Repeat while stop_reason is TOOL_USE",
+   "lines": [
+    {
+     "say": "Here's how the loop works.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One: you send Claude the question, plus a list of the tools it may use.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ]
+    },
+    {
+     "say": "Two: Claude either answers, or replies with stop reason, tool use. That means: please run this tool for me.",
+     "tts": "Two: Claude either answers, or replies with stop reason: tool use. That means: please run this tool for me.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ]
+    },
+    {
+     "say": "Three: your Java code runs the tool, and sends the result back.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ]
+    },
+    {
+     "say": "Then you ask again. You repeat while the stop reason is tool use. That's the whole agent.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "When to build an agent",
+   "kicker": "**03** · When to use it",
+   "heading": "When to build an [[agent]]",
+   "left": {
+    "title": "Build an agent when…",
+    "body": "• Claude needs live data:\n  time, files, your database\n• It must act: calculate,\n  send, update\n• The steps aren't known\n  in advance"
+   },
+   "right": {
+    "title": "A single call is enough when…",
+    "body": "• Summaries, translation,\n  rewriting text\n• One question, one answer\n• Nothing to look up\n  or execute"
+   },
+   "lines": [
+    {
+     "say": "When should you build an agent?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "When Claude needs live data, like the time or your database. When it must act. Or when the steps aren't known in advance.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "If Claude can answer from text alone, like a summary or a translation, one simple call is enough. Start simple.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "Our use case",
+   "kicker": "**04** · Our use case",
+   "heading": "A [[time + math]] helper",
+   "left": {
+    "title": "Plain chatbot",
+    "body": "\"What time is it?\"\n\nClaude can't see your clock.\nIt can only say it doesn't know.\n\nBig math? It might\nget a digit wrong."
+   },
+   "right": {
+    "title": "Our agent",
+    "body": "get_current_time → your clock\ncalculate → exact Java math\n\nClaude combines both\ninto one clear answer\n\n✓ Real data, exact numbers"
+   },
+   "lines": [
+    {
+     "say": "Our use case is small on purpose: a helper that knows the time, and does exact math.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "A plain chatbot can't see your computer's clock. And with big numbers, it's better to compute than to guess.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "Our agent gets two tools: one reads the clock, one does the math in Java. Claude decides when to use each.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "The problem: no tools",
+   "project": "java-first-agent",
+   "kicker": "**DEMO** · Without tools",
+   "lines": [
+    {
+     "say": "Here's a plain chatbot first. One question, one answer, no tools.",
+     "do": [
+      {
+       "k": "file",
+       "path": "src/main/java/agent/NoTools.java",
+       "text": "package agent;\n\nimport com.anthropic.client.AnthropicClient;\nimport com.anthropic.client.okhttp.AnthropicOkHttpClient;\nimport com.anthropic.models.messages.Message;\nimport com.anthropic.models.messages.MessageCreateParams;\n\n// A plain chatbot: one question, one answer, no tools\npublic class NoTools {\n\n    public static void main(String[] args) {\n        AnthropicClient client = AnthropicOkHttpClient.fromEnv();\n\n        Message reply = client.messages().create(\n            MessageCreateParams.builder()\n                .model(\"claude-opus-5-5\")\n                .maxTokens(16000L)\n                .addUserMessage(\"What time is it right now?\")\n                .build());\n\n        reply.content().forEach(block -> block.text().ifPresent(t ->\n                System.out.println(\"Claude: \" + t.text())));\n    }\n}\n"
+      }
+     ]
+    },
+    {
+     "say": "I ask Claude what time it is.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "What time is it right now?",
+       "label": "Just a question",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "Claude answers that it can't see the current time. It's honest, but not helpful. Let's fix that with an agent.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.mainClass=agent.NoTools",
+       "out": [
+        "Claude: I don't have access to a clock, so I",
+        "can't tell you the current time."
+       ]
+      },
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "I don't have access",
+       "label": "It can't see your clock",
+       "dur": 4.5,
+       "span": 2
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-first-agent",
+   "lines": [
+    {
+     "say": "Step one: add the Anthropic Java SDK.",
+     "do": [
+      {
+       "k": "step",
+       "n": 1
+      },
+      {
+       "k": "file",
+       "path": "pom.xml",
+       "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n\n    <groupId>agent</groupId>\n    <artifactId>java-first-agent</artifactId>\n    <version>1.0</version>\n\n    <properties>\n        <maven.compiler.release>17</maven.compiler.release>\n        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n    </properties>\n\n    <dependencies>\n        <!-- The official Anthropic Java SDK -->\n        <dependency>\n            <groupId>com.anthropic</groupId>\n            <artifactId>anthropic-java</artifactId>\n            <version>2.71.0</version>\n        </dependency>\n    </dependencies>\n\n    <build>\n        <plugins>\n            <!-- Lets us run the agent with: mvn compile exec:java -->\n            <plugin>\n                <groupId>org.codehaus.mojo</groupId>\n                <artifactId>exec-maven-plugin</artifactId>\n                <version>3.5.0</version>\n                <configuration>\n                    <mainClass>agent.MyFirstAgent</mainClass>\n                </configuration>\n            </plugin>\n        </plugins>\n    </build>\n</project>\n"
+      }
+     ]
+    },
+    {
+     "say": "It's a normal Maven project. The only dependency is anthropic java, the official SDK.",
+     "tts": "It's a normal Maven project. The only dependency is anthropic-java, the official S D K.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "<artifactId>anthropic-java</artifactId>",
+       "label": "The official SDK",
+       "dur": 5.0,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "And the exec plugin lets us run the agent with one Maven command.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "<mainClass>agent.MyFirstAgent</mainClass>",
+       "label": "Runs our agent",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "The SDK reads your API key from an environment variable, called ANTHROPIC_API_KEY. Never put the key in your code.",
+     "tts": "The S D K reads your A P I key from an environment variable, called anthropic underscore A P I underscore key. Never put the key in your code.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "$env:ANTHROPIC_API_KEY=\"sk-ant-...\"",
+       "out": []
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-first-agent",
+   "lines": [
+    {
+     "say": "Step two: write the tools. I create a class called Tools.",
+     "do": [
+      {
+       "k": "step",
+       "n": 2
+      },
+      {
+       "k": "open",
+       "path": "src/main/java/agent/Tools.java",
+       "at": 0.6
+      }
+     ]
+    },
+    {
+     "say": "A tool is just a Java method. This one returns the current date and time. This one does exact math on two numbers.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Tools.java",
+       "text": "package agent;\n\nimport com.anthropic.core.JsonValue;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.time.LocalDateTime;\nimport java.util.List;\nimport java.util.Map;\n\npublic class Tools {\n\n    // 1. Plain Java methods that do the real work\n    static String getCurrentTime() {\n        return LocalDateTime.now().withNano(0).toString();\n    }\n\n    static String calculate(String op, double a, double b) {\n        return switch (op) {\n            case \"add\" -> String.valueOf(a + b);\n            case \"subtract\" -> String.valueOf(a - b);\n            case \"multiply\" -> String.valueOf(a * b);\n            case \"divide\" -> b == 0 ? \"Error: divide by zero\"\n                                    : String.valueOf(a / b);\n            default -> \"Error: unknown operation \" + op;\n        };\n    }\n\n",
+       "cps": 60
+      }
+     ]
+    },
+    {
+     "say": "Notice they return text. Claude reads the result as text, even errors like divide by zero.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "Error: divide by zero",
+       "label": "Errors are text too",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "Claude never runs these methods itself. It can only ask. Your program runs them.",
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-first-agent",
+   "lines": [
+    {
+     "say": "Step three: describe the tools to Claude.",
+     "do": [
+      {
+       "k": "step",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "say": "Each tool gets a name, a description, and an input schema: the inputs it takes.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Tools.java",
+       "text": "    // 2. Descriptions Claude reads to decide WHEN to use a tool\n    static final Tool TIME = Tool.builder()\n            .name(\"get_current_time\")\n            .description(\"Returns the current local date and time. \"\n                    + \"Use it for any question about now or today.\")\n            .inputSchema(Tool.InputSchema.builder()\n                .properties(Tool.InputSchema.Properties.builder()\n                    .build())\n                .build())\n            .build();\n\n    static final Tool CALCULATOR = Tool.builder()\n            .name(\"calculate\")\n            .description(\"Does exact math on two numbers. \"\n                    + \"Use it for any arithmetic.\")\n            .inputSchema(Tool.InputSchema.builder()\n                .properties(Tool.InputSchema.Properties.builder()\n                    .putAdditionalProperty(\"op\", JsonValue.from(Map.of(\n                        \"type\", \"string\",\n                        \"enum\", List.of(\"add\", \"subtract\",\n                                        \"multiply\", \"divide\"))))\n                    .putAdditionalProperty(\"a\", JsonValue.from(\n                        Map.of(\"type\", \"number\")))\n                    .putAdditionalProperty(\"b\", JsonValue.from(\n                        Map.of(\"type\", \"number\")))\n                    .build())\n                .required(List.of(\"op\", \"a\", \"b\"))\n                .build())\n            .build();\n\n",
+       "cps": 70
+      }
+     ]
+    },
+    {
+     "say": "The calculator takes an operation, and two numbers, a and b. All three are required.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".required(List.of(\"op\", \"a\", \"b\"))",
+       "label": "Three required inputs",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "The description is the most important part. Claude reads it to decide when to use the tool. So say what it does, and when to use it.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".description(\"Does exact math",
+       "label": "When to use it",
+       "dur": 5.5,
+       "span": 2
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-first-agent",
+   "lines": [
+    {
+     "say": "Step four: when Claude asks for a tool, we need to run the right method.",
+     "do": [
+      {
+       "k": "step",
+       "n": 4
+      }
+     ]
+    },
+    {
+     "say": "The run method takes Claude's tool call, reads its inputs, and picks the method by name.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Tools.java",
+       "text": "    // 3. Run the tool Claude asked for, return the result as text\n    @SuppressWarnings(\"unchecked\")\n    static String run(ToolUseBlock call) {\n        Map<String, Object> in = call._input().convert(Map.class);\n        return switch (call.name()) {\n            case \"get_current_time\" -> getCurrentTime();\n            case \"calculate\" -> calculate((String) in.get(\"op\"),\n                    ((Number) in.get(\"a\")).doubleValue(),\n                    ((Number) in.get(\"b\")).doubleValue());\n            default -> \"Error: unknown tool \" + call.name();\n        };\n    }\n}\n",
+       "cps": 60
+      }
+     ]
+    },
+    {
+     "say": "Claude sends the inputs as JSON. I convert them to a map, then call calculate with the operation and the numbers.",
+     "tts": "Claude sends the inputs as Jason. I convert them to a map, then call calculate with the operation and the numbers.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "case \"calculate\" ->",
+       "label": "Name → Java method",
+       "dur": 5.0,
+       "span": 3
+      }
+     ]
+    },
+    {
+     "say": "An unknown tool name returns an error message, instead of crashing.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "default -> \"Error: unknown tool",
+       "label": "Never crash",
+       "dur": 4.0
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-first-agent",
+   "lines": [
+    {
+     "say": "Step five, the heart of every agent: the loop. I create MyFirstAgent.",
+     "do": [
+      {
+       "k": "step",
+       "n": 5
+      },
+      {
+       "k": "open",
+       "path": "src/main/java/agent/MyFirstAgent.java",
+       "at": 0.6
+      }
+     ]
+    },
+    {
+     "say": "First, the client, which reads the API key. Then I read the user's question.",
+     "tts": "First, the client, which reads the A P I key. Then I read the user's question.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/MyFirstAgent.java",
+       "text": "package agent;\n\nimport com.anthropic.client.AnthropicClient;\nimport com.anthropic.client.okhttp.AnthropicOkHttpClient;\nimport com.anthropic.models.messages.ContentBlock;\nimport com.anthropic.models.messages.ContentBlockParam;\nimport com.anthropic.models.messages.Message;\nimport com.anthropic.models.messages.MessageCreateParams;\nimport com.anthropic.models.messages.StopReason;\nimport com.anthropic.models.messages.ToolResultBlockParam;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Scanner;\n\npublic class MyFirstAgent {\n\n    public static void main(String[] args) {\n        // Reads your key from the ANTHROPIC_API_KEY variable\n        AnthropicClient client = AnthropicOkHttpClient.fromEnv();\n\n        System.out.print(\"Ask your agent: \");\n        String question = new Scanner(System.in).nextLine();\n\n        // The conversation: model, tools, and the user's question\n        MessageCreateParams.Builder chat =\n            MessageCreateParams.builder()\n                .model(\"claude-opus-5-5\")\n                .maxTokens(16000L)\n                .addTool(Tools.TIME)\n                .addTool(Tools.CALCULATOR)\n                .addUserMessage(question);\n\n",
+       "cps": 75
+      }
+     ]
+    },
+    {
+     "say": "The builder holds the whole conversation: the model, Claude Opus five point five, the two tools, and the question.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".addTool(Tools.TIME)",
+       "label": "Give Claude the tools",
+       "dur": 5.0,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "Now the loop. I send the conversation, and save Claude's reply in the history. Then I print any text Claude wrote.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/MyFirstAgent.java",
+       "text": "        // The agent loop\n        while (true) {\n            Message reply = client.messages().create(chat.build());\n            chat.addMessage(reply); // no memory: keep the history\n\n            for (ContentBlock block : reply.content()) {\n                block.text().ifPresent(t ->\n                        System.out.println(\"Claude: \" + t.text()));\n            }\n\n",
+       "cps": 75
+      }
+     ]
+    },
+    {
+     "say": "This matters: Claude has no memory between calls. We send the full history every time.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "chat.addMessage(reply);",
+       "label": "Keep the history",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "Next, the exit. If the stop reason isn't tool use, Claude is done, so we break out of the loop.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/MyFirstAgent.java",
+       "text": "            // No tool requested? Then Claude is done.\n            StopReason why = reply.stopReason().orElse(null);\n            if (why != StopReason.TOOL_USE) {\n                break;\n            }\n\n",
+       "cps": 60
+      },
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "if (why != StopReason.TOOL_USE)",
+       "label": "Done? Stop.",
+       "dur": 4.5,
+       "span": 3
+      }
+     ]
+    },
+    {
+     "say": "Otherwise, I run every tool Claude asked for, and collect the results.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/MyFirstAgent.java",
+       "text": "            // Run every tool Claude asked for, send all results back\n            List<ContentBlockParam> results = new ArrayList<>();\n            for (ContentBlock block : reply.content()) {\n                block.toolUse().ifPresent(call -> {\n                    String result = Tools.run(call);\n                    System.out.println(\"  [tool] \" + call.name()\n                            + \" -> \" + result);\n                    results.add(ContentBlockParam.ofToolResult(\n                            ToolResultBlockParam.builder()\n                                    .toolUseId(call.id())\n                                    .content(result)\n                                    .build()));\n                });\n            }\n            chat.addUserMessageOfBlockParams(results);\n        }\n    }\n}\n",
+       "cps": 80
+      }
+     ]
+    },
+    {
+     "say": "Then I send all the results back together, in one message. Each result carries the id of the call it answers.",
+     "tts": "Then I send all the results back together, in one message. Each result carries the I D of the call it answers.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".toolUseId(call.id())",
+       "label": "Answers this call",
+       "dur": 4.0
+      },
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "chat.addUserMessageOfBlockParams(results);",
+       "label": "All results, one message",
+       "dur": 4.0,
+       "at": 4.2
+      }
+     ]
+    },
+    {
+     "say": "Then the loop starts again, and Claude sees the results.",
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "Test it",
+   "project": "java-first-agent",
+   "kicker": "TEST · Run the agent",
+   "lines": [
+    {
+     "say": "Time to test. First, an offline check of the tools. No API key needed.",
+     "tts": "Time to test. First, an offline check of the tools. No A P I key needed.",
+     "do": [
+      {
+       "k": "step",
+       "n": 0
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/ToolsCheck.java",
+       "text": "package agent;\n\n// Tests the tools offline (no API key needed): mvn compile exec:java -Dexec.mainClass=agent.ToolsCheck\npublic class ToolsCheck {\n\n    public static void main(String[] args) {\n        System.out.println(\"time:     \" + Tools.getCurrentTime());\n        System.out.println(\"multiply: \" + Tools.calculate(\"multiply\", 1234, 5678));\n        System.out.println(\"divide:   \" + Tools.calculate(\"divide\", 10, 0));\n        System.out.println(\"tools:    \" + Tools.TIME.name() + \", \" + Tools.CALCULATOR.name());\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "clear"
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.mainClass=agent.ToolsCheck",
+       "out": [
+        "time:     2026-10-25T12:31:01",
+        "multiply: 7006652.0",
+        "divide:   Error: divide by zero",
+        "tools:    get_current_time, calculate"
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Both tools work, and the errors come back as text. Now the real agent.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "multiply: 7006652.0",
+       "label": "Exact math",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "I ask: what time is it, and what is twelve thirty four times fifty six seventy eight?",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java",
+       "out": [
+        "Ask your agent: What time is it, and what is",
+        "1234 times 5678?",
+        "  [tool] get_current_time -> 2026-10-25T12:32:40",
+        "  [tool] calculate -> 7006652.0",
+        "Claude: It's 12:32 on October 25, 2026, and",
+        "1234 × 5678 = 7,006,652."
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Claude asked for both tools. Our Java code ran them, and sent back the results.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "[tool] get_current_time",
+       "label": "Claude asked, Java ran it",
+       "dur": 5.0,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "Then Claude used the real time and the exact number in one clear answer. That's your first agent.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "Claude: It's 12:32",
+       "label": "Real data, exact math",
+       "dur": 5.0,
+       "span": 2
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "Tips",
+   "kicker": "**TIPS** · Before you go further",
+   "heading": "4 tips for your [[next agent]]",
+   "cards": [
+    {
+     "title": "Describe tools well",
+     "text": "What it does, and when to use it"
+    },
+    {
+     "title": "Return errors as text",
+     "text": "Claude can read them and recover"
+    },
+    {
+     "title": "Limit the loop",
+     "text": "Add a max number of turns"
+    },
+    {
+     "title": "Keep tools small",
+     "text": "One job per tool, clear inputs"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Four tips for your next agent.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One: write clear tool descriptions. They decide when Claude uses each tool.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Two: return errors as text, instead of throwing. Claude reads them, and can try again.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "Three: limit the loop. In a real app, stop after a maximum number of turns, so it can never run forever.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And four: keep each tool small, with one job and clear inputs.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "checks",
+   "chapter": "Recap",
+   "heading": "Recap",
+   "items": [
+    "An agent = **LLM + tools + a loop**",
+    "Tools are Java methods; Claude **asks**, your code **runs** them",
+    "Loop while `stop_reason` is [[TOOL_USE]], and keep the history"
+   ],
+   "lines": [
+    {
+     "say": "Let's recap.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "An agent is an LLM, plus tools, plus a loop.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Tools are plain Java methods. Claude asks, your code runs them.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "And the loop continues while the stop reason is tool use, sending the full history every time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "title": "Thanks for [[watching]]",
+   "subtitle": "The full Java project is linked in the description",
+   "cta": "Subscribe for more free AI tutorials",
+   "lines": [
+    {
+     "say": "The full Java project, with the offline check, is linked in the description. Try adding your own tool, like a weather tool.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line1"
+      }
+     ]
+    },
+    {
+     "say": "If this helped, like the video, and subscribe to Zero Cost AI for more free AI tutorials. See you in the next one!",
+     "do": [
+      {
+       "k": "show",
+       "el": "line2"
+      }
+     ],
+     "hold": 1.5
+    }
+   ]
+  }
+ ]
+}
