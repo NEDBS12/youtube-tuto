@@ -1,0 +1,27 @@
+{
+ "title": "Claude Certified Architect Prep: A Free Unofficial Kit (Not by Anthropic)",
+ "subtitle": "An unofficial study guide PDF, 200 mock exam questions and a Windows practice app to prepare for the CCA-F exam. Not official, not provided by Anthropic.",
+ "tags": [
+  "Claude",
+  "Artificial Intelligence",
+  "Certification",
+  "AI",
+  "Exam Preparation"
+ ],
+ "video": "pending",
+ "slug": "claude-certification-prep-kit",
+ "captions": [
+  "The disclaimer: not official, not provided by Anthropic",
+  "The exam at a glance: format, scenarios, scoring and the five domains",
+  "The three files: study guide PDF, mock exams PDF and practice app",
+  "Inside the study guide: domain weights and annotated code",
+  "Patterns, architecture diagrams and real settings files",
+  "The mock exams workbook: questions grouped by scenario, and answer keys",
+  "The Windows app: start the practice app or open the PDF in one click",
+  "The practice app home page: exam format, domain weights and two modes",
+  "Practice mode: why the answer is wrong, the correct answer and the explanation",
+  "Timed mode: a 40-minute timer and a question navigator",
+  "Results: estimated scaled score, score per domain and review of misses",
+  "A four-step study plan"
+ ]
+}

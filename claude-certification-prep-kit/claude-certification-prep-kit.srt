@@ -1,0 +1,260 @@
+1
+00:00:00,600 --> 00:00:05,784
+Are you preparing for the Claude Certified Architect, Foundations exam, and wondering where to start?
+
+2
+00:00:06,234 --> 00:00:15,315
+In this video, I'm sharing three free files to help you prepare: a study guide in PDF, a mock exam workbook in PDF, and a Windows practice app.
+
+3
+00:00:15,765 --> 00:00:17,237
+But first, one important note.
+
+4
+00:00:18,687 --> 00:00:22,349
+These files are not official, and they are not provided by Anthropic.
+
+5
+00:00:22,799 --> 00:00:28,442
+They are independent study material. Anthropic did not make them, review them, or endorse them.
+
+6
+00:00:28,892 --> 00:00:36,202
+The questions are original practice questions, written to match the published exam domains. They are not real exam questions.
+
+7
+00:00:36,652 --> 00:00:44,243
+And exam details, like the format or the pass mark, can change. So always confirm them on the official exam page before you book.
+
+8
+00:00:45,793 --> 00:00:49,055
+Here's what the exam looks like, based on the published exam guide.
+
+9
+00:00:49,505 --> 00:00:54,278
+Sixty multiple-choice questions in two hours. That's about two minutes per question.
+
+10
+00:00:54,728 --> 00:01:01,585
+Every question sits inside a realistic production scenario. You get four scenarios, drawn from a bank of six.
+
+11
+00:01:02,035 --> 00:01:07,060
+Scores are scaled from 100 to 1,000, and the pass mark is 720.
+
+12
+00:01:07,510 --> 00:01:16,394
+The questions cover five domains: agent architecture, tool design and MCP, Claude Code, prompt engineering, and context management.
+
+13
+00:01:17,844 --> 00:01:18,924
+You get three files.
+
+14
+00:01:19,374 --> 00:01:22,976
+A fifty-seven page study guide that teaches every domain.
+
+15
+00:01:23,426 --> 00:01:29,228
+A printable mock exam workbook: ten exams, two hundred questions, with full answer keys.
+
+16
+00:01:29,678 --> 00:01:34,713
+And a Windows practice app, with the same ten exams, in practice and timed modes.
+
+17
+00:01:36,163 --> 00:01:37,553
+Let's start with the study guide.
+
+18
+00:01:38,003 --> 00:01:46,017
+It's written for beginners. Chapter zero explains the exam, and chapter one covers the basics, like what an API call and a tool are.
+
+19
+00:01:46,467 --> 00:01:51,020
+Then there's one chapter per domain, so you can see exactly how much each one is worth.
+
+20
+00:01:51,470 --> 00:01:57,357
+Each chapter explains the ideas with real code, annotated line by line, like this agent loop.
+
+21
+00:01:58,607 --> 00:02:04,019
+Inside, you'll find comparison tables, like the workflow patterns and when to use each one.
+
+22
+00:02:04,469 --> 00:02:07,625
+Diagrams, like this coordinator and its subagents.
+
+23
+00:02:08,075 --> 00:02:12,452
+And real configuration files for Claude Code, such as permission rules and hooks.
+
+24
+00:02:12,902 --> 00:02:22,989
+Every chapter ends with a lab exercise and a short quiz. Later chapters solve all six exam scenarios, and finish with a four-week study plan and a glossary.
+
+25
+00:02:24,539 --> 00:02:32,786
+The second file is the mock exam workbook: ten exams in a ninety-six page PDF, from Foundation level up to exam level.
+
+26
+00:02:33,236 --> 00:02:39,337
+Each exam has twenty questions grouped under their scenario, like on the real exam, and an answer sheet you can print.
+
+27
+00:02:39,787 --> 00:02:45,189
+After each exam, the answer key explains the correct answer and why every other option is wrong.
+
+28
+00:02:45,639 --> 00:02:50,725
+At the end, a score table and a master answer grid help you track all ten attempts.
+
+29
+00:02:52,175 --> 00:02:56,906
+The third file is the Windows app. It's a single file, so there's nothing to install.
+
+30
+00:02:57,356 --> 00:03:01,558
+Double-click it, and choose Start the practice app. It opens in its own window.
+
+31
+00:03:02,008 --> 00:03:04,459
+You can also open the mock exam workbook from here.
+
+32
+00:03:04,909 --> 00:03:08,096
+Everything is bundled inside, so it works offline too.
+
+33
+00:03:08,546 --> 00:03:14,743
+Windows may warn you the first time, because the file isn't signed. Choose More info, then Run anyway.
+
+34
+00:03:16,193 --> 00:03:19,264
+This is the practice app. It's where you'll spend most of your time.
+
+35
+00:03:19,714 --> 00:03:21,782
+The home page sums up the exam format.
+
+36
+00:03:22,232 --> 00:03:24,984
+And the five domain weights, so you know where to focus.
+
+37
+00:03:25,434 --> 00:03:30,878
+Below, you'll find the ten mock exams. Each one has twenty questions across four scenarios.
+
+38
+00:03:31,328 --> 00:03:34,519
+Every exam has two modes: Practice, and Timed.
+
+39
+00:03:35,869 --> 00:03:39,009
+In practice mode, you pick an answer and check it right away.
+
+40
+00:03:39,459 --> 00:03:44,102
+Here, I chose A on purpose. The app marks it wrong, and tells me why it's wrong.
+
+41
+00:03:44,552 --> 00:03:46,019
+It highlights the correct answer.
+
+42
+00:03:46,469 --> 00:03:54,627
+And explains the reasoning behind it. Every wrong option has its own note too, because understanding the traps is how you pass a scenario exam.
+
+43
+00:03:56,077 --> 00:03:58,451
+Timed mode puts you under exam conditions.
+
+44
+00:03:58,901 --> 00:04:02,327
+You get two minutes per question, so forty minutes for the whole exam.
+
+45
+00:04:02,777 --> 00:04:08,395
+You can flag a question, move on, and come back to it later from the navigator, just as you would on exam day.
+
+46
+00:04:09,645 --> 00:04:16,352
+When you finish, you get your score and an estimated scaled score. It's a simple estimate, not the official formula.
+
+47
+00:04:16,802 --> 00:04:20,871
+You also see your score in each domain, so your weak spots are obvious.
+
+48
+00:04:21,321 --> 00:04:26,812
+And you can review every question you missed, with your answer, the correct one, and the explanation.
+
+49
+00:04:27,262 --> 00:04:31,080
+Your best score for each exam is saved, so you can track your progress.
+
+50
+00:04:32,530 --> 00:04:33,681
+Here are the three files.
+
+51
+00:04:34,131 --> 00:04:35,562
+The study guide PDF.
+
+52
+00:04:36,012 --> 00:04:37,471
+The mock exams PDF.
+
+53
+00:04:37,921 --> 00:04:39,682
+And the practice app, for Windows.
+
+54
+00:04:40,132 --> 00:04:46,769
+They're free. The download link is in the description. And remember, they're unofficial, and not provided by Anthropic.
+
+55
+00:04:48,219 --> 00:04:49,701
+So, how should you use them?
+
+56
+00:04:50,151 --> 00:04:55,831
+First, learn. Read the study guide one domain at a time, and do the lab at the end of each chapter.
+
+57
+00:04:56,281 --> 00:05:02,704
+Then practise with exams one to five, in practice mode. Read every explanation, even when you're right.
+
+58
+00:05:03,154 --> 00:05:08,967
+Next, test yourself with exams six to ten in timed mode. No notes, forty minutes each.
+
+59
+00:05:09,417 --> 00:05:15,525
+Finally, review your misses. Aim for sixteen out of twenty, or better, before you book the real exam.
+
+60
+00:05:16,975 --> 00:05:17,628
+Let's recap.
+
+61
+00:05:18,078 --> 00:05:22,321
+The study guide teaches all five domains, starting from the basics.
+
+62
+00:05:22,771 --> 00:05:28,591
+Two hundred original questions, with explanations, in the mock exam PDF and in the practice app.
+
+63
+00:05:29,041 --> 00:05:37,166
+And remember: these files are not official, and not provided by Anthropic. Always confirm the exam details on the official exam page.
+
+64
+00:05:38,716 --> 00:05:40,897
+Thanks for watching, and good luck on your exam.
+
+65
+00:05:41,347 --> 00:05:44,267
+If this helped, like the video and subscribe for more.
+
