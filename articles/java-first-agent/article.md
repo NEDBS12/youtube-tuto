@@ -2,7 +2,7 @@
 title: Build Your First AI Agent in Java with Claude (Step by Step)
 subtitle: An AI agent is just an LLM, some tools and a loop. Here's how to build one in plain Java with the official Anthropic SDK, no framework needed.
 tags: Java, Artificial Intelligence, AI Agents, Claude, Programming
-video: pending
+video: https://www.youtube.com/watch?v=7Ny6Vsk5v5A
 slug: java-first-agent
 ---
 Everyone talks about AI agents. But if you're a Java developer, most tutorials you'll find are in Python.
