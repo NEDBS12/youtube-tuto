@@ -1,0 +1,236 @@
+1
+00:00:00,600 --> 00:00:08,486
+Our review pipeline has one reviewer for everything: SQL, threads, tests. One prompt can't be an expert in all of them.
+
+2
+00:00:08,936 --> 00:00:15,191
+Today, you'll add routing: a small, fast model reads the file, and sends it to the right specialist.
+
+3
+00:00:15,641 --> 00:00:18,675
+And Java's compiler will make sure no case is forgotten.
+
+4
+00:00:20,225 --> 00:00:21,102
+So, what is routing?
+
+5
+00:00:21,552 --> 00:00:24,701
+A router agent looks at the input, and puts it in a category.
+
+6
+00:00:25,151 --> 00:00:27,488
+Each category has its own specialist agent.
+
+7
+00:00:27,938 --> 00:00:32,686
+Specialists get focused prompts, so each one is better at its job than a generalist.
+
+8
+00:00:33,136 --> 00:00:37,733
+And only one specialist runs: the one that fits. You don't pay for the others.
+
+9
+00:00:39,183 --> 00:00:42,861
+The router's job is easy: pick one of four categories.
+
+10
+00:00:43,311 --> 00:00:51,767
+So it doesn't need the biggest model. Anthropic's docs describe Haiku 5.5 for classification and routing, and it's the fastest model.
+
+11
+00:00:52,217 --> 00:00:58,942
+It's also much cheaper: from ten cents per million input tokens, against four dollars for Opus 5.5.
+
+12
+00:00:59,392 --> 00:01:03,481
+So: a cheap model decides, and a strong model does the real work.
+
+13
+00:01:04,931 --> 00:01:05,691
+When should you route?
+
+14
+00:01:06,141 --> 00:01:13,381
+When inputs fall into clear categories, each category needs a different prompt or tools, and classifying is easy.
+
+15
+00:01:13,831 --> 00:01:24,595
+Don't route when one prompt already handles everything, or when categories overlap. And if an input needs several specialists at once, that's parallel agents: the next episode.
+
+16
+00:01:26,045 --> 00:01:27,015
+Here's our use case.
+
+17
+00:01:27,465 --> 00:01:33,892
+In episode two, one generalist reviewer handled every file, with one prompt, on the big model.
+
+18
+00:01:34,342 --> 00:01:42,641
+Now a Haiku router reads the file first, and picks one of four specialists: security, concurrency, testing, or code quality.
+
+19
+00:01:44,091 --> 00:01:45,961
+Here's the reviewer from episode two.
+
+20
+00:01:46,411 --> 00:01:53,656
+One prompt for every kind of file. A SQL bug, a threading bug and a weak test all get the same generic reviewer.
+
+21
+00:01:54,106 --> 00:01:56,136
+Let's give each kind of file its own expert.
+
+22
+00:01:57,586 --> 00:02:01,091
+Step one: pick a model per agent. Here's our Agent class.
+
+23
+00:02:01,541 --> 00:02:04,908
+I add a model field, and a second constructor that takes the model.
+
+24
+00:02:05,358 --> 00:02:10,289
+The old constructor still works. It just uses Opus 5.5, like before.
+
+25
+00:02:10,739 --> 00:02:13,345
+And the request uses the agent's own model.
+
+26
+00:02:14,695 --> 00:02:18,291
+Step two: the router's answer. I create Route dot java.
+
+27
+00:02:18,741 --> 00:02:21,073
+A route is a specialist, and a short reason.
+
+28
+00:02:23,923 --> 00:02:29,285
+The specialist is an enum. So the router can only pick one of these four. It can't invent a fifth.
+
+29
+00:02:29,735 --> 00:02:34,465
+And the reason is for us: we'll log it, so we can see why each file went where it went.
+
+30
+00:02:35,815 --> 00:02:39,744
+Step three: the router itself, in ReviewRouter dot java.
+
+31
+00:02:40,194 --> 00:02:42,474
+It's a normal agent, with three differences.
+
+32
+00:02:45,800 --> 00:02:49,769
+One: the model is Haiku 5.5. Small and fast.
+
+33
+00:02:50,219 --> 00:02:56,436
+Two: the prompt defines each category in a few words. Clear categories make reliable routing.
+
+34
+00:02:56,886 --> 00:03:02,269
+And three: no tools. The router only classifies. It never fixes anything.
+
+35
+00:03:03,619 --> 00:03:09,190
+Step four: route to the specialists. First, a switch from each specialist to its focus.
+
+36
+00:03:10,760 --> 00:03:15,971
+This is a switch expression on an enum, with no default. So it must cover every value.
+
+37
+00:03:16,421 --> 00:03:21,275
+If I add a fifth specialist to the enum and forget it here, the code doesn't even compile.
+
+38
+00:03:21,725 --> 00:03:27,641
+Then the specialists. Each one is the same Agent class, with a focused prompt and the read file tool.
+
+39
+00:03:28,091 --> 00:03:34,008
+Now main. The router gets the code directly in its task. That's one cheap call, with no tool loop.
+
+40
+00:03:37,530 --> 00:03:43,386
+I print the route and its reason. Then the chosen specialist does the real review, on the big model.
+
+41
+00:03:44,736 --> 00:03:47,282
+Let's test it. First, the offline check.
+
+42
+00:03:48,886 --> 00:03:53,244
+Three sample files, a valid schema, and every specialist has a focus.
+
+43
+00:03:53,694 --> 00:03:57,807
+Now the real thing. First file: the user service, with its SQL.
+
+44
+00:03:58,257 --> 00:04:02,229
+The router picked security, and the security expert found the injection.
+
+45
+00:04:02,679 --> 00:04:06,169
+Second file: the visit counter, used by many threads.
+
+46
+00:04:06,619 --> 00:04:11,384
+Concurrency. It found the counter that isn't atomic, and the map that isn't thread-safe.
+
+47
+00:04:11,834 --> 00:04:12,790
+And a test class.
+
+48
+00:04:15,940 --> 00:04:21,901
+Testing. Three files, three different experts, and each decision cost one small Haiku call.
+
+49
+00:04:23,451 --> 00:04:24,499
+Four tips for your router.
+
+50
+00:04:24,949 --> 00:04:29,534
+One: use a small model, and define each category in a few clear words.
+
+51
+00:04:29,984 --> 00:04:35,529
+Two: return an enum, and switch on it with no default. The compiler checks every route for you.
+
+52
+00:04:35,979 --> 00:04:41,197
+Three: always have a fallback category, like GENERAL, for inputs that fit nowhere.
+
+53
+00:04:41,647 --> 00:04:46,823
+And four: log the router's reason. When a file goes to the wrong expert, you'll see why.
+
+54
+00:04:48,373 --> 00:04:49,027
+Let's recap.
+
+55
+00:04:49,477 --> 00:04:54,090
+Routing means a router classifies the input, and only the right specialist runs.
+
+56
+00:04:54,540 --> 00:04:58,768
+A small, cheap model makes the decision. A strong model does the work.
+
+57
+00:04:59,218 --> 00:05:04,171
+And in Java, an enum with an exhaustive switch makes every route checked by the compiler.
+
+58
+00:05:05,621 --> 00:05:16,285
+The full Java project is linked in the description. Next episode: parallel agents, with Java virtual threads, where several specialists review the same file at the same time.
+
+59
+00:05:16,735 --> 00:05:22,941
+If this helped, like the video, and subscribe to Zero Cost AI so you don't miss episode four. See you there!
+

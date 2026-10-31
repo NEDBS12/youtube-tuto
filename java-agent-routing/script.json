@@ -1,0 +1,891 @@
+{
+ "title": "java-agent-routing",
+ "voice": "en-US-AndrewNeural",
+ "steps": [
+  "Pick a model",
+  "The Route record",
+  "The router",
+  "Route to experts"
+ ],
+ "brand": {
+  "name": "Zero Cost AI"
+ },
+ "scenes": [
+  {
+   "type": "title",
+   "chapter": "Introduction",
+   "kicker": "Multi-agent systems in Java · Episode 3",
+   "title": "Agent [[Routing]]\nin Java",
+   "subtitle": "A small, fast model sends each job to the right specialist",
+   "lines": [
+    {
+     "say": "Our review pipeline has one reviewer for everything: SQL, threads, tests. One prompt can't be an expert in all of them."
+    },
+    {
+     "say": "Today, you'll add routing: a small, fast model reads the file, and sends it to the right specialist."
+    },
+    {
+     "say": "And Java's compiler will make sure no case is forgotten.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "chapter": "What is routing?",
+   "kicker": "**01** · The concept",
+   "heading": "What is [[routing]]?",
+   "items": [
+    "A **router** agent classifies the input",
+    "Each category has its own **specialist** agent",
+    "Specialists get **focused prompts** and their own tools",
+    "Only **one** specialist runs: the one that fits"
+   ],
+   "card": {
+    "title": "OUR ROUTER",
+    "code": "              ┌→ security\nfile → Router ├→ concurrency\n              ├→ testing\n              └→ code quality"
+   },
+   "lines": [
+    {
+     "say": "So, what is routing?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "card",
+       "at": 0.8
+      }
+     ]
+    },
+    {
+     "say": "A router agent looks at the input, and puts it in a category.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Each category has its own specialist agent.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "Specialists get focused prompts, so each one is better at its job than a generalist.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ]
+    },
+    {
+     "say": "And only one specialist runs: the one that fits. You don't pay for the others.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item4"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "Why a small model?",
+   "kicker": "**02** · How it works",
+   "heading": "A [[small model]] for the router",
+   "rows": [
+    {
+     "label": "An easy job",
+     "text": "Pick one of four categories: no deep thinking needed"
+    },
+    {
+     "label": "Haiku 5.5",
+     "text": "Made for classification and routing: the fastest model"
+    },
+    {
+     "label": "Much cheaper",
+     "text": "From $0.10 per million input tokens, vs $4 for Opus 5.5"
+    }
+   ],
+   "banner": "A cheap model decides. A strong model does the work.",
+   "lines": [
+    {
+     "say": "The router's job is easy: pick one of four categories.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ]
+    },
+    {
+     "say": "So it doesn't need the biggest model. Anthropic's docs describe Haiku 5.5 for classification and routing, and it's the fastest model.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ],
+     "tts": "So it doesn't need the biggest model. Anthropic's docs describe Haiku five point five for classification and routing, and it's the fastest model."
+    },
+    {
+     "say": "It's also much cheaper: from ten cents per million input tokens, against four dollars for Opus 5.5.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ],
+     "tts": "It's also much cheaper: from ten cents per million input tokens, against four dollars for Opus five point five."
+    },
+    {
+     "say": "So: a cheap model decides, and a strong model does the real work.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "When to use routing",
+   "kicker": "**03** · When to use it",
+   "heading": "When to use [[routing]]",
+   "left": {
+    "title": "Route when…",
+    "body": "• Inputs fall into clear,\n  distinct categories\n• Each category needs a\n  different prompt or tools\n• Classifying is easy\n  and reliable"
+   },
+   "right": {
+    "title": "Don't route when…",
+    "body": "• One prompt already\n  handles every input\n• Categories overlap,\n  so the router guesses\n• An input needs several\n  specialists at once"
+   },
+   "lines": [
+    {
+     "say": "When should you route?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "When inputs fall into clear categories, each category needs a different prompt or tools, and classifying is easy.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "Don't route when one prompt already handles everything, or when categories overlap. And if an input needs several specialists at once, that's parallel agents: the next episode.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "Our use case",
+   "kicker": "**04** · Our use case",
+   "heading": "Specialist [[reviewers]]",
+   "left": {
+    "title": "Episode 2",
+    "body": "One generalist reviewer\nfor every file\n\nSQL, threads, tests:\none prompt for all\n\nOpus 5.5 for every call"
+   },
+   "right": {
+    "title": "Episode 3",
+    "body": "Router (Haiku 5.5)\nreads the file first\n\nsecurity · concurrency\ntesting · code quality\n\n✓ The right expert,\n  and a cheap decision"
+   },
+   "lines": [
+    {
+     "say": "Here's our use case.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "In episode two, one generalist reviewer handled every file, with one prompt, on the big model.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "Now a Haiku router reads the file first, and picks one of four specialists: security, concurrency, testing, or code quality.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "The problem",
+   "project": "java-agent-routing",
+   "kicker": "**DEMO** · Episode 2's reviewer",
+   "lines": [
+    {
+     "say": "Here's the reviewer from episode two.",
+     "do": [
+      {
+       "k": "file",
+       "path": "pom.xml",
+       "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n\n    <groupId>agent</groupId>\n    <artifactId>java-agent-routing</artifactId>\n    <version>1.0</version>\n\n    <properties>\n        <maven.compiler.release>17</maven.compiler.release>\n        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n        <!-- The class to run (change it with -Dexec.mainClass=...) -->\n        <exec.mainClass>agent.ReviewRouter</exec.mainClass>\n    </properties>\n\n    <dependencies>\n        <!-- The official Anthropic Java SDK -->\n        <dependency>\n            <groupId>com.anthropic</groupId>\n            <artifactId>anthropic-java</artifactId>\n            <version>3.3.0</version>\n        </dependency>\n    </dependencies>\n\n    <build>\n        <plugins>\n            <!-- Lets us run the router with: mvn compile exec:java -->\n            <plugin>\n                <groupId>org.codehaus.mojo</groupId>\n                <artifactId>exec-maven-plugin</artifactId>\n                <version>3.5.0</version>\n            </plugin>\n        </plugins>\n    </build>\n</project>\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/FileTools.java",
+       "text": "package agent;\n\nimport com.anthropic.core.JsonValue;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.List;\nimport java.util.Map;\n\n// The Reviewer's only tool: read a file from the sample folder\npublic class FileTools {\n\n    static final Tool READ_FILE = Tool.builder()\n            .name(\"read_file\")\n            .description(\"Reads a Java file from the sample folder. \"\n                    + \"Use it to see the code before reviewing it.\")\n            .inputSchema(Tool.InputSchema.builder()\n                .properties(Tool.InputSchema.Properties.builder()\n                    .putAdditionalProperty(\"name\", JsonValue.from(\n                        Map.of(\"type\", \"string\")))\n                    .build())\n                .required(List.of(\"name\"))\n                .build())\n            .build();\n\n    // Plain Java: the real work, safe to test without an API key\n    static String readFile(String name) {\n        try {\n            Path file = Path.of(\"sample\", name).normalize();\n            if (!file.startsWith(\"sample\")) {\n                return \"Error: only files in the sample folder\";\n            }\n            return Files.readString(file);\n        } catch (Exception e) {\n            return \"Error: cannot read \" + name;\n        }\n    }\n\n    // Run the tool call the agent asked for\n    @SuppressWarnings(\"unchecked\")\n    static String run(ToolUseBlock call) {\n        Map<String, Object> in = call._input().convert(Map.class);\n        return readFile((String) in.get(\"name\"));\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/Review.java",
+       "text": "package agent;\n\nimport java.util.List;\n\n// The Reviewer's answer: typed data, not free text\npublic record Review(String summary, List<Bug> bugs) {\n\n    public record Bug(int line, Severity severity,\n                      String problem, String fix) {}\n\n    public enum Severity { LOW, MEDIUM, HIGH }\n}\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "sample/UserService.java",
+       "text": "import java.sql.Connection;\nimport java.sql.ResultSet;\nimport java.sql.SQLException;\nimport java.sql.Statement;\n\n// Sample code to review (it has bugs on purpose)\npublic class UserService {\n\n    private final Connection db;\n\n    public UserService(Connection db) {\n        this.db = db;\n    }\n\n    public boolean isAdmin(String username) throws SQLException {\n        Statement st = db.createStatement();\n        ResultSet rs = st.executeQuery(\n            \"SELECT role FROM users WHERE name = '\" + username + \"'\");\n        if (rs.next()) {\n            return rs.getString(\"role\") == \"ADMIN\";\n        }\n        return false;\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "episode-2/ReviewPipeline.java",
+       "text": "// From episode 2 (Agent Pipelines in Java), kept here for comparison.\n// It is not compiled: Maven only builds src/main/java.\npackage agent;\n\nimport agent.Review.Bug;\nimport agent.Review.Severity;\nimport java.util.List;\n\n// A pipeline: Reviewer -> gate (plain Java) -> Writer\npublic class ReviewPipeline {\n\n    // The gate: plain Java, no LLM. Keep only the serious bugs.\n    static List<Bug> seriousBugs(Review review) {\n        return review.bugs().stream()\n                .filter(bug -> bug.severity() != Severity.LOW)\n                .toList();\n    }\n\n    public static void main(String[] args) {\n        String file = args.length > 0 ? args[0] : \"UserService.java\";\n\n        Agent reviewer = new Agent(\"Reviewer\",\n                \"You are a senior Java reviewer. Read the file \"\n                + \"with your tool. Report real bugs only.\",\n                List.of(FileTools.READ_FILE), FileTools::run);\n\n        Agent writer = new Agent(\"Writer\",\n                \"You turn bug lists into a short, friendly report \"\n                + \"for a junior developer. Max 8 lines.\",\n                List.of(), call -> \"Error: no tools\");\n\n        // Step 1: a typed review\n        Review review = reviewer.run(\"Review \" + file, Review.class);\n        System.out.println(\"Summary: \" + review.summary());\n\n        // Step 2: the gate decides if the pipeline continues\n        List<Bug> serious = seriousBugs(review);\n        if (serious.isEmpty()) {\n            System.out.println(\"No serious bugs: Writer skipped.\");\n            return;\n        }\n\n        // Step 3: the Writer gets only the serious bugs\n        String report = writer.run(\"Write the report:\\n\" + serious);\n        System.out.println(\"\\n=== REPORT ===\\n\" + report);\n    }\n}\n"
+      }
+     ]
+    },
+    {
+     "say": "One prompt for every kind of file. A SQL bug, a threading bug and a weak test all get the same generic reviewer.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "\"You are a senior Java reviewer. Read the file \"",
+       "label": "One prompt for all",
+       "dur": 5.5,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "Let's give each kind of file its own expert.",
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-routing",
+   "lines": [
+    {
+     "say": "Step one: pick a model per agent. Here's our Agent class.",
+     "do": [
+      {
+       "k": "step",
+       "n": 1
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "package agent;\n\nimport com.anthropic.client.AnthropicClient;\nimport com.anthropic.client.okhttp.AnthropicOkHttpClient;\nimport com.anthropic.models.messages.ContentBlockParam;\nimport com.anthropic.models.messages.MessageCreateParams;\nimport com.anthropic.models.messages.StopReason;\nimport com.anthropic.models.messages.StructuredContentBlock;\nimport com.anthropic.models.messages.StructuredMessage;\nimport com.anthropic.models.messages.StructuredMessageCreateParams;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolResultBlockParam;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.function.Function;\n\n// One agent = its own system prompt, its own tools, its own context\npublic class Agent {\n\n    // Reads your key from the ANTHROPIC_API_KEY variable\n    private static final AnthropicClient CLIENT =\n            AnthropicOkHttpClient.fromEnv();\n\n    private final String name;\n    private final String model;\n    private final String systemPrompt;\n    private final List<Tool> tools;\n    private final Function<ToolUseBlock, String> toolRunner;\n\n    public Agent(String name, String systemPrompt, List<Tool> tools,\n                 Function<ToolUseBlock, String> toolRunner) {\n        this(name, \"claude-opus-5-5\", systemPrompt, tools,\n                toolRunner);\n    }\n\n    // NEW: choose the model per agent (a small one for simple jobs)\n    public Agent(String name, String model, String systemPrompt,\n                 List<Tool> tools,\n                 Function<ToolUseBlock, String> toolRunner) {\n        this.name = name;\n        this.model = model;\n        this.systemPrompt = systemPrompt;\n        this.tools = tools;\n        this.toolRunner = toolRunner;\n    }\n\n    // A plain-text answer, for agents that write for humans\n    record Answer(String text) {}\n\n    public String run(String task) {\n        return run(task, Answer.class).text();\n    }\n\n    // The agent loop, with a typed answer (a Java record)\n    public <T> T run(String task, Class<T> type) {\n        System.out.println(\"[\" + name + \"] working...\");\n\n        // The answer must match the record: the SDK builds the schema\n        StructuredMessageCreateParams.Builder<T> chat =\n            MessageCreateParams.builder()\n                .model(model)\n                .maxTokens(16000L)\n                .system(systemPrompt)\n                .addUserMessage(task)\n                .outputConfig(type);\n        tools.forEach(chat::addTool);\n\n        for (int turn = 0; turn < 10; turn++) {\n            StructuredMessage<T> reply =\n                    CLIENT.messages().create(chat.build());\n            chat.addMessage(reply.rawMessage());\n\n            // No tool requested? Return the typed answer.\n            StopReason why = reply.stopReason().orElse(null);\n            if (why != StopReason.TOOL_USE) {\n                return reply.content().stream()\n                        .flatMap(block -> block.text().stream())\n                        .findFirst().orElseThrow()\n                        .text();\n            }\n\n            // Run every tool it asked for, send all results back\n            List<ContentBlockParam> results = new ArrayList<>();\n            for (StructuredContentBlock<T> block : reply.content()) {\n                block.toolUse().ifPresent(call -> {\n                    System.out.println(\"  [\" + name + \"] tool: \"\n                            + call.name());\n                    results.add(ContentBlockParam.ofToolResult(\n                            ToolResultBlockParam.builder()\n                                    .toolUseId(call.id())\n                                    .content(toolRunner.apply(call))\n                                    .build()));\n                });\n            }\n            chat.addUserMessageOfContentBlockParams(results);\n        }\n        throw new IllegalStateException(name + \": too many turns\");\n    }\n}\n"
+      }
+     ]
+    },
+    {
+     "say": "I add a model field, and a second constructor that takes the model.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "public Agent(String name, String model, String systemPrompt,",
+       "label": "Choose the model",
+       "dur": 5.0,
+       "span": 3
+      }
+     ]
+    },
+    {
+     "say": "The old constructor still works. It just uses Opus 5.5, like before.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "this(name, \"claude-opus-5-5\", systemPrompt, tools,",
+       "label": "Default: Opus 5.5",
+       "dur": 5.0,
+       "span": 2
+      }
+     ],
+     "tts": "The old constructor still works. It just uses Opus five point five, like before."
+    },
+    {
+     "say": "And the request uses the agent's own model.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".model(model)",
+       "label": "Per-agent model",
+       "dur": 4.0
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-routing",
+   "lines": [
+    {
+     "say": "Step two: the router's answer. I create Route dot java.",
+     "do": [
+      {
+       "k": "step",
+       "n": 2
+      },
+      {
+       "k": "open",
+       "path": "src/main/java/agent/Route.java"
+      }
+     ],
+     "tts": "Step two: the router's answer. I create Route dot java."
+    },
+    {
+     "say": "A route is a specialist, and a short reason.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Route.java",
+       "text": "package agent;\n\n// The router's answer: which specialist, and why\npublic record Route(Specialist specialist, String reason) {\n\n    public enum Specialist { SECURITY, CONCURRENCY, TESTS, GENERAL }\n}\n",
+       "cps": 45
+      }
+     ]
+    },
+    {
+     "say": "The specialist is an enum. So the router can only pick one of these four. It can't invent a fifth.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "public enum Specialist { SECURITY, CONCURRENCY, TESTS, GENERAL }",
+       "label": "Only 4 choices",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "And the reason is for us: we'll log it, so we can see why each file went where it went.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "public record Route(Specialist specialist, String reason) {",
+       "label": "Why: for the logs",
+       "dur": 4.5
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-routing",
+   "lines": [
+    {
+     "say": "Step three: the router itself, in ReviewRouter dot java.",
+     "do": [
+      {
+       "k": "step",
+       "n": 3
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/ReviewRouter.java",
+       "text": "package agent;\n\nimport agent.Route.Specialist;\nimport java.util.List;\n\n// Routing: a small, fast model picks the right specialist\npublic class ReviewRouter {\n\n"
+      }
+     ],
+     "tts": "Step three: the router itself, in ReviewRouter dot java."
+    },
+    {
+     "say": "It's a normal agent, with three differences.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewRouter.java",
+       "text": "    // The router: Haiku 5.5, no tools, one job: classify the file\n    static final Agent ROUTER = new Agent(\"Router\",\n            \"claude-haiku-5-5\",\n            \"Pick the best reviewer for a Java file. \"\n            + \"SECURITY: SQL, user input, passwords. \"\n            + \"CONCURRENCY: threads, shared state. \"\n            + \"TESTS: test classes. GENERAL: anything else.\",\n            List.of(), call -> \"Error: no tools\");\n\n",
+       "cps": 60
+      }
+     ]
+    },
+    {
+     "say": "One: the model is Haiku 5.5. Small and fast.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "\"claude-haiku-5-5\",",
+       "label": "Small, fast model",
+       "dur": 4.5
+      }
+     ],
+     "tts": "One: the model is Haiku five point five. Small and fast."
+    },
+    {
+     "say": "Two: the prompt defines each category in a few words. Clear categories make reliable routing.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "+ \"SECURITY: SQL, user input, passwords. \"",
+       "label": "Clear categories",
+       "dur": 5.0,
+       "span": 3
+      }
+     ]
+    },
+    {
+     "say": "And three: no tools. The router only classifies. It never fixes anything.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "List.of(), call -> \"Error: no tools\");",
+       "label": "No tools",
+       "dur": 4.0
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-routing",
+   "lines": [
+    {
+     "say": "Step four: route to the specialists. First, a switch from each specialist to its focus.",
+     "do": [
+      {
+       "k": "step",
+       "n": 4
+      },
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewRouter.java",
+       "text": "    // The switch must cover every specialist: the compiler checks it\n    static String focusFor(Specialist specialist) {\n        return switch (specialist) {\n            case SECURITY -> \"security\";\n            case CONCURRENCY -> \"concurrency\";\n            case TESTS -> \"testing\";\n            case GENERAL -> \"code quality\";\n        };\n    }\n\n",
+       "cps": 55
+      }
+     ]
+    },
+    {
+     "say": "This is a switch expression on an enum, with no default. So it must cover every value.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "return switch (specialist) {",
+       "label": "No default",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "If I add a fifth specialist to the enum and forget it here, the code doesn't even compile.",
+     "do": [
+      {
+       "k": "note",
+       "title": "Add PERFORMANCE to the enum, forget the case…",
+       "text": "error: the switch expression does not cover all possible input values",
+       "dur": 6.0
+      }
+     ]
+    },
+    {
+     "say": "Then the specialists. Each one is the same Agent class, with a focused prompt and the read file tool.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewRouter.java",
+       "text": "    // A specialist = the same Agent class with a focused prompt\n    static Agent specialist(String focus) {\n        return new Agent(focus + \" reviewer\",\n                \"You are a Java \" + focus + \" expert. Read the \"\n                + \"file with your tool. Report real \" + focus\n                + \" bugs only.\",\n                List.of(FileTools.READ_FILE), FileTools::run);\n    }\n\n",
+       "cps": 70
+      }
+     ]
+    },
+    {
+     "say": "Now main. The router gets the code directly in its task. That's one cheap call, with no tool loop.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewRouter.java",
+       "text": "    public static void main(String[] args) {\n        String file = args.length > 0 ? args[0] : \"UserService.java\";\n\n        // Step 1: route. One cheap call, the code is in the task.\n        Route route = ROUTER.run(\"File \" + file + \":\\n\"\n                + FileTools.readFile(file), Route.class);\n        System.out.println(\"Route: \" + route.specialist()\n                + \" (\" + route.reason() + \")\");\n\n        // Step 2: the chosen specialist does the real review\n        Agent reviewer = specialist(focusFor(route.specialist()));\n        Review review = reviewer.run(\"Review \" + file, Review.class);\n\n        review.bugs().forEach(bug -> System.out.println(\"  line \"\n                + bug.line() + \" [\" + bug.severity() + \"] \"\n                + bug.problem()));\n    }\n}\n",
+       "cps": 75
+      }
+     ]
+    },
+    {
+     "say": "I print the route and its reason. Then the chosen specialist does the real review, on the big model.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "Agent reviewer = specialist(focusFor(route.specialist()));",
+       "label": "The right expert",
+       "dur": 5.0
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "Test it",
+   "project": "java-agent-routing",
+   "kicker": "**TEST** · Route three files",
+   "lines": [
+    {
+     "say": "Let's test it. First, the offline check.",
+     "do": [
+      {
+       "k": "step",
+       "n": 0
+      },
+      {
+       "k": "file",
+       "path": "sample/VisitCounter.java",
+       "text": "import java.util.HashMap;\nimport java.util.Map;\n\n// Sample code to review (it has bugs on purpose)\npublic class VisitCounter {\n\n    private final Map<String, Integer> visits = new HashMap<>();\n    private int total = 0;\n\n    // Called by many web request threads at the same time\n    public void record(String page) {\n        total++;\n        visits.put(page, visits.getOrDefault(page, 0) + 1);\n    }\n\n    public int total() {\n        return total;\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "sample/PriceCalculatorTest.java",
+       "text": "import org.junit.jupiter.api.Test;\n\n// Sample code to review (it has bugs on purpose)\nclass PriceCalculatorTest {\n\n    @Test\n    void totalCents() {\n        long total = PriceCalculator.totalCents(250, 4);\n        System.out.println(total);\n    }\n\n    @Test\n    void negativeQuantity() {\n        PriceCalculator.totalCents(250, -1);\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.mainClass=agent.RoutingCheck",
+       "out": [
+        "read:   UserService.java 24 lines",
+        "read:   VisitCounter.java 19 lines",
+        "read:   PriceCalculatorTest.java 16 lines",
+        "schema: Route record OK",
+        "route:  SECURITY -> security",
+        "route:  CONCURRENCY -> concurrency",
+        "route:  TESTS -> testing",
+        "route:  GENERAL -> code quality"
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Three sample files, a valid schema, and every specialist has a focus.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "schema: Route record OK",
+       "label": "No API key needed",
+       "dur": 4.0
+      }
+     ],
+     "tts": "Three sample files, a valid schema, and every specialist has a focus."
+    },
+    {
+     "say": "Now the real thing. First file: the user service, with its SQL.",
+     "do": [
+      {
+       "k": "clear"
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java",
+       "out": [
+        "[Router] working...",
+        "Route: SECURITY (Builds SQL from user input.)",
+        "[security reviewer] working...",
+        "  [security reviewer] tool: read_file",
+        "  line 18 [HIGH] SQL injection: input in the query",
+        "  line 16 [LOW] Statement is never closed"
+       ]
+      }
+     ]
+    },
+    {
+     "say": "The router picked security, and the security expert found the injection.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "Route: SECURITY",
+       "label": "Routed to security",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "Second file: the visit counter, used by many threads.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.args=VisitCounter.java",
+       "out": [
+        "[Router] working...",
+        "Route: CONCURRENCY (Shared state, many threads.)",
+        "[concurrency reviewer] working...",
+        "  [concurrency reviewer] tool: read_file",
+        "  line 12 [HIGH] total++ is not atomic: lost updates",
+        "  line 13 [HIGH] HashMap is not thread-safe"
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Concurrency. It found the counter that isn't atomic, and the map that isn't thread-safe.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "Route: CONCURRENCY",
+       "label": "Routed to concurrency",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "And a test class.",
+     "do": [
+      {
+       "k": "clear"
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.args=PriceCalculatorTest.java",
+       "out": [
+        "[Router] working...",
+        "Route: TESTS (A JUnit test class.)",
+        "[testing reviewer] working...",
+        "  [testing reviewer] tool: read_file",
+        "  line 9 [HIGH] No assertion: the test can't fail",
+        "  line 14 [HIGH] Use assertThrows for the exception"
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Testing. Three files, three different experts, and each decision cost one small Haiku call.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "Route: TESTS",
+       "label": "Routed to testing",
+       "dur": 4.5
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "Tips",
+   "rail": true,
+   "kicker": "**TIPS** · Before episode 4",
+   "heading": "4 tips for your [[router]]",
+   "cards": [
+    {
+     "title": "Small model, clear categories",
+     "text": "Define each category in a few words"
+    },
+    {
+     "title": "Use an enum, no default",
+     "text": "The compiler checks every route"
+    },
+    {
+     "title": "Always have a fallback",
+     "text": "GENERAL catches what fits nowhere"
+    },
+    {
+     "title": "Log the reason",
+     "text": "See why each input went where it went"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Four tips for your router.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One: use a small model, and define each category in a few clear words.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Two: return an enum, and switch on it with no default. The compiler checks every route for you.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "Three: always have a fallback category, like GENERAL, for inputs that fit nowhere.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And four: log the router's reason. When a file goes to the wrong expert, you'll see why.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "checks",
+   "chapter": "Recap",
+   "heading": "Recap",
+   "items": [
+    "Routing = a router **classifies**, one **specialist** runs",
+    "A **small model** decides, a strong model works",
+    "An [[enum + switch]] makes every route compile-checked"
+   ],
+   "lines": [
+    {
+     "say": "Let's recap.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Routing means a router classifies the input, and only the right specialist runs.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "A small, cheap model makes the decision. A strong model does the work.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "And in Java, an enum with an exhaustive switch makes every route checked by the compiler.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "title": "Next: [[parallel agents]]",
+   "subtitle": "The full Java project is linked in the description",
+   "cta": "Subscribe for episode 4",
+   "lines": [
+    {
+     "say": "The full Java project is linked in the description. Next episode: parallel agents, with Java virtual threads, where several specialists review the same file at the same time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line1"
+      }
+     ]
+    },
+    {
+     "say": "If this helped, like the video, and subscribe to Zero Cost AI so you don't miss episode four. See you there!",
+     "do": [
+      {
+       "k": "show",
+       "el": "line2"
+      }
+     ],
+     "hold": 1.5
+    }
+   ]
+  }
+ ]
+}
