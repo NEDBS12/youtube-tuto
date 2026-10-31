@@ -1,0 +1,272 @@
+1
+00:00:00,600 --> 00:00:04,746
+One agent can do a lot. But give it too many jobs, and it starts to struggle.
+
+2
+00:00:05,196 --> 00:00:09,777
+In this series, you'll learn multi-agent systems in plain Java, step by step.
+
+3
+00:00:10,227 --> 00:00:15,358
+Today: what a multi-agent system is, when it's worth it, and your first two-agent team.
+
+4
+00:00:16,908 --> 00:00:18,782
+So, what is a multi-agent system?
+
+5
+00:00:19,232 --> 00:00:27,429
+Remember: an agent is an LLM, plus tools, plus a loop. A multi-agent system is several of them, each with one job.
+
+6
+00:00:27,879 --> 00:00:31,819
+Each agent gets its own system prompt. That's its role, and its rules.
+
+7
+00:00:32,269 --> 00:00:36,391
+Its own tools, and its own context: the conversation it sees.
+
+8
+00:00:36,841 --> 00:00:40,664
+And they work together. One agent's output becomes another agent's input.
+
+9
+00:00:41,114 --> 00:00:44,854
+Think of a team of specialists, instead of one person doing everything.
+
+10
+00:00:46,304 --> 00:00:48,333
+Why split the work? Three reasons.
+
+11
+00:00:48,783 --> 00:00:53,561
+One: focus. An agent with one job and a short prompt does that job better.
+
+12
+00:00:54,011 --> 00:01:00,336
+Two: clean context. Each agent sees only what it needs, not every file and every message.
+
+13
+00:01:00,786 --> 00:01:05,756
+Three: parallel work. Agents that don't depend on each other can run at the same time.
+
+14
+00:01:06,206 --> 00:01:10,891
+The key idea: each agent has its own context window. That's its working memory.
+
+15
+00:01:12,341 --> 00:01:15,204
+Now the honest part. More agents have a real cost.
+
+16
+00:01:15,654 --> 00:01:22,567
+More tokens. Anthropic wrote that their multi-agent research system used about fifteen times more tokens than a chat.
+
+17
+00:01:23,017 --> 00:01:26,563
+Harder to debug. More moving parts means more places to fail.
+
+18
+00:01:27,013 --> 00:01:30,220
+And more to build: more code, and more prompts to tune.
+
+19
+00:01:30,670 --> 00:01:35,121
+So the rule is simple. Start with one agent. Split only when it struggles.
+
+20
+00:01:36,671 --> 00:01:37,684
+So when should you split?
+
+21
+00:01:38,134 --> 00:01:45,971
+When the task has clear, separate parts. When there's too much information for one context. Or when too many tools confuse a single agent.
+
+22
+00:01:46,421 --> 00:01:53,531
+Keep one agent when it already works, or when every step needs the same context. Splitting those just adds cost.
+
+23
+00:01:54,981 --> 00:01:59,972
+Our use case is the project for this whole series: a code-review team for Java code.
+
+24
+00:02:00,422 --> 00:02:08,786
+One agent could read the code, find the bugs, and explain them. But that's one prompt asking for a strict reviewer and a friendly teacher at the same time.
+
+25
+00:02:09,236 --> 00:02:19,238
+So we split it. A Reviewer that reads the file and lists the bugs. And a Writer that turns those notes into a friendly report. It has no tools, and never sees the code.
+
+26
+00:02:20,688 --> 00:02:22,281
+Here's the agent from episode one.
+
+27
+00:02:22,731 --> 00:02:25,205
+The model and the tools are hard-coded inside main.
+
+28
+00:02:25,655 --> 00:02:29,981
+And the loop lives in main too. To build a second agent, I'd copy all of it.
+
+29
+00:02:30,431 --> 00:02:33,290
+Let's wrap it into a reusable Agent class instead.
+
+30
+00:02:34,740 --> 00:02:42,421
+Step one: the Agent class. Same Maven project as before, with the Anthropic Java SDK, version three.
+
+31
+00:02:42,871 --> 00:02:44,377
+I create Agent dot java.
+
+32
+00:02:44,827 --> 00:02:51,362
+An agent is four things: a name, a system prompt, a list of tools, and a function that runs those tools.
+
+33
+00:02:54,212 --> 00:02:58,918
+The system prompt is the agent's role. This is what makes a reviewer different from a writer.
+
+34
+00:02:59,368 --> 00:03:01,640
+And each agent gets only the tools it needs.
+
+35
+00:03:02,090 --> 00:03:07,791
+The client is shared. Every agent talks to the same API, with your key from the environment.
+
+36
+00:03:09,141 --> 00:03:14,651
+Step two: the agent loop. It's the loop from episode one, wrapped in one method: run.
+
+37
+00:03:21,724 --> 00:03:29,360
+Every run starts a fresh conversation. The agent sees only its own system prompt and its own task. That's its own context.
+
+38
+00:03:29,810 --> 00:03:36,050
+When Claude stops asking for tools, run returns the agent's answer as text. So another agent can use it.
+
+39
+00:03:36,500 --> 00:03:42,726
+The rest is the same as before: run every tool the agent asked for, and send all the results back.
+
+40
+00:03:46,272 --> 00:03:51,204
+One change: the loop stops after ten turns, so an agent can never run forever.
+
+41
+00:03:51,654 --> 00:03:59,040
+And in SDK version three, the method that sends tool results is called add user message of content block params.
+
+42
+00:04:00,390 --> 00:04:07,365
+Step three: give the Reviewer a tool. Here's the code it will review: a small user service, with bugs on purpose.
+
+43
+00:04:07,815 --> 00:04:10,243
+Can you spot them? We'll see if the Reviewer does.
+
+44
+00:04:10,693 --> 00:04:15,464
+Now FileTools dot java. The tool is called read file, and it takes a file name.
+
+45
+00:04:18,954 --> 00:04:25,620
+The real work is a plain Java method. It only reads files inside the sample folder, and returns errors as text.
+
+46
+00:04:28,470 --> 00:04:32,467
+That check matters: an agent should never read files you didn't plan for.
+
+47
+00:04:33,817 --> 00:04:37,371
+Step four: build the team, in ReviewTeam dot java.
+
+48
+00:04:37,821 --> 00:04:40,277
+Two agents, created from the same class.
+
+49
+00:04:50,038 --> 00:04:55,701
+The Reviewer is a strict senior reviewer. It gets the read file tool, and lists real bugs only.
+
+50
+00:04:56,151 --> 00:04:58,822
+The Writer has a different role, and no tools at all.
+
+51
+00:04:59,272 --> 00:05:06,435
+Here's how they work together: the Reviewer's notes become the Writer's task. The Writer never sees the code. Only the notes.
+
+52
+00:05:06,885 --> 00:05:10,809
+That's a multi-agent system: two agents, each with one job.
+
+53
+00:05:12,159 --> 00:05:16,837
+Let's test it. First, an offline check of the tool. No API key needed.
+
+54
+00:05:17,287 --> 00:05:20,821
+It reads the sample, and it refuses files outside the folder.
+
+55
+00:05:21,271 --> 00:05:22,110
+Now the real team.
+
+56
+00:05:23,621 --> 00:05:27,603
+The Reviewer used its tool to read the file. Then the Writer took over.
+
+57
+00:05:28,053 --> 00:05:33,798
+It found all three bugs, and the Writer explained them in plain words. Each agent did one job.
+
+58
+00:05:35,348 --> 00:05:36,660
+Four tips for your agent team.
+
+59
+00:05:37,110 --> 00:05:41,628
+One: give each agent one job, with a short, clear system prompt.
+
+60
+00:05:42,078 --> 00:05:47,326
+Two: give each agent only the tools it needs. Our Writer doesn't need to read files.
+
+61
+00:05:47,776 --> 00:05:54,076
+Three: pass short results between agents, not the whole conversation. That keeps every context clean.
+
+62
+00:05:54,526 --> 00:05:59,355
+And four: cap every loop. More agents means more ways to run forever.
+
+63
+00:06:00,905 --> 00:06:01,559
+Let's recap.
+
+64
+00:06:02,009 --> 00:06:05,695
+A multi-agent system is several agents, each with one job.
+
+65
+00:06:06,145 --> 00:06:10,695
+Each agent has its own system prompt, its own tools, and its own context.
+
+66
+00:06:11,145 --> 00:06:15,935
+It costs more tokens. So start with one agent, and split only when it struggles.
+
+67
+00:06:17,385 --> 00:06:23,766
+The full Java project is linked in the description. In the next episode, we'll chain agents into a real pipeline.
+
+68
+00:06:24,216 --> 00:06:30,414
+If this helped, like the video, and subscribe to Zero Cost AI so you don't miss episode two. See you there!
+

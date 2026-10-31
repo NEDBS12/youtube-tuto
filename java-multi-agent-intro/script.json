@@ -1,0 +1,949 @@
+{
+ "title": "java-multi-agent-intro",
+ "voice": "en-US-AndrewNeural",
+ "steps": [
+  "The Agent class",
+  "The agent loop",
+  "Give it a tool",
+  "Build the team"
+ ],
+ "brand": {
+  "name": "Zero Cost AI"
+ },
+ "scenes": [
+  {
+   "type": "title",
+   "chapter": "Introduction",
+   "kicker": "Multi-agent systems in Java · Episode 1",
+   "title": "[[Multi-Agent]] Systems\nin Java",
+   "subtitle": "What they are, why they help, and when NOT to use them",
+   "lines": [
+    {
+     "say": "One agent can do a lot. But give it too many jobs, and it starts to struggle."
+    },
+    {
+     "say": "In this series, you'll learn multi-agent systems in plain Java, step by step."
+    },
+    {
+     "say": "Today: what a multi-agent system is, when it's worth it, and your first two-agent team.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "chapter": "What is a multi-agent system?",
+   "kicker": "**01** · The concept",
+   "heading": "What is a [[multi-agent]] system?",
+   "items": [
+    "Several **agents**, each with **one job**",
+    "Each has its **own system prompt**: its role and rules",
+    "Each has its **own tools** and its **own context**",
+    "They **work together**: one agent's output is another's input"
+   ],
+   "card": {
+    "title": "THE IDEA",
+    "code": "agent  = LLM + tools + loop\nteam   = agent + agent + ..."
+   },
+   "lines": [
+    {
+     "say": "So, what is a multi-agent system?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "card",
+       "at": 0.8
+      }
+     ]
+    },
+    {
+     "say": "Remember: an agent is an LLM, plus tools, plus a loop. A multi-agent system is several of them, each with one job.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Each agent gets its own system prompt. That's its role, and its rules.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "Its own tools, and its own context: the conversation it sees.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ]
+    },
+    {
+     "say": "And they work together. One agent's output becomes another agent's input.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item4"
+      }
+     ]
+    },
+    {
+     "say": "Think of a team of specialists, instead of one person doing everything.",
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "Why split the work?",
+   "kicker": "**02** · Why it helps",
+   "heading": "Why [[split]] the work?",
+   "rows": [
+    {
+     "label": "Focus",
+     "text": "One job, one short prompt, done well"
+    },
+    {
+     "label": "Clean context",
+     "text": "Each agent sees only what it needs"
+    },
+    {
+     "label": "Parallel work",
+     "text": "Independent agents can run at the same time"
+    }
+   ],
+   "banner": "Each agent has its own context window",
+   "lines": [
+    {
+     "say": "Why split the work? Three reasons.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One: focus. An agent with one job and a short prompt does that job better.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ]
+    },
+    {
+     "say": "Two: clean context. Each agent sees only what it needs, not every file and every message.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ]
+    },
+    {
+     "say": "Three: parallel work. Agents that don't depend on each other can run at the same time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ]
+    },
+    {
+     "say": "The key idea: each agent has its own context window. That's its working memory.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "The honest cost",
+   "kicker": "**03** · The honest part",
+   "heading": "The [[cost]] of more agents",
+   "rows": [
+    {
+     "label": "More tokens",
+     "text": "Anthropic measured ~15× a chat for multi-agent"
+    },
+    {
+     "label": "Harder to debug",
+     "text": "More moving parts, more places to fail"
+    },
+    {
+     "label": "More to build",
+     "text": "More code, more prompts to tune"
+    }
+   ],
+   "banner": "Start with one agent. Split only when it struggles.",
+   "lines": [
+    {
+     "say": "Now the honest part. More agents have a real cost.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "More tokens. Anthropic wrote that their multi-agent research system used about fifteen times more tokens than a chat.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ],
+     "tts": "More tokens. Anthropic wrote that their multi-agent research system used about fifteen times more tokens than a chat."
+    },
+    {
+     "say": "Harder to debug. More moving parts means more places to fail.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ]
+    },
+    {
+     "say": "And more to build: more code, and more prompts to tune.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ]
+    },
+    {
+     "say": "So the rule is simple. Start with one agent. Split only when it struggles.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "When to use it",
+   "kicker": "**04** · When to use it",
+   "heading": "When to use [[multiple agents]]",
+   "left": {
+    "title": "Split when…",
+    "body": "• The task has clear,\n  separate parts\n• Too much information\n  for one context\n• Many different tools\n  confuse one agent"
+   },
+   "right": {
+    "title": "Keep one agent when…",
+    "body": "• One agent already\n  does the job well\n• Every step needs\n  the same context\n• The parts depend\n  heavily on each other"
+   },
+   "lines": [
+    {
+     "say": "So when should you split?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "When the task has clear, separate parts. When there's too much information for one context. Or when too many tools confuse a single agent.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "Keep one agent when it already works, or when every step needs the same context. Splitting those just adds cost.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "Our use case",
+   "kicker": "**05** · Our use case",
+   "heading": "A code-review [[team]]",
+   "left": {
+    "title": "One agent does it all",
+    "body": "Read the code\nFind the bugs\nExplain them kindly\n\nOne prompt, three jobs:\nstrict reviewer AND\nfriendly teacher"
+   },
+   "right": {
+    "title": "Two focused agents",
+    "body": "Reviewer: reads the file,\nlists real bugs (has a tool)\n\nWriter: turns the notes\ninto a friendly report\n(no tools, never sees code)\n\n✓ One job each"
+   },
+   "lines": [
+    {
+     "say": "Our use case is the project for this whole series: a code-review team for Java code.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One agent could read the code, find the bugs, and explain them. But that's one prompt asking for a strict reviewer and a friendly teacher at the same time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "So we split it. A Reviewer that reads the file and lists the bugs. And a Writer that turns those notes into a friendly report. It has no tools, and never sees the code.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "The problem",
+   "project": "java-multi-agent-intro",
+   "kicker": "**DEMO** · Episode 1's agent",
+   "lines": [
+    {
+     "say": "Here's the agent from episode one.",
+     "do": [
+      {
+       "k": "file",
+       "path": "pom.xml",
+       "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n\n    <groupId>agent</groupId>\n    <artifactId>java-multi-agent-intro</artifactId>\n    <version>1.0</version>\n\n    <properties>\n        <maven.compiler.release>17</maven.compiler.release>\n        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n        <!-- The class to run (change it with -Dexec.mainClass=...) -->\n        <exec.mainClass>agent.ReviewTeam</exec.mainClass>\n    </properties>\n\n    <dependencies>\n        <!-- The official Anthropic Java SDK -->\n        <dependency>\n            <groupId>com.anthropic</groupId>\n            <artifactId>anthropic-java</artifactId>\n            <version>3.3.0</version>\n        </dependency>\n    </dependencies>\n\n    <build>\n        <plugins>\n            <!-- Lets us run the team with: mvn compile exec:java -->\n            <plugin>\n                <groupId>org.codehaus.mojo</groupId>\n                <artifactId>exec-maven-plugin</artifactId>\n                <version>3.5.0</version>\n            </plugin>\n        </plugins>\n    </build>\n</project>\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "episode-1/MyFirstAgent.java",
+       "text": "// From episode 1 (Build Your First AI Agent in Java), kept here for comparison.\n// It is not compiled: Maven only builds src/main/java.\npackage agent;\n\nimport com.anthropic.client.AnthropicClient;\nimport com.anthropic.client.okhttp.AnthropicOkHttpClient;\nimport com.anthropic.models.messages.ContentBlock;\nimport com.anthropic.models.messages.ContentBlockParam;\nimport com.anthropic.models.messages.Message;\nimport com.anthropic.models.messages.MessageCreateParams;\nimport com.anthropic.models.messages.StopReason;\nimport com.anthropic.models.messages.ToolResultBlockParam;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Scanner;\n\npublic class MyFirstAgent {\n\n    public static void main(String[] args) {\n        // Reads your key from the ANTHROPIC_API_KEY variable\n        AnthropicClient client = AnthropicOkHttpClient.fromEnv();\n\n        System.out.print(\"Ask your agent: \");\n        String question = new Scanner(System.in).nextLine();\n\n        // The conversation: model, tools, and the user's question\n        MessageCreateParams.Builder chat =\n            MessageCreateParams.builder()\n                .model(\"claude-opus-5-5\")\n                .maxTokens(16000L)\n                .addTool(Tools.TIME)\n                .addTool(Tools.CALCULATOR)\n                .addUserMessage(question);\n\n        // The agent loop\n        while (true) {\n            Message reply = client.messages().create(chat.build());\n            chat.addMessage(reply); // no memory: keep the history\n\n            for (ContentBlock block : reply.content()) {\n                block.text().ifPresent(t ->\n                        System.out.println(\"Claude: \" + t.text()));\n            }\n\n            // No tool requested? Then Claude is done.\n            StopReason why = reply.stopReason().orElse(null);\n            if (why != StopReason.TOOL_USE) {\n                break;\n            }\n\n            // Run every tool Claude asked for, send all results back\n            List<ContentBlockParam> results = new ArrayList<>();\n            for (ContentBlock block : reply.content()) {\n                block.toolUse().ifPresent(call -> {\n                    String result = Tools.run(call);\n                    System.out.println(\"  [tool] \" + call.name()\n                            + \" -> \" + result);\n                    results.add(ContentBlockParam.ofToolResult(\n                            ToolResultBlockParam.builder()\n                                    .toolUseId(call.id())\n                                    .content(result)\n                                    .build()));\n                });\n            }\n            chat.addUserMessageOfBlockParams(results);\n        }\n    }\n}\n"
+      }
+     ]
+    },
+    {
+     "say": "The model and the tools are hard-coded inside main.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".addTool(Tools.TIME)",
+       "label": "Hard-coded tools",
+       "dur": 4.5,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "And the loop lives in main too. To build a second agent, I'd copy all of it.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "while (true) {",
+       "label": "Stuck inside main",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "Let's wrap it into a reusable Agent class instead.",
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-multi-agent-intro",
+   "lines": [
+    {
+     "say": "Step one: the Agent class. Same Maven project as before, with the Anthropic Java SDK, version three.",
+     "do": [
+      {
+       "k": "step",
+       "n": 1
+      },
+      {
+       "k": "open",
+       "path": "pom.xml"
+      },
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "<version>3.3.0</version>",
+       "label": "Anthropic Java SDK",
+       "dur": 4.5
+      }
+     ],
+     "tts": "Step one: the Agent class. Same Maven project as before, with the Anthropic Java S D K, version three."
+    },
+    {
+     "say": "I create Agent dot java.",
+     "do": [
+      {
+       "k": "file",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "package agent;\n\nimport com.anthropic.client.AnthropicClient;\nimport com.anthropic.client.okhttp.AnthropicOkHttpClient;\nimport com.anthropic.models.messages.ContentBlock;\nimport com.anthropic.models.messages.ContentBlockParam;\nimport com.anthropic.models.messages.Message;\nimport com.anthropic.models.messages.MessageCreateParams;\nimport com.anthropic.models.messages.StopReason;\nimport com.anthropic.models.messages.TextBlock;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolResultBlockParam;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.function.Function;\nimport java.util.stream.Collectors;\n\n"
+      }
+     ],
+     "tts": "I create Agent dot java."
+    },
+    {
+     "say": "An agent is four things: a name, a system prompt, a list of tools, and a function that runs those tools.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "// One agent = its own system prompt, its own tools, its own context\npublic class Agent {\n\n    // Reads your key from the ANTHROPIC_API_KEY variable\n    private static final AnthropicClient CLIENT =\n            AnthropicOkHttpClient.fromEnv();\n\n    private final String name;\n    private final String systemPrompt;\n    private final List<Tool> tools;\n    private final Function<ToolUseBlock, String> toolRunner;\n\n    public Agent(String name, String systemPrompt, List<Tool> tools,\n                 Function<ToolUseBlock, String> toolRunner) {\n        this.name = name;\n        this.systemPrompt = systemPrompt;\n        this.tools = tools;\n        this.toolRunner = toolRunner;\n    }\n\n",
+       "cps": 70
+      }
+     ]
+    },
+    {
+     "say": "The system prompt is the agent's role. This is what makes a reviewer different from a writer.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "private final String systemPrompt;",
+       "label": "Its role",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "And each agent gets only the tools it needs.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "private final List<Tool> tools;",
+       "label": "Its own tools",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "The client is shared. Every agent talks to the same API, with your key from the environment.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "private static final AnthropicClient CLIENT =",
+       "label": "One shared client",
+       "dur": 4.5,
+       "span": 2
+      }
+     ],
+     "tts": "The client is shared. Every agent talks to the same A P I, with your key from the environment.",
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-multi-agent-intro",
+   "lines": [
+    {
+     "say": "Step two: the agent loop. It's the loop from episode one, wrapped in one method: run.",
+     "do": [
+      {
+       "k": "step",
+       "n": 2
+      },
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "    // The agent loop from episode 1, wrapped in one method\n    public String run(String task) {\n        System.out.println(\"[\" + name + \"] working...\");\n\n        // A fresh conversation: this agent sees only its own task\n        MessageCreateParams.Builder chat =\n            MessageCreateParams.builder()\n                .model(\"claude-opus-5-5\")\n                .maxTokens(16000L)\n                .system(systemPrompt)\n                .addUserMessage(task);\n        tools.forEach(chat::addTool);\n\n        for (int turn = 0; turn < 10; turn++) {\n            Message reply = CLIENT.messages().create(chat.build());\n            chat.addMessage(reply);\n\n            // No tool requested? Return the agent's answer.\n            StopReason why = reply.stopReason().orElse(null);\n            if (why != StopReason.TOOL_USE) {\n                return reply.content().stream()\n                        .flatMap(block -> block.text().stream())\n                        .map(TextBlock::text)\n                        .collect(Collectors.joining(\"\\n\"));\n            }\n\n",
+       "cps": 70
+      }
+     ]
+    },
+    {
+     "say": "Every run starts a fresh conversation. The agent sees only its own system prompt and its own task. That's its own context.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".system(systemPrompt)",
+       "label": "Fresh context",
+       "dur": 5.0,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "When Claude stops asking for tools, run returns the agent's answer as text. So another agent can use it.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "return reply.content().stream()",
+       "label": "Answer as text",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "The rest is the same as before: run every tool the agent asked for, and send all the results back.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "            // Run every tool it asked for, send all results back\n            List<ContentBlockParam> results = new ArrayList<>();\n            for (ContentBlock block : reply.content()) {\n                block.toolUse().ifPresent(call -> {\n                    System.out.println(\"  [\" + name + \"] tool: \"\n                            + call.name());\n                    results.add(ContentBlockParam.ofToolResult(\n                            ToolResultBlockParam.builder()\n                                    .toolUseId(call.id())\n                                    .content(toolRunner.apply(call))\n                                    .build()));\n                });\n            }\n            chat.addUserMessageOfContentBlockParams(results);\n        }\n        return \"Stopped: too many turns\";\n    }\n}\n",
+       "cps": 70
+      }
+     ]
+    },
+    {
+     "say": "One change: the loop stops after ten turns, so an agent can never run forever.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "for (int turn = 0; turn < 10; turn++) {",
+       "label": "Max 10 turns",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "And in SDK version three, the method that sends tool results is called add user message of content block params.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "chat.addUserMessageOfContentBlockParams(results);",
+       "label": "SDK 3.x name",
+       "dur": 5.0
+      }
+     ],
+     "tts": "And in S D K version three, the method that sends tool results is called: add user message of content block params.",
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-multi-agent-intro",
+   "lines": [
+    {
+     "say": "Step three: give the Reviewer a tool. Here's the code it will review: a small user service, with bugs on purpose.",
+     "do": [
+      {
+       "k": "step",
+       "n": 3
+      },
+      {
+       "k": "file",
+       "path": "sample/UserService.java",
+       "text": "import java.sql.Connection;\nimport java.sql.ResultSet;\nimport java.sql.SQLException;\nimport java.sql.Statement;\n\n// Sample code to review (it has bugs on purpose)\npublic class UserService {\n\n    private final Connection db;\n\n    public UserService(Connection db) {\n        this.db = db;\n    }\n\n    public boolean isAdmin(String username) throws SQLException {\n        Statement st = db.createStatement();\n        ResultSet rs = st.executeQuery(\n            \"SELECT role FROM users WHERE name = '\" + username + \"'\");\n        if (rs.next()) {\n            return rs.getString(\"role\") == \"ADMIN\";\n        }\n        return false;\n    }\n}\n"
+      }
+     ]
+    },
+    {
+     "say": "Can you spot them? We'll see if the Reviewer does.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "== \"ADMIN\"",
+       "label": "Bugs on purpose",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "Now FileTools dot java. The tool is called read file, and it takes a file name.",
+     "do": [
+      {
+       "k": "file",
+       "path": "src/main/java/agent/FileTools.java",
+       "text": "package agent;\n\nimport com.anthropic.core.JsonValue;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.List;\nimport java.util.Map;\n\n"
+      },
+      {
+       "k": "type",
+       "path": "src/main/java/agent/FileTools.java",
+       "text": "// The Reviewer's only tool: read a file from the sample folder\npublic class FileTools {\n\n    static final Tool READ_FILE = Tool.builder()\n            .name(\"read_file\")\n            .description(\"Reads a Java file from the sample folder. \"\n                    + \"Use it to see the code before reviewing it.\")\n            .inputSchema(Tool.InputSchema.builder()\n                .properties(Tool.InputSchema.Properties.builder()\n                    .putAdditionalProperty(\"name\", JsonValue.from(\n                        Map.of(\"type\", \"string\")))\n                    .build())\n                .required(List.of(\"name\"))\n                .build())\n            .build();\n\n",
+       "cps": 75
+      }
+     ],
+     "tts": "Now FileTools dot java. The tool is called read file, and it takes a file name."
+    },
+    {
+     "say": "The real work is a plain Java method. It only reads files inside the sample folder, and returns errors as text.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/FileTools.java",
+       "text": "    // Plain Java: the real work, safe to test without an API key\n    static String readFile(String name) {\n        try {\n            Path file = Path.of(\"sample\", name).normalize();\n            if (!file.startsWith(\"sample\")) {\n                return \"Error: only files in the sample folder\";\n            }\n            return Files.readString(file);\n        } catch (Exception e) {\n            return \"Error: cannot read \" + name;\n        }\n    }\n\n    // Run the tool call the agent asked for\n    @SuppressWarnings(\"unchecked\")\n    static String run(ToolUseBlock call) {\n        Map<String, Object> in = call._input().convert(Map.class);\n        return readFile((String) in.get(\"name\"));\n    }\n}\n",
+       "cps": 75
+      }
+     ]
+    },
+    {
+     "say": "That check matters: an agent should never read files you didn't plan for.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "if (!file.startsWith(\"sample\")) {",
+       "label": "Stay in sample/",
+       "dur": 4.5
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-multi-agent-intro",
+   "lines": [
+    {
+     "say": "Step four: build the team, in ReviewTeam dot java.",
+     "do": [
+      {
+       "k": "step",
+       "n": 4
+      },
+      {
+       "k": "open",
+       "path": "src/main/java/agent/ReviewTeam.java"
+      }
+     ],
+     "tts": "Step four: build the team, in ReviewTeam dot java."
+    },
+    {
+     "say": "Two agents, created from the same class.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewTeam.java",
+       "text": "package agent;\n\nimport java.util.List;\n\n// Two agents, two jobs: one finds the bugs, one explains them\npublic class ReviewTeam {\n\n    public static void main(String[] args) {\n        // Agent 1: can read files. Its only job is to find real bugs.\n        Agent reviewer = new Agent(\"Reviewer\",\n                \"You are a senior Java reviewer. Read the file \"\n                + \"with your tool. List real bugs only: \"\n                + \"line, problem, fix.\",\n                List.of(FileTools.READ_FILE), FileTools::run);\n\n        // Agent 2: no tools. It never sees the code, only the notes.\n        Agent writer = new Agent(\"Writer\",\n                \"You turn code review notes into a short, friendly \"\n                + \"report for a junior developer. Max 8 lines.\",\n                List.of(), call -> \"Error: no tools\");\n\n        String notes = reviewer.run(\"Review UserService.java\");\n        String report = writer.run(\"Write the report:\\n\" + notes);\n\n        System.out.println(\"\\n=== REPORT ===\\n\" + report);\n    }\n}\n",
+       "cps": 60
+      }
+     ]
+    },
+    {
+     "say": "The Reviewer is a strict senior reviewer. It gets the read file tool, and lists real bugs only.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "List.of(FileTools.READ_FILE), FileTools::run);",
+       "label": "Reviewer: has a tool",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "The Writer has a different role, and no tools at all.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "List.of(), call -> \"Error: no tools\");",
+       "label": "Writer: no tools",
+       "dur": 4.5
+      }
+     ]
+    },
+    {
+     "say": "Here's how they work together: the Reviewer's notes become the Writer's task. The Writer never sees the code. Only the notes.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "String report = writer.run(\"Write the report:\\n\" + notes);",
+       "label": "Notes → Writer",
+       "dur": 5.5
+      }
+     ]
+    },
+    {
+     "say": "That's a multi-agent system: two agents, each with one job.",
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "Test it",
+   "project": "java-multi-agent-intro",
+   "kicker": "**TEST** · Run the team",
+   "lines": [
+    {
+     "say": "Let's test it. First, an offline check of the tool. No API key needed.",
+     "do": [
+      {
+       "k": "step",
+       "n": 0
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.mainClass=agent.ToolsCheck",
+       "out": [
+        "read:    24 lines",
+        "missing: Error: cannot read Nope.java",
+        "escape:  Error: only files in the sample folder",
+        "name:    read_file"
+       ]
+      }
+     ],
+     "tts": "Let's test it. First, an offline check of the tool. No A P I key needed."
+    },
+    {
+     "say": "It reads the sample, and it refuses files outside the folder.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "escape:  Error: only files",
+       "label": "Safe by design",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "Now the real team.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java",
+       "out": [
+        "[Reviewer] working...",
+        "  [Reviewer] tool: read_file",
+        "[Writer] working...",
+        "",
+        "=== REPORT ===",
+        "Nice start on UserService! Three things to fix:",
+        "1. Line 18: the SQL is built from user input.",
+        "   Use a PreparedStatement to stop SQL injection.",
+        "2. Line 20: == compares references, not text.",
+        "   Use \"ADMIN\".equals(...) instead.",
+        "3. Line 16: Statement and ResultSet are never",
+        "   closed. Use try-with-resources."
+       ]
+      }
+     ]
+    },
+    {
+     "say": "The Reviewer used its tool to read the file. Then the Writer took over.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "[Reviewer] tool: read_file",
+       "label": "Reviewer reads",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "It found all three bugs, and the Writer explained them in plain words. Each agent did one job.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "=== REPORT ===",
+       "label": "Friendly report",
+       "dur": 5.0,
+       "span": 8
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "Tips",
+   "rail": true,
+   "kicker": "**TIPS** · Before episode 2",
+   "heading": "4 tips for your [[agent team]]",
+   "cards": [
+    {
+     "title": "One job per agent",
+     "text": "A short, clear system prompt"
+    },
+    {
+     "title": "Only the tools it needs",
+     "text": "The Writer doesn't need to read files"
+    },
+    {
+     "title": "Pass results, not history",
+     "text": "Short notes keep each context clean"
+    },
+    {
+     "title": "Cap every loop",
+     "text": "A max number of turns per agent"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Four tips for your agent team.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One: give each agent one job, with a short, clear system prompt.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Two: give each agent only the tools it needs. Our Writer doesn't need to read files.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "Three: pass short results between agents, not the whole conversation. That keeps every context clean.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And four: cap every loop. More agents means more ways to run forever.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "checks",
+   "chapter": "Recap",
+   "heading": "Recap",
+   "items": [
+    "A multi-agent system = **agents with one job each**",
+    "Each has its **own prompt, tools and context**",
+    "Costs more tokens: [[start with one agent]], split when it struggles"
+   ],
+   "lines": [
+    {
+     "say": "Let's recap.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "A multi-agent system is several agents, each with one job.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Each agent has its own system prompt, its own tools, and its own context.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "It costs more tokens. So start with one agent, and split only when it struggles.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "title": "Next: [[agent pipelines]]",
+   "subtitle": "The full Java project is linked in the description",
+   "cta": "Subscribe for the next episode",
+   "lines": [
+    {
+     "say": "The full Java project is linked in the description. In the next episode, we'll chain agents into a real pipeline.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line1"
+      }
+     ]
+    },
+    {
+     "say": "If this helped, like the video, and subscribe to Zero Cost AI so you don't miss episode two. See you there!",
+     "do": [
+      {
+       "k": "show",
+       "el": "line2"
+      }
+     ],
+     "hold": 1.5
+    }
+   ]
+  }
+ ]
+}
