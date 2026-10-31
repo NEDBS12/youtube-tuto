@@ -1,0 +1,853 @@
+{
+ "title": "java-agent-pipeline",
+ "voice": "en-US-AndrewNeural",
+ "steps": [
+  "Typed answers",
+  "Upgrade the Agent",
+  "Add a gate",
+  "Build the pipeline"
+ ],
+ "brand": {
+  "name": "Zero Cost AI"
+ },
+ "scenes": [
+  {
+   "type": "title",
+   "chapter": "Introduction",
+   "kicker": "Multi-agent systems in Java · Episode 2",
+   "title": "Agent [[Pipelines]]\nin Java",
+   "subtitle": "Chain agents with typed outputs and gates",
+   "lines": [
+    {
+     "say": "In episode one, two agents worked together. But they passed plain text, and the second agent always ran."
+    },
+    {
+     "say": "Today, you'll turn them into a real pipeline: typed data between agents, and a check in plain Java that can stop early."
+    },
+    {
+     "say": "It's the most common multi-agent pattern, and the easiest to get right.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "chapter": "What is an agent pipeline?",
+   "kicker": "**01** · The concept",
+   "heading": "What is an agent [[pipeline]]?",
+   "items": [
+    "Agents run in a **fixed order**, like an assembly line",
+    "Each agent's **output is the next agent's input**",
+    "Each step has **one small job**",
+    "**Gates** between steps: plain Java checks that can stop the line"
+   ],
+   "card": {
+    "title": "OUR PIPELINE",
+    "code": "Reviewer  →  gate  →  Writer\n (agent)    (Java)   (agent)"
+   },
+   "lines": [
+    {
+     "say": "So, what is an agent pipeline?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "card",
+       "at": 0.8
+      }
+     ]
+    },
+    {
+     "say": "Agents run in a fixed order, like an assembly line.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Each agent's output becomes the next agent's input.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "Every step has one small job, so every step is easier to get right.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ]
+    },
+    {
+     "say": "And between steps, you can add gates: plain Java checks that decide if the line continues.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item4"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "Typed outputs",
+   "kicker": "**02** · How it works",
+   "heading": "Pass [[typed data]], not text",
+   "rows": [
+    {
+     "label": "Free text",
+     "text": "Hard to check in code: you'd have to parse sentences"
+    },
+    {
+     "label": "Structured outputs",
+     "text": "Claude's answer must follow a JSON schema"
+    },
+    {
+     "label": "Java records",
+     "text": "The SDK builds the schema from your record, and parses the answer"
+    }
+   ],
+   "banner": "Check the data in Java, not with another LLM call",
+   "lines": [
+    {
+     "say": "The key idea is typed data.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "If an agent answers in free text, your code can't easily check it. You'd have to parse sentences.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ]
+    },
+    {
+     "say": "With structured outputs, Claude's answer must follow a JSON schema you give it.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ]
+    },
+    {
+     "say": "And in Java, you don't even write the schema. The SDK builds it from a record, and parses the answer back into that record.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ],
+     "tts": "And in Java, you don't even write the schema. The S D K builds it from a record, and parses the answer back into that record."
+    },
+    {
+     "say": "So you can check the data with normal Java code. No extra LLM call.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "When to use a pipeline",
+   "kicker": "**03** · When to use it",
+   "heading": "When to use a [[pipeline]]",
+   "left": {
+    "title": "Use a pipeline when…",
+    "body": "• The steps are known\n  in advance\n• They always run in\n  the same order\n• You can check the\n  result of each step"
+   },
+   "right": {
+    "title": "Use something else when…",
+    "body": "• The next step depends\n  on what you find\n  (routing: next episode)\n• One prompt already\n  does the job well"
+   },
+   "lines": [
+    {
+     "say": "When should you use a pipeline?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "When the steps are known in advance, always in the same order, and you can check each result.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "If the next step depends on what you find, that's routing. That's the next episode. And if one prompt already works, keep it simple.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "Our use case",
+   "kicker": "**04** · Our use case",
+   "heading": "Upgrade the [[review team]]",
+   "left": {
+    "title": "Episode 1",
+    "body": "Reviewer → free text notes\n\nWriter always runs,\neven with nothing to fix\n\nNo way to check\nthe notes in code"
+   },
+   "right": {
+    "title": "Episode 2",
+    "body": "Reviewer → a Review record\n(line, severity, problem, fix)\n\nGate: drop LOW bugs,\nstop if nothing is left\n\n✓ Writer only runs\n  when it's needed"
+   },
+   "lines": [
+    {
+     "say": "We'll upgrade the code-review team from episode one.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Before: the Reviewer wrote free text notes, and the Writer always ran, even when there was nothing to fix.",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "After: the Reviewer returns a Review record. A gate in Java drops the low-severity bugs, and stops if nothing serious is left. The Writer only runs when it's needed.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.4
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "The problem",
+   "project": "java-agent-pipeline",
+   "kicker": "**DEMO** · Episode 1's team",
+   "lines": [
+    {
+     "say": "Here's the team from episode one.",
+     "do": [
+      {
+       "k": "file",
+       "path": "pom.xml",
+       "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n\n    <groupId>agent</groupId>\n    <artifactId>java-agent-pipeline</artifactId>\n    <version>1.0</version>\n\n    <properties>\n        <maven.compiler.release>17</maven.compiler.release>\n        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n        <!-- The class to run (change it with -Dexec.mainClass=...) -->\n        <exec.mainClass>agent.ReviewPipeline</exec.mainClass>\n    </properties>\n\n    <dependencies>\n        <!-- The official Anthropic Java SDK -->\n        <dependency>\n            <groupId>com.anthropic</groupId>\n            <artifactId>anthropic-java</artifactId>\n            <version>3.3.0</version>\n        </dependency>\n    </dependencies>\n\n    <build>\n        <plugins>\n            <!-- Lets us run the pipeline with: mvn compile exec:java -->\n            <plugin>\n                <groupId>org.codehaus.mojo</groupId>\n                <artifactId>exec-maven-plugin</artifactId>\n                <version>3.5.0</version>\n            </plugin>\n        </plugins>\n    </build>\n</project>\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/FileTools.java",
+       "text": "package agent;\n\nimport com.anthropic.core.JsonValue;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.List;\nimport java.util.Map;\n\n// The Reviewer's only tool: read a file from the sample folder\npublic class FileTools {\n\n    static final Tool READ_FILE = Tool.builder()\n            .name(\"read_file\")\n            .description(\"Reads a Java file from the sample folder. \"\n                    + \"Use it to see the code before reviewing it.\")\n            .inputSchema(Tool.InputSchema.builder()\n                .properties(Tool.InputSchema.Properties.builder()\n                    .putAdditionalProperty(\"name\", JsonValue.from(\n                        Map.of(\"type\", \"string\")))\n                    .build())\n                .required(List.of(\"name\"))\n                .build())\n            .build();\n\n    // Plain Java: the real work, safe to test without an API key\n    static String readFile(String name) {\n        try {\n            Path file = Path.of(\"sample\", name).normalize();\n            if (!file.startsWith(\"sample\")) {\n                return \"Error: only files in the sample folder\";\n            }\n            return Files.readString(file);\n        } catch (Exception e) {\n            return \"Error: cannot read \" + name;\n        }\n    }\n\n    // Run the tool call the agent asked for\n    @SuppressWarnings(\"unchecked\")\n    static String run(ToolUseBlock call) {\n        Map<String, Object> in = call._input().convert(Map.class);\n        return readFile((String) in.get(\"name\"));\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "sample/UserService.java",
+       "text": "import java.sql.Connection;\nimport java.sql.ResultSet;\nimport java.sql.SQLException;\nimport java.sql.Statement;\n\n// Sample code to review (it has bugs on purpose)\npublic class UserService {\n\n    private final Connection db;\n\n    public UserService(Connection db) {\n        this.db = db;\n    }\n\n    public boolean isAdmin(String username) throws SQLException {\n        Statement st = db.createStatement();\n        ResultSet rs = st.executeQuery(\n            \"SELECT role FROM users WHERE name = '\" + username + \"'\");\n        if (rs.next()) {\n            return rs.getString(\"role\") == \"ADMIN\";\n        }\n        return false;\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "file",
+       "path": "episode-1/ReviewTeam.java",
+       "text": "// From episode 1 (Multi-Agent Systems in Java), kept here for comparison.\n// It is not compiled: Maven only builds src/main/java.\npackage agent;\n\nimport java.util.List;\n\n// Two agents, two jobs: one finds the bugs, one explains them\npublic class ReviewTeam {\n\n    public static void main(String[] args) {\n        // Agent 1: can read files. Its only job is to find real bugs.\n        Agent reviewer = new Agent(\"Reviewer\",\n                \"You are a senior Java reviewer. Read the file \"\n                + \"with your tool. List real bugs only: \"\n                + \"line, problem, fix.\",\n                List.of(FileTools.READ_FILE), FileTools::run);\n\n        // Agent 2: no tools. It never sees the code, only the notes.\n        Agent writer = new Agent(\"Writer\",\n                \"You turn code review notes into a short, friendly \"\n                + \"report for a junior developer. Max 8 lines.\",\n                List.of(), call -> \"Error: no tools\");\n\n        String notes = reviewer.run(\"Review UserService.java\");\n        String report = writer.run(\"Write the report:\\n\" + notes);\n\n        System.out.println(\"\\n=== REPORT ===\\n\" + report);\n    }\n}\n"
+      }
+     ]
+    },
+    {
+     "say": "The Reviewer returns a string. My code can't tell if it found zero bugs or ten.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "String notes = reviewer.run(\"Review UserService.java\");",
+       "label": "Just a string",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "So the Writer always runs, and always costs tokens.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "String report = writer.run(\"Write the report:\\n\" + notes);",
+       "label": "Always runs",
+       "dur": 4.5
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-pipeline",
+   "lines": [
+    {
+     "say": "Step one: typed answers. I create Review dot java.",
+     "do": [
+      {
+       "k": "step",
+       "n": 1
+      },
+      {
+       "k": "open",
+       "path": "src/main/java/agent/Review.java"
+      }
+     ],
+     "tts": "Step one: typed answers. I create Review dot java."
+    },
+    {
+     "say": "A review has a short summary, and a list of bugs.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Review.java",
+       "text": "package agent;\n\nimport java.util.List;\n\n// The Reviewer's answer: typed data, not free text\npublic record Review(String summary, List<Bug> bugs) {\n\n    public record Bug(int line, Severity severity,\n                      String problem, String fix) {}\n\n    public enum Severity { LOW, MEDIUM, HIGH }\n}\n",
+       "cps": 45
+      }
+     ]
+    },
+    {
+     "say": "Each bug has a line number, a severity, the problem, and the fix.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "public record Bug(int line, Severity severity,",
+       "label": "One bug",
+       "dur": 4.5,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "Severity is an enum: low, medium or high. Claude can only answer with one of these three values.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "public enum Severity { LOW, MEDIUM, HIGH }",
+       "label": "Only 3 values",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "That's the contract between the two agents. Plain Java records.",
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-pipeline",
+   "lines": [
+    {
+     "say": "Step two: upgrade the Agent class. The top is the same as in episode one.",
+     "do": [
+      {
+       "k": "step",
+       "n": 2
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "package agent;\n\nimport com.anthropic.client.AnthropicClient;\nimport com.anthropic.client.okhttp.AnthropicOkHttpClient;\nimport com.anthropic.models.messages.ContentBlockParam;\nimport com.anthropic.models.messages.MessageCreateParams;\nimport com.anthropic.models.messages.StopReason;\nimport com.anthropic.models.messages.StructuredContentBlock;\nimport com.anthropic.models.messages.StructuredMessage;\nimport com.anthropic.models.messages.StructuredMessageCreateParams;\nimport com.anthropic.models.messages.Tool;\nimport com.anthropic.models.messages.ToolResultBlockParam;\nimport com.anthropic.models.messages.ToolUseBlock;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.function.Function;\n\n// One agent = its own system prompt, its own tools, its own context\npublic class Agent {\n\n    // Reads your key from the ANTHROPIC_API_KEY variable\n    private static final AnthropicClient CLIENT =\n            AnthropicOkHttpClient.fromEnv();\n\n    private final String name;\n    private final String systemPrompt;\n    private final List<Tool> tools;\n    private final Function<ToolUseBlock, String> toolRunner;\n\n    public Agent(String name, String systemPrompt, List<Tool> tools,\n                 Function<ToolUseBlock, String> toolRunner) {\n        this.name = name;\n        this.systemPrompt = systemPrompt;\n        this.tools = tools;\n        this.toolRunner = toolRunner;\n    }\n\n"
+      }
+     ]
+    },
+    {
+     "say": "Now the new part: a run method with a type. You give it a class, and you get an object of that class back.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "    // A plain-text answer, for agents that write for humans\n    record Answer(String text) {}\n\n    public String run(String task) {\n        return run(task, Answer.class).text();\n    }\n\n    // NEW: the agent loop, with a typed answer (a Java record)\n    public <T> T run(String task, Class<T> type) {\n        System.out.println(\"[\" + name + \"] working...\");\n\n        // The answer must match the record: the SDK builds the schema\n        StructuredMessageCreateParams.Builder<T> chat =\n            MessageCreateParams.builder()\n                .model(\"claude-opus-5-5\")\n                .maxTokens(16000L)\n                .system(systemPrompt)\n                .addUserMessage(task)\n                .outputConfig(type);\n        tools.forEach(chat::addTool);\n\n",
+       "cps": 75
+      }
+     ]
+    },
+    {
+     "say": "One line does the magic: output config with the type. The SDK turns the record into a JSON schema, and Claude's answer must match it.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".outputConfig(type);",
+       "label": "Schema from the record",
+       "dur": 5.5
+      }
+     ],
+     "tts": "One line does the magic: output config, with the type. The S D K turns the record into a JSON schema, and Claude's answer must match it."
+    },
+    {
+     "say": "The loop is the same as before. Structured outputs work together with tools in the same request.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/Agent.java",
+       "text": "        for (int turn = 0; turn < 10; turn++) {\n            StructuredMessage<T> reply =\n                    CLIENT.messages().create(chat.build());\n            chat.addMessage(reply.rawMessage());\n\n            // No tool requested? Return the typed answer.\n            StopReason why = reply.stopReason().orElse(null);\n            if (why != StopReason.TOOL_USE) {\n                return reply.content().stream()\n                        .flatMap(block -> block.text().stream())\n                        .findFirst().orElseThrow()\n                        .text();\n            }\n\n            // Run every tool it asked for, send all results back\n            List<ContentBlockParam> results = new ArrayList<>();\n            for (StructuredContentBlock<T> block : reply.content()) {\n                block.toolUse().ifPresent(call -> {\n                    System.out.println(\"  [\" + name + \"] tool: \"\n                            + call.name());\n                    results.add(ContentBlockParam.ofToolResult(\n                            ToolResultBlockParam.builder()\n                                    .toolUseId(call.id())\n                                    .content(toolRunner.apply(call))\n                                    .build()));\n                });\n            }\n            chat.addUserMessageOfContentBlockParams(results);\n        }\n        throw new IllegalStateException(name + \": too many turns\");\n    }\n}\n",
+       "cps": 80
+      }
+     ]
+    },
+    {
+     "say": "When Claude is done, I don't return text anymore. I return the typed object, already parsed.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".findFirst().orElseThrow()",
+       "label": "Typed answer",
+       "dur": 4.5,
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "And the old run method still works. It asks for a small Answer record, and returns its text. So text agents, like our Writer, don't change.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "return run(task, Answer.class).text();",
+       "label": "Text agents still work",
+       "dur": 5.5
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-pipeline",
+   "lines": [
+    {
+     "say": "Step three: the gate. In ReviewPipeline dot java.",
+     "do": [
+      {
+       "k": "step",
+       "n": 3
+      },
+      {
+       "k": "file",
+       "path": "src/main/java/agent/ReviewPipeline.java",
+       "text": "package agent;\n\nimport agent.Review.Bug;\nimport agent.Review.Severity;\nimport java.util.List;\n\n// A pipeline: Reviewer -> gate (plain Java) -> Writer\npublic class ReviewPipeline {\n\n"
+      }
+     ],
+     "tts": "Step three: the gate. In ReviewPipeline dot java."
+    },
+    {
+     "say": "The gate is plain Java. No LLM, no tokens.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewPipeline.java",
+       "text": "    // The gate: plain Java, no LLM. Keep only the serious bugs.\n    static List<Bug> seriousBugs(Review review) {\n        return review.bugs().stream()\n                .filter(bug -> bug.severity() != Severity.LOW)\n                .toList();\n    }\n\n",
+       "cps": 50
+      }
+     ]
+    },
+    {
+     "say": "It keeps only the bugs that are not low severity. Because the review is typed, it's one simple filter.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": ".filter(bug -> bug.severity() != Severity.LOW)",
+       "label": "Plain Java filter",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "And because it's a normal method, I can unit test it without calling the API.",
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "java-agent-pipeline",
+   "lines": [
+    {
+     "say": "Step four: build the pipeline. The two agents are the same as in episode one.",
+     "do": [
+      {
+       "k": "step",
+       "n": 4
+      },
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewPipeline.java",
+       "text": "    public static void main(String[] args) {\n        String file = args.length > 0 ? args[0] : \"UserService.java\";\n\n        Agent reviewer = new Agent(\"Reviewer\",\n                \"You are a senior Java reviewer. Read the file \"\n                + \"with your tool. Report real bugs only.\",\n                List.of(FileTools.READ_FILE), FileTools::run);\n\n        Agent writer = new Agent(\"Writer\",\n                \"You turn bug lists into a short, friendly report \"\n                + \"for a junior developer. Max 8 lines.\",\n                List.of(), call -> \"Error: no tools\");\n\n",
+       "cps": 75
+      }
+     ]
+    },
+    {
+     "say": "Step one of the pipeline: the Reviewer returns a Review object, not a string.",
+     "do": [
+      {
+       "k": "type",
+       "path": "src/main/java/agent/ReviewPipeline.java",
+       "text": "        // Step 1: a typed review\n        Review review = reviewer.run(\"Review \" + file, Review.class);\n        System.out.println(\"Summary: \" + review.summary());\n\n        // Step 2: the gate decides if the pipeline continues\n        List<Bug> serious = seriousBugs(review);\n        if (serious.isEmpty()) {\n            System.out.println(\"No serious bugs: Writer skipped.\");\n            return;\n        }\n\n        // Step 3: the Writer gets only the serious bugs\n        String report = writer.run(\"Write the report:\\n\" + serious);\n        System.out.println(\"\\n=== REPORT ===\\n\" + report);\n    }\n}\n",
+       "cps": 70
+      }
+     ]
+    },
+    {
+     "say": "Here I pass Review dot class. That's the only change for a typed agent.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "Review review = reviewer.run(\"Review \" + file, Review.class);",
+       "label": "Typed review",
+       "dur": 5.0
+      }
+     ],
+     "tts": "Here I pass Review dot class. That's the only change for a typed agent."
+    },
+    {
+     "say": "Then the gate. If no serious bugs are left, the pipeline stops here. The Writer is never called.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "if (serious.isEmpty()) {",
+       "label": "Stop early",
+       "dur": 5.0
+      }
+     ]
+    },
+    {
+     "say": "Otherwise, the Writer gets only the serious bugs. Less input, cleaner context.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "String report = writer.run(\"Write the report:\\n\" + serious);",
+       "label": "Only serious bugs",
+       "dur": 5.0
+      }
+     ],
+     "hold": 0.4
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "Test it",
+   "project": "java-agent-pipeline",
+   "kicker": "**TEST** · Run the pipeline",
+   "lines": [
+    {
+     "say": "Let's test it. First, an offline check. No API key needed.",
+     "do": [
+      {
+       "k": "step",
+       "n": 0
+      },
+      {
+       "k": "file",
+       "path": "sample/PriceCalculator.java",
+       "text": "// Sample code to review (this one is clean)\npublic class PriceCalculator {\n\n    public static long totalCents(long unitCents, int quantity) {\n        if (quantity < 0) {\n            throw new IllegalArgumentException(\"quantity < 0\");\n        }\n        return Math.multiplyExact(unitCents, quantity);\n    }\n}\n",
+       "open": false
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.mainClass=agent.PipelineCheck",
+       "out": [
+        "read:   UserService 24 lines, PriceCalculator 10 lines",
+        "schema: Review and Answer records OK",
+        "gate:   buggy -> 1 serious bug(s), clean -> 0"
+       ]
+      }
+     ],
+     "tts": "Let's test it. First, an offline check. No A P I key needed."
+    },
+    {
+     "say": "The SDK accepts our records as a schema, and the gate works on fake reviews.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "gate:   buggy -> 1 serious",
+       "label": "Gate tested",
+       "dur": 4.0
+      }
+     ],
+     "tts": "The S D K accepts our records as a schema, and the gate works on fake reviews."
+    },
+    {
+     "say": "Now the real pipeline, on the buggy user service.",
+     "do": [
+      {
+       "k": "clear"
+      },
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java",
+       "out": [
+        "[Reviewer] working...",
+        "  [Reviewer] tool: read_file",
+        "Summary: Checks if a user has the ADMIN role.",
+        "[Writer] working...",
+        "",
+        "=== REPORT ===",
+        "Good start! Three things to fix in UserService:",
+        "1. Line 18: user input goes straight into the",
+        "   SQL. Use a PreparedStatement.",
+        "2. Line 20: == compares references, not text.",
+        "   Use \"ADMIN\".equals(...).",
+        "3. Line 16: close Statement and ResultSet with",
+        "   try-with-resources."
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Serious bugs, so the gate let the Writer run.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "[Writer] working...",
+       "label": "Gate: continue",
+       "dur": 4.0
+      }
+     ]
+    },
+    {
+     "say": "Now a clean file: a small price calculator.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "mvn -q compile exec:java -Dexec.args=PriceCalculator.java",
+       "out": [
+        "[Reviewer] working...",
+        "  [Reviewer] tool: read_file",
+        "Summary: Multiplies a unit price by a quantity.",
+        "No serious bugs: Writer skipped."
+       ]
+      }
+     ]
+    },
+    {
+     "say": "Nothing serious, so the pipeline stopped at the gate. The Writer never ran, and cost nothing.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "term",
+       "match": "No serious bugs: Writer skipped.",
+       "label": "Stopped early",
+       "dur": 5.0
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "Tips",
+   "rail": true,
+   "kicker": "**TIPS** · Before episode 3",
+   "heading": "4 tips for your [[pipelines]]",
+   "cards": [
+    {
+     "title": "Type every handoff",
+     "text": "A record between agents, not free text"
+    },
+    {
+     "title": "Gate in plain Java",
+     "text": "Free, fast, and easy to test"
+    },
+    {
+     "title": "Pass only what's needed",
+     "text": "Serious bugs only, not the whole review"
+    },
+    {
+     "title": "Test steps offline",
+     "text": "Fake inputs, no API key needed"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Four tips for your pipelines.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "One: type every handoff. A record between agents, not free text.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Two: write your gates in plain Java. They're free, fast, and easy to test.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "Three: pass only what the next agent needs. Our Writer gets the serious bugs, not the whole review.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And four: test each step offline, with fake inputs.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "checks",
+   "chapter": "Recap",
+   "heading": "Recap",
+   "items": [
+    "A pipeline = agents in a **fixed order**, one job each",
+    "Typed handoffs: a **record** + `outputConfig(type)`",
+    "[[Gates]] in plain Java stop early and save tokens"
+   ],
+   "lines": [
+    {
+     "say": "Let's recap.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "A pipeline is agents in a fixed order, each with one job.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Pass typed data between them: a Java record, and output config with its type.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "And gates in plain Java check each step, stop early, and save tokens.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "title": "Next: [[routing]]",
+   "subtitle": "The full Java project is linked in the description",
+   "cta": "Subscribe for episode 3",
+   "lines": [
+    {
+     "say": "The full Java project, with the offline check, is linked in the description. Next episode: routing, where an agent decides which specialist gets the job.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line1"
+      }
+     ]
+    },
+    {
+     "say": "If this helped, like the video, and subscribe to Zero Cost AI so you don't miss episode three. See you there!",
+     "do": [
+      {
+       "k": "show",
+       "el": "line2"
+      }
+     ],
+     "hold": 1.5
+    }
+   ]
+  }
+ ]
+}

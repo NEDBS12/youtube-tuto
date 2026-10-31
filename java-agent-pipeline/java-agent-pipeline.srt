@@ -1,0 +1,236 @@
+1
+00:00:00,600 --> 00:00:06,800
+In episode one, two agents worked together. But they passed plain text, and the second agent always ran.
+
+2
+00:00:07,250 --> 00:00:14,345
+Today, you'll turn them into a real pipeline: typed data between agents, and a check in plain Java that can stop early.
+
+3
+00:00:14,795 --> 00:00:18,529
+It's the most common multi-agent pattern, and the easiest to get right.
+
+4
+00:00:20,079 --> 00:00:21,483
+So, what is an agent pipeline?
+
+5
+00:00:21,933 --> 00:00:25,083
+Agents run in a fixed order, like an assembly line.
+
+6
+00:00:25,533 --> 00:00:28,178
+Each agent's output becomes the next agent's input.
+
+7
+00:00:28,628 --> 00:00:33,069
+Every step has one small job, so every step is easier to get right.
+
+8
+00:00:33,519 --> 00:00:38,659
+And between steps, you can add gates: plain Java checks that decide if the line continues.
+
+9
+00:00:40,109 --> 00:00:41,855
+The key idea is typed data.
+
+10
+00:00:42,305 --> 00:00:47,979
+If an agent answers in free text, your code can't easily check it. You'd have to parse sentences.
+
+11
+00:00:48,429 --> 00:00:52,761
+With structured outputs, Claude's answer must follow a JSON schema you give it.
+
+12
+00:00:53,211 --> 00:01:00,532
+And in Java, you don't even write the schema. The SDK builds it from a record, and parses the answer back into that record.
+
+13
+00:01:00,982 --> 00:01:04,809
+So you can check the data with normal Java code. No extra LLM call.
+
+14
+00:01:06,259 --> 00:01:07,463
+When should you use a pipeline?
+
+15
+00:01:07,913 --> 00:01:13,180
+When the steps are known in advance, always in the same order, and you can check each result.
+
+16
+00:01:13,630 --> 00:01:20,696
+If the next step depends on what you find, that's routing. That's the next episode. And if one prompt already works, keep it simple.
+
+17
+00:01:22,146 --> 00:01:24,798
+We'll upgrade the code-review team from episode one.
+
+18
+00:01:25,248 --> 00:01:31,965
+Before: the Reviewer wrote free text notes, and the Writer always ran, even when there was nothing to fix.
+
+19
+00:01:32,415 --> 00:01:42,377
+After: the Reviewer returns a Review record. A gate in Java drops the low-severity bugs, and stops if nothing serious is left. The Writer only runs when it's needed.
+
+20
+00:01:43,827 --> 00:01:45,348
+Here's the team from episode one.
+
+21
+00:01:45,798 --> 00:01:50,590
+The Reviewer returns a string. My code can't tell if it found zero bugs or ten.
+
+22
+00:01:51,040 --> 00:01:54,415
+So the Writer always runs, and always costs tokens.
+
+23
+00:01:55,865 --> 00:01:59,616
+Step one: typed answers. I create Review dot java.
+
+24
+00:02:00,066 --> 00:02:02,879
+A review has a short summary, and a list of bugs.
+
+25
+00:02:05,729 --> 00:02:09,971
+Each bug has a line number, a severity, the problem, and the fix.
+
+26
+00:02:10,421 --> 00:02:16,981
+Severity is an enum: low, medium or high. Claude can only answer with one of these three values.
+
+27
+00:02:17,431 --> 00:02:21,077
+That's the contract between the two agents. Plain Java records.
+
+28
+00:02:22,427 --> 00:02:27,150
+Step two: upgrade the Agent class. The top is the same as in episode one.
+
+29
+00:02:27,600 --> 00:02:33,356
+Now the new part: a run method with a type. You give it a class, and you get an object of that class back.
+
+30
+00:02:36,872 --> 00:02:46,036
+One line does the magic: output config with the type. The SDK turns the record into a JSON schema, and Claude's answer must match it.
+
+31
+00:02:46,486 --> 00:02:52,044
+The loop is the same as before. Structured outputs work together with tools in the same request.
+
+32
+00:03:03,114 --> 00:03:08,586
+When Claude is done, I don't return text anymore. I return the typed object, already parsed.
+
+33
+00:03:09,036 --> 00:03:17,607
+And the old run method still works. It asks for a small Answer record, and returns its text. So text agents, like our Writer, don't change.
+
+34
+00:03:18,957 --> 00:03:22,522
+Step three: the gate. In ReviewPipeline dot java.
+
+35
+00:03:22,972 --> 00:03:26,491
+The gate is plain Java. No LLM, no tokens.
+
+36
+00:03:28,822 --> 00:03:34,738
+It keeps only the bugs that are not low severity. Because the review is typed, it's one simple filter.
+
+37
+00:03:35,188 --> 00:03:39,244
+And because it's a normal method, I can unit test it without calling the API.
+
+38
+00:03:40,594 --> 00:03:45,092
+Step four: build the pipeline. The two agents are the same as in episode one.
+
+39
+00:03:47,942 --> 00:03:52,518
+Step one of the pipeline: the Reviewer returns a Review object, not a string.
+
+40
+00:03:55,470 --> 00:03:59,522
+Here I pass Review dot class. That's the only change for a typed agent.
+
+41
+00:03:59,972 --> 00:04:05,732
+Then the gate. If no serious bugs are left, the pipeline stops here. The Writer is never called.
+
+42
+00:04:06,182 --> 00:04:11,316
+Otherwise, the Writer gets only the serious bugs. Less input, cleaner context.
+
+43
+00:04:12,666 --> 00:04:16,743
+Let's test it. First, an offline check. No API key needed.
+
+44
+00:04:17,193 --> 00:04:21,877
+The SDK accepts our records as a schema, and the gate works on fake reviews.
+
+45
+00:04:22,327 --> 00:04:25,216
+Now the real pipeline, on the buggy user service.
+
+46
+00:04:25,666 --> 00:04:28,501
+Serious bugs, so the gate let the Writer run.
+
+47
+00:04:28,951 --> 00:04:31,656
+Now a clean file: a small price calculator.
+
+48
+00:04:32,951 --> 00:04:38,103
+Nothing serious, so the pipeline stopped at the gate. The Writer never ran, and cost nothing.
+
+49
+00:04:39,653 --> 00:04:41,033
+Four tips for your pipelines.
+
+50
+00:04:41,483 --> 00:04:46,216
+One: type every handoff. A record between agents, not free text.
+
+51
+00:04:46,666 --> 00:04:51,637
+Two: write your gates in plain Java. They're free, fast, and easy to test.
+
+52
+00:04:52,087 --> 00:04:57,987
+Three: pass only what the next agent needs. Our Writer gets the serious bugs, not the whole review.
+
+53
+00:04:58,437 --> 00:05:02,295
+And four: test each step offline, with fake inputs.
+
+54
+00:05:03,845 --> 00:05:04,499
+Let's recap.
+
+55
+00:05:04,949 --> 00:05:08,395
+A pipeline is agents in a fixed order, each with one job.
+
+56
+00:05:08,845 --> 00:05:13,743
+Pass typed data between them: a Java record, and output config with its type.
+
+57
+00:05:14,193 --> 00:05:18,776
+And gates in plain Java check each step, stop early, and save tokens.
+
+58
+00:05:20,226 --> 00:05:29,451
+The full Java project, with the offline check, is linked in the description. Next episode: routing, where an agent decides which specialist gets the job.
+
+59
+00:05:29,901 --> 00:05:36,186
+If this helped, like the video, and subscribe to Zero Cost AI so you don't miss episode three. See you there!
+
