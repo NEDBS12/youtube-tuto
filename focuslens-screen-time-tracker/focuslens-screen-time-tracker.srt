@@ -1,0 +1,240 @@
+1
+00:00:00,600 --> 00:00:04,855
+At the end of a long day at the computer, can you say how many hours you really worked?
+
+2
+00:00:05,305 --> 00:00:12,559
+Most of us can't. We remember being busy, but not the twenty minutes on YouTube, or the quick Instagram check that turned into an hour.
+
+3
+00:00:13,009 --> 00:00:20,603
+In this video, I'll show you FocusLens, a free app that tracks where your screen time goes. And I'll explain exactly how it works inside.
+
+4
+00:00:22,153 --> 00:00:23,411
+So, what is FocusLens?
+
+5
+00:00:23,861 --> 00:00:32,751
+Think of it as a fitness tracker, but for your attention. A small program runs in the background and notes which app or website is in front of you, every second.
+
+6
+00:00:33,201 --> 00:00:38,013
+Then a dashboard in your browser turns that data into time, scores, and habits.
+
+7
+00:00:38,463 --> 00:00:44,105
+It's plain Python with no extra packages and no account. And your data never leaves your computer.
+
+8
+00:00:45,555 --> 00:00:47,903
+Under the hood, it works in four stages.
+
+9
+00:00:48,353 --> 00:00:55,404
+First, capture. Every second, it asks Windows which window is active, and how long since you last clicked or typed.
+
+10
+00:00:55,854 --> 00:01:05,669
+Second, classify. Rules turn a program and a tab title into a named activity, like YouTube, and a category: productive, neutral, or distracting.
+
+11
+00:01:06,119 --> 00:01:12,754
+Third, analyze. The sessions become a focus score, deep-work blocks, and the habit loops that cost you time.
+
+12
+00:01:13,204 --> 00:01:17,141
+And fourth, show it all on a dashboard that only your own computer can open.
+
+13
+00:01:17,591 --> 00:01:22,450
+Everything is stored in one small SQLite database file, right next to the app.
+
+14
+00:01:23,900 --> 00:01:32,145
+Without tracking, all you have is a feeling. I worked all day. But the hours are a blur, and distractions always feel shorter than they were.
+
+15
+00:01:32,595 --> 00:01:41,746
+With FocusLens, you get facts: exact productive time, exact lost time, and the specific habits behind them. And you can't improve what you don't measure.
+
+16
+00:01:43,296 --> 00:01:47,160
+Here's the dashboard. This is demo data, so you can see a full day.
+
+17
+00:01:47,610 --> 00:01:54,456
+Top left is your focus score, from zero to a hundred. It measures how much of your screen time went into real work.
+
+18
+00:01:54,906 --> 00:02:03,211
+Next to it: total screen time, productive time against your daily goal, and time lost to distractions, each compared with your seven-day average.
+
+19
+00:02:03,661 --> 00:02:12,805
+The day timeline shows every minute, colored by category. The purple bars underneath are deep-work blocks: twenty-five minutes or more of focused work.
+
+20
+00:02:13,255 --> 00:02:20,773
+And on the right, the coach turns your numbers into advice: your best focus hour, your biggest time sink, and habit loops.
+
+21
+00:02:22,223 --> 00:02:28,585
+Further down, every app and website is listed with the exact time you spent on it, and how many separate sessions.
+
+22
+00:02:29,035 --> 00:02:34,707
+Open one, and you see the window titles behind it. Here, the exact GitHub page I was on.
+
+23
+00:02:35,157 --> 00:02:42,140
+If something is in the wrong category, change it right here. Every day, past and present, is recalculated instantly.
+
+24
+00:02:43,590 --> 00:02:49,941
+Then the trends: productive time versus lost time, day by day, with the focus score above each bar.
+
+25
+00:02:50,391 --> 00:02:59,675
+This heatmap is my favorite part. Each square is one hour of one weekday, over the last four weeks. The redder it is, the more time you usually lose there.
+
+26
+00:03:00,125 --> 00:03:09,479
+And these are your triggers: what you open right after working. After VS Code, X. After the terminal, YouTube. Once you see the loop, you can break it.
+
+27
+00:03:11,029 --> 00:03:16,113
+Now let's look inside. I built this whole app with Claude Code, starting from a single prompt.
+
+28
+00:03:18,963 --> 00:03:26,279
+Claude wrote the tracker, the rules, the analytics and the dashboard. Then it ran the app with demo data and checked the result.
+
+29
+00:03:26,729 --> 00:03:28,586
+Let's walk through the four parts that matter.
+
+30
+00:03:30,036 --> 00:03:33,128
+Step one is the tracker, in tracker dot py.
+
+31
+00:03:33,578 --> 00:03:41,679
+Windows can tell any program which window is in front. Python's built-in ctypes module lets us ask, without installing anything.
+
+32
+00:03:42,129 --> 00:03:50,849
+This function returns two clues: the program's file name, like chrome dot exe, and the window title, which for a browser is the name of the tab.
+
+33
+00:03:51,299 --> 00:03:56,527
+The third clue is idle time: the seconds since your last mouse move or key press.
+
+34
+00:03:56,977 --> 00:04:05,079
+After three minutes without input, you're marked as away. But while a video plays, it waits thirty minutes, because watching doesn't need clicks.
+
+35
+00:04:05,529 --> 00:04:16,551
+Every second, the loop compares the new sample with the current one. If nothing changed, it just extends the session. So an hour in one app is one database row, not thirty-six hundred.
+
+36
+00:04:17,501 --> 00:04:22,129
+Step two: turning raw data into names. That's rules dot py.
+
+37
+00:04:22,579 --> 00:04:27,760
+Apps are matched by their file name. code dot exe is VS Code, and it's productive.
+
+38
+00:04:28,210 --> 00:04:35,553
+Browsers are trickier, because chrome dot exe could be anything. So for browsers, it looks for keywords in the tab title instead.
+
+39
+00:04:36,003 --> 00:04:45,695
+These rules are saved in a config dot json file you can edit. And when you change a category in the dashboard, it's stored as an override, which wins over every rule.
+
+40
+00:04:46,645 --> 00:04:50,948
+Step three, analytics dot py, turns sessions into scores.
+
+41
+00:04:51,398 --> 00:05:01,171
+A deep-work block is twenty-five minutes or more of productive work. Interruptions under two minutes don't break it, so a quick glance at a message won't reset your streak.
+
+42
+00:05:01,621 --> 00:05:09,004
+The focus score is your productive time, plus forty percent of neutral time like email, divided by your total active time.
+
+43
+00:05:09,454 --> 00:05:16,575
+And here's how triggers are found. Every time a productive block is directly followed by a distracting one, that pair gets counted.
+
+44
+00:05:17,525 --> 00:05:25,537
+Step four, app dot py, ties it all together. It starts the tracker in the background, next to a small web server for the dashboard.
+
+45
+00:05:25,987 --> 00:05:35,152
+The server only listens on one two seven dot zero dot zero dot one. That address means this computer, so nobody else on your network can open your data.
+
+46
+00:05:36,102 --> 00:05:40,065
+Now let's run it. To try it with sample data first, add the demo flag.
+
+47
+00:05:40,515 --> 00:05:47,133
+Your browser opens the dashboard with three weeks of sample data, so you can explore every chart before tracking anything.
+
+48
+00:05:47,583 --> 00:05:49,979
+To track for real, run it without the flag.
+
+49
+00:05:50,429 --> 00:05:58,302
+I also packaged it as a Windows exe with PyInstaller, and put a shortcut in my Startup folder. Now it starts quietly every time I log in.
+
+50
+00:06:00,052 --> 00:06:02,042
+A few tips to get real value from it.
+
+51
+00:06:02,492 --> 00:06:09,004
+First, fix the categories on day one. A YouTube tutorial can be work for you. One click in the dashboard sets it.
+
+52
+00:06:09,454 --> 00:06:15,294
+Second, track a full week before judging. Habits show up as patterns, not in a single day.
+
+53
+00:06:15,744 --> 00:06:19,855
+Third, find your peak focus hour, and protect it for your hardest task.
+
+54
+00:06:20,305 --> 00:06:26,979
+And fourth, break one loop at a time. Pick your top trigger, and when you feel the urge, stand up and stretch instead.
+
+55
+00:06:28,429 --> 00:06:29,082
+Let's recap.
+
+56
+00:06:29,532 --> 00:06:34,910
+FocusLens samples the active window every second, and merges the samples into sessions.
+
+57
+00:06:35,360 --> 00:06:40,484
+Rules turn apps and tab titles into productive, neutral, or distracting time.
+
+58
+00:06:40,934 --> 00:06:46,229
+And the analytics reveal your focus score, your deep work, and the habit loops that steal your time.
+
+59
+00:06:47,779 --> 00:06:52,655
+All the code is on GitHub, linked in the description, with steps to run it yourself.
+
+60
+00:06:53,105 --> 00:06:57,419
+If this helped, subscribe for more free AI builds. See you in the next one.
+

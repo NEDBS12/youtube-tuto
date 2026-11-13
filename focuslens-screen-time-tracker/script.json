@@ -1,0 +1,917 @@
+{
+ "title": "focuslens-screen-time-tracker",
+ "steps": [
+  "Capture the window",
+  "Name the activity",
+  "Score your day",
+  "Serve the dashboard",
+  "Run it"
+ ],
+ "scenes": [
+  {
+   "type": "title",
+   "chapter": "Introduction",
+   "kicker": "Built with Claude Code · how it works",
+   "title": "Where Does Your\n[[Screen Time]] Go?",
+   "subtitle": "FocusLens: a free tracker that shows how focused you really are",
+   "lines": [
+    {
+     "say": "At the end of a long day at the computer, can you say how many hours you really worked?"
+    },
+    {
+     "say": "Most of us can't. We remember being busy, but not the twenty minutes on YouTube, or the quick Instagram check that turned into an hour."
+    },
+    {
+     "say": "In this video, I'll show you FocusLens, a free app that tracks where your screen time goes. And I'll explain exactly how it works inside.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "chapter": "What is FocusLens?",
+   "kicker": "**01** · The app",
+   "heading": "What is [[FocusLens]]?",
+   "items": [
+    "A **tracker** that notes which app or website is in front of you, **every second**",
+    "A **dashboard** in your browser that turns it into **time, scores and habits**",
+    "**Free and private**: plain Python, no account, data never leaves your PC"
+   ],
+   "card": {
+    "title": "THE PROJECT",
+    "code": "screenAnalyze/\n  tracker.py    watches the active window\n  rules.py      app or site -> category\n  analytics.py  scores, focus, habits\n  storage.py    SQLite database\n  app.py        local web server\n  static/       the dashboard"
+   },
+   "lines": [
+    {
+     "say": "So, what is FocusLens?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Think of it as a fitness tracker, but for your attention. A small program runs in the background and notes which app or website is in front of you, every second.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Then a dashboard in your browser turns that data into time, scores, and habits.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "It's plain Python with no extra packages and no account. And your data never leaves your computer.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      },
+      {
+       "k": "show",
+       "el": "card",
+       "at": 1.0
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "How it works",
+   "kicker": "**02** · How it works",
+   "heading": "Four stages, [[every second]]",
+   "rows": [
+    {
+     "label": "1 · Capture",
+     "text": "Active window + seconds since your last click or key"
+    },
+    {
+     "label": "2 · Classify",
+     "text": "chrome.exe + tab title -> “YouTube · Distracting”"
+    },
+    {
+     "label": "3 · Analyze",
+     "text": "Focus score, deep work, switches, habit loops"
+    },
+    {
+     "label": "4 · Show",
+     "text": "A private dashboard at 127.0.0.1:8765"
+    }
+   ],
+   "banner": "✓ Everything stays on your PC, in one small SQLite file",
+   "lines": [
+    {
+     "say": "Under the hood, it works in four stages.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "First, capture. Every second, it asks Windows which window is active, and how long since you last clicked or typed.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ]
+    },
+    {
+     "say": "Second, classify. Rules turn a program and a tab title into a named activity, like YouTube, and a category: productive, neutral, or distracting.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ]
+    },
+    {
+     "say": "Third, analyze. The sessions become a focus score, deep-work blocks, and the habit loops that cost you time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ]
+    },
+    {
+     "say": "And fourth, show it all on a dashboard that only your own computer can open.",
+     "tts": "And fourth, show it all on a dashboard that only your own computer can open.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row4"
+      }
+     ]
+    },
+    {
+     "say": "Everything is stored in one small SQLite database file, right next to the app.",
+     "tts": "Everything is stored in one small sequel-lite database file, right next to the app.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "Before and after",
+   "kicker": "**03** · Why it helps",
+   "heading": "From a [[feeling]] to facts",
+   "left": {
+    "title": "Without tracking",
+    "body": "“I worked all day.”\n\n• No idea where the hours went\n• Distractions feel like five minutes\n• The same habits, every week"
+   },
+   "right": {
+    "title": "With FocusLens",
+    "body": "**3h 5m** productive · **43m** lost\n\n• Every app linked to its time\n• A focus score for each day\n• Your distraction triggers, named"
+   },
+   "lines": [
+    {
+     "say": "Without tracking, all you have is a feeling. I worked all day. But the hours are a blur, and distractions always feel shorter than they were.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "left",
+       "at": 1.0
+      }
+     ]
+    },
+    {
+     "say": "With FocusLens, you get facts: exact productive time, exact lost time, and the specific habits behind them. And you can't improve what you don't measure.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      },
+      {
+       "k": "show",
+       "el": "right",
+       "at": 0.6
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "chapter": "Dashboard tour",
+   "kicker": "**04** · The dashboard",
+   "img": "shots/1-overview.png",
+   "label": "127.0.0.1:8765 · FocusLens",
+   "marks": [
+    {
+     "x": 16,
+     "y": 11.5,
+     "w": 22.5,
+     "h": 26,
+     "label": "Focus score",
+     "below": true
+    },
+    {
+     "x": 38.8,
+     "y": 11.5,
+     "w": 35.5,
+     "h": 26,
+     "label": "Time, goal and time lost",
+     "below": true
+    },
+    {
+     "x": 16.5,
+     "y": 47,
+     "w": 55,
+     "h": 10,
+     "label": "Every minute of your day"
+    },
+    {
+     "x": 72.6,
+     "y": 38.5,
+     "w": 25.8,
+     "h": 61,
+     "label": "Coach insights"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Here's the dashboard. This is demo data, so you can see a full day.",
+     "do": [
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "Top left is your focus score, from zero to a hundred. It measures how much of your screen time went into real work.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark1"
+      }
+     ]
+    },
+    {
+     "say": "Next to it: total screen time, productive time against your daily goal, and time lost to distractions, each compared with your seven-day average.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark2"
+      }
+     ]
+    },
+    {
+     "say": "The day timeline shows every minute, colored by category. The purple bars underneath are deep-work blocks: twenty-five minutes or more of focused work.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark3"
+      }
+     ]
+    },
+    {
+     "say": "And on the right, the coach turns your numbers into advice: your best focus hour, your biggest time sink, and habit loops.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark4"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "chapter": "Every activity, linked to time",
+   "kicker": "**04** · The dashboard",
+   "img": "shots/3-activities.png",
+   "label": "Where your time went",
+   "marks": [
+    {
+     "x": 5.5,
+     "y": 24,
+     "w": 93,
+     "h": 7.5,
+     "label": "The window titles behind it",
+     "below": true
+    },
+    {
+     "x": 84.3,
+     "y": 15,
+     "w": 12,
+     "h": 81,
+     "label": "Edit category"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Further down, every app and website is listed with the exact time you spent on it, and how many separate sessions.",
+     "do": [
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "Open one, and you see the window titles behind it. Here, the exact GitHub page I was on.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark1"
+      }
+     ]
+    },
+    {
+     "say": "If something is in the wrong category, change it right here. Every day, past and present, is recalculated instantly.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark2"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "chapter": "Trends and habits",
+   "kicker": "**04** · The dashboard",
+   "img": "shots/4-trends-habits.png",
+   "label": "Trends and habits",
+   "marks": [
+    {
+     "x": 2,
+     "y": 24,
+     "w": 46.5,
+     "h": 40,
+     "label": "Productive vs. lost, per day",
+     "below": true
+    },
+    {
+     "x": 51.8,
+     "y": 12.5,
+     "w": 47.6,
+     "h": 31,
+     "label": "When you lose time",
+     "below": true
+    },
+    {
+     "x": 51.8,
+     "y": 54.5,
+     "w": 47.6,
+     "h": 43
+    }
+   ],
+   "lines": [
+    {
+     "say": "Then the trends: productive time versus lost time, day by day, with the focus score above each bar.",
+     "do": [
+      {
+       "k": "show",
+       "el": "frame"
+      },
+      {
+       "k": "show",
+       "el": "mark1",
+       "at": 0.5
+      }
+     ]
+    },
+    {
+     "say": "This heatmap is my favorite part. Each square is one hour of one weekday, over the last four weeks. The redder it is, the more time you usually lose there.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark2"
+      }
+     ]
+    },
+    {
+     "say": "And these are your triggers: what you open right after working. After VS Code, X. After the terminal, YouTube. Once you see the loop, you can break it.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark3"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "chapter": "How I built it with Claude Code",
+   "project": "screenAnalyze",
+   "kicker": "**05** · Inside the code",
+   "lines": [
+    {
+     "say": "Now let's look inside. I built this whole app with Claude Code, starting from a single prompt.",
+     "do": [
+      {
+       "k": "claude"
+      },
+      {
+       "k": "cprompt",
+       "text": "Create an app that tracks how I spend my screen time every day. Make it a dashboard where every activity is linked to time spent, to detect my habits and improve my performance. Modern, professional interface.",
+       "at": 1.2
+      }
+     ]
+    },
+    {
+     "say": "Claude wrote the tracker, the rules, the analytics and the dashboard. Then it ran the app with demo data and checked the result.",
+     "do": [
+      {
+       "k": "cout",
+       "dur": 5,
+       "lines": [
+        "tool:Write(tracker.py)",
+        "tool:Write(rules.py)",
+        "tool:Write(analytics.py)",
+        "tool:Write(storage.py)",
+        "tool:Write(app.py)",
+        "tool:Write(static/index.html)",
+        "tool:Bash(python app.py --demo)",
+        "res:FocusLens dashboard -> http://127.0.0.1:8765/",
+        "",
+        "ai:FocusLens is ready. Run start.bat to begin tracking."
+       ]
+      },
+      {
+       "k": "tree",
+       "path": "tracker.py",
+       "at": 0.6
+      },
+      {
+       "k": "tree",
+       "path": "rules.py",
+       "at": 1.2
+      },
+      {
+       "k": "tree",
+       "path": "analytics.py",
+       "at": 1.8
+      },
+      {
+       "k": "tree",
+       "path": "storage.py",
+       "at": 2.4
+      },
+      {
+       "k": "tree",
+       "path": "app.py",
+       "at": 3.0
+      },
+      {
+       "k": "tree",
+       "path": "static/",
+       "at": 3.6
+      }
+     ]
+    },
+    {
+     "say": "Let's walk through the four parts that matter.",
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "screen",
+   "project": "screenAnalyze",
+   "lines": [
+    {
+     "say": "Step one is the tracker, in tracker dot py.",
+     "do": [
+      {
+       "k": "step",
+       "n": 1
+      },
+      {
+       "k": "file",
+       "path": "tracker.py",
+       "text": "\"\"\"Foreground-window tracker for Windows (stdlib only, uses ctypes).\n\nEvery second it samples the active window (process + title) and the time since\nthe last keyboard/mouse input. Consecutive identical samples are merged into one\nsession row in SQLite, so the database stays small.\n\"\"\"\nimport ctypes\nimport ctypes.wintypes as wt\nimport os\nimport threading\nimport time\n\nimport storage\nimport rules\n\nuser32 = ctypes.WinDLL(\"user32\", use_last_error=True)\nkernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)\n\nPROCESS_QUERY_LIMITED_INFORMATION = 0x1000\n\n\nclass LASTINPUTINFO(ctypes.Structure):\n    _fields_ = [(\"cbSize\", wt.UINT), (\"dwTime\", wt.DWORD)]\n\n\nuser32.GetForegroundWindow.restype = wt.HWND\nuser32.GetWindowTextLengthW.argtypes = [wt.HWND]\nuser32.GetWindowTextW.argtypes = [wt.HWND, wt.LPWSTR, ctypes.c_int]\nuser32.GetWindowThreadProcessId.argtypes = [wt.HWND, ctypes.POINTER(wt.DWORD)]\nkernel32.OpenProcess.restype = wt.HANDLE\nkernel32.QueryFullProcessImageNameW.argtypes = [wt.HANDLE, wt.DWORD, wt.LPWSTR, ctypes.POINTER(wt.DWORD)]\nkernel32.GetTickCount.restype = wt.DWORD\n\n\ndef idle_seconds():\n    info = LASTINPUTINFO()\n    info.cbSize = ctypes.sizeof(LASTINPUTINFO)\n    if not user32.GetLastInputInfo(ctypes.byref(info)):\n        return 0.0\n    elapsed = (kernel32.GetTickCount() - info.dwTime) & 0xFFFFFFFF\n    return elapsed / 1000.0\n\n\ndef foreground_window():\n    \"\"\"Return (exe_name, window_title) of the active window, or (None, None).\"\"\"\n    hwnd = user32.GetForegroundWindow()\n    if not hwnd:\n        return None, None\n    length = user32.GetWindowTextLengthW(hwnd)\n    buf = ctypes.create_unicode_buffer(length + 1)\n    user32.GetWindowTextW(hwnd, buf, length + 1)\n    title = buf.value\n\n    pid = wt.DWORD()\n    user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))\n    exe = None\n    handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid.value)\n    if handle:\n        try:\n            size = wt.DWORD(1024)\n            path = ctypes.create_unicode_buffer(size.value)\n            if kernel32.QueryFullProcessImageNameW(handle, 0, path, ctypes.byref(size)):\n                exe = os.path.basename(path.value).lower()\n        finally:\n            kernel32.CloseHandle(handle)\n    return exe, title\n\n\nclass Tracker(threading.Thread):\n    SAMPLE_EVERY = 1.0\n    FLUSH_EVERY = 10.0\n\n    def __init__(self, db_path):\n        super().__init__(daemon=True)\n        self.db_path = db_path\n        self._stop = threading.Event()\n\n    def stop(self):\n        self._stop.set()\n\n    def _sample(self, cfg):\n        \"\"\"Return (exe, title, started_at) for the current state.\"\"\"\n        now = time.time()\n        exe, title = foreground_window()\n        idle = idle_seconds()\n        threshold = cfg[\"settings\"][\"idle_minutes\"] * 60\n        # Watching a video produces no input; give media a longer grace period.\n        if exe and rules.is_media(exe, title or \"\", cfg):\n            threshold = max(threshold, cfg[\"settings\"][\"media_idle_minutes\"] * 60)\n        if exe in (None, \"lockapp.exe\", \"logonui.exe\") or idle >= threshold:\n            return storage.IDLE, \"\", now - (idle if idle >= threshold else 0)\n        return exe, title or \"\", now\n\n    def run(self):\n        conn = storage.connect(self.db_path)\n        cfg = rules.load_config()\n        cfg_loaded = time.time()\n        current = None  # dict(id, exe, title, end)\n        last_flush = 0.0\n        while not self._stop.is_set():\n            try:\n                if time.time() - cfg_loaded > 30:\n                    cfg, cfg_loaded = rules.load_config(), time.time()\n                exe, title, started = self._sample(cfg)\n                now = time.time()\n                # A sleep/hibernate gap: close the old row where it really ended.\n                if current and now - current[\"end\"] > 30:\n                    storage.update_end(conn, current[\"id\"], current[\"end\"])\n                    current = None\n                if current and current[\"exe\"] == exe and current[\"title\"] == title:\n                    current[\"end\"] = now\n                    if now - last_flush >= self.FLUSH_EVERY:\n                        storage.update_end(conn, current[\"id\"], now)\n                        last_flush = now\n                else:\n                    start = now\n                    if current:\n                        # When going idle, the idle period began at the last input.\n                        start = max(min(started, now), current.get(\"start\", started))\n                        storage.update_end(conn, current[\"id\"], start)\n                    row_id = storage.insert(conn, start, now, exe, title)\n                    current = {\"id\": row_id, \"exe\": exe, \"title\": title, \"start\": start, \"end\": now}\n                    last_flush = now\n            except Exception as exc:  # never let the tracker die\n                print(\"tracker error:\", exc)\n            self._stop.wait(self.SAMPLE_EVERY)\n        if current:\n            storage.update_end(conn, current[\"id\"], time.time())\n        conn.close()\n"
+      }
+     ]
+    },
+    {
+     "say": "Windows can tell any program which window is in front. Python's built-in ctypes module lets us ask, without installing anything.",
+     "tts": "Windows can tell any program which window is in front. Python's built-in C types module lets us ask, without installing anything.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "user32 = ctypes.WinDLL",
+       "label": "Windows API, via ctypes"
+      }
+     ]
+    },
+    {
+     "say": "This function returns two clues: the program's file name, like chrome dot exe, and the window title, which for a browser is the name of the tab.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "def foreground_window",
+       "label": "Which window is active?"
+      }
+     ]
+    },
+    {
+     "say": "The third clue is idle time: the seconds since your last mouse move or key press.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "def idle_seconds",
+       "label": "Time since your last input"
+      }
+     ]
+    },
+    {
+     "say": "After three minutes without input, you're marked as away. But while a video plays, it waits thirty minutes, because watching doesn't need clicks.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "threshold = max(threshold",
+       "label": "Videos get a longer grace period"
+      }
+     ]
+    },
+    {
+     "say": "Every second, the loop compares the new sample with the current one. If nothing changed, it just extends the session. So an hour in one app is one database row, not thirty-six hundred.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "if current and current[\"exe\"] == exe",
+       "label": "Same window? Extend the session",
+       "span": 2
+      }
+     ],
+     "hold": 0.5
+    },
+    {
+     "say": "Step two: turning raw data into names. That's rules dot py.",
+     "do": [
+      {
+       "k": "step",
+       "n": 2
+      },
+      {
+       "k": "file",
+       "path": "rules.py",
+       "text": "\"\"\"Turns a raw (exe, window title) into a named activity and a category.\n\nCategories: productive, neutral, distracting. Everything is editable in\nconfig.json (created on first run) or from the dashboard.\n\"\"\"\nimport copy\nimport json\nimport os\nimport sys\nimport threading\n\nBASE = os.path.dirname(sys.executable if getattr(sys, \"frozen\", False) else os.path.abspath(__file__))\nCONFIG_PATH = os.path.join(BASE, \"config.json\")\nCATEGORIES = (\"productive\", \"neutral\", \"distracting\")\n_lock = threading.Lock()\n\nBROWSERS = {\n    \"chrome.exe\": \"Google Chrome\", \"msedge.exe\": \"Microsoft Edge\", \"firefox.exe\": \"Firefox\",\n    \"brave.exe\": \"Brave\", \"opera.exe\": \"Opera\", \"opera_gx.exe\": \"Opera GX\",\n    \"vivaldi.exe\": \"Vivaldi\", \"arc.exe\": \"Arc\", \"iexplore.exe\": \"Internet Explorer\",\n}\n\nDEFAULT_CONFIG = {\n    \"settings\": {\n        \"goal_hours\": 6,            # daily productive-time goal\n        \"idle_minutes\": 3,          # no input for this long = away\n        \"media_idle_minutes\": 30,   # grace period while a video is playing\n    },\n    # exe -> [display name, category]\n    \"apps\": {\n        \"code.exe\": [\"VS Code\", \"productive\"],\n        \"cursor.exe\": [\"Cursor\", \"productive\"],\n        \"devenv.exe\": [\"Visual Studio\", \"productive\"],\n        \"pycharm64.exe\": [\"PyCharm\", \"productive\"],\n        \"idea64.exe\": [\"IntelliJ IDEA\", \"productive\"],\n        \"webstorm64.exe\": [\"WebStorm\", \"productive\"],\n        \"rider64.exe\": [\"Rider\", \"productive\"],\n        \"datagrip64.exe\": [\"DataGrip\", \"productive\"],\n        \"studio64.exe\": [\"Android Studio\", \"productive\"],\n        \"sublime_text.exe\": [\"Sublime Text\", \"productive\"],\n        \"notepad++.exe\": [\"Notepad++\", \"productive\"],\n        \"windowsterminal.exe\": [\"Terminal\", \"productive\"],\n        \"powershell.exe\": [\"PowerShell\", \"productive\"],\n        \"pwsh.exe\": [\"PowerShell\", \"productive\"],\n        \"cmd.exe\": [\"Command Prompt\", \"productive\"],\n        \"wsl.exe\": [\"WSL\", \"productive\"],\n        \"postman.exe\": [\"Postman\", \"productive\"],\n        \"claude.exe\": [\"Claude\", \"productive\"],\n        \"chatgpt.exe\": [\"ChatGPT\", \"productive\"],\n        \"winword.exe\": [\"Word\", \"productive\"],\n        \"excel.exe\": [\"Excel\", \"productive\"],\n        \"powerpnt.exe\": [\"PowerPoint\", \"productive\"],\n        \"onenote.exe\": [\"OneNote\", \"productive\"],\n        \"notion.exe\": [\"Notion\", \"productive\"],\n        \"obsidian.exe\": [\"Obsidian\", \"productive\"],\n        \"figma.exe\": [\"Figma\", \"productive\"],\n        \"photoshop.exe\": [\"Photoshop\", \"productive\"],\n        \"illustrator.exe\": [\"Illustrator\", \"productive\"],\n        \"acrobat.exe\": [\"Acrobat\", \"productive\"],\n        \"acrord32.exe\": [\"Acrobat Reader\", \"productive\"],\n        \"matlab.exe\": [\"MATLAB\", \"productive\"],\n        \"rstudio.exe\": [\"RStudio\", \"productive\"],\n        \"blender.exe\": [\"Blender\", \"productive\"],\n        \"outlook.exe\": [\"Outlook\", \"neutral\"],\n        \"olk.exe\": [\"Outlook\", \"neutral\"],\n        \"ms-teams.exe\": [\"Teams\", \"neutral\"],\n        \"teams.exe\": [\"Teams\", \"neutral\"],\n        \"slack.exe\": [\"Slack\", \"neutral\"],\n        \"zoom.exe\": [\"Zoom\", \"neutral\"],\n        \"explorer.exe\": [\"File Explorer\", \"neutral\"],\n        \"notepad.exe\": [\"Notepad\", \"neutral\"],\n        \"systemsettings.exe\": [\"Settings\", \"neutral\"],\n        \"taskmgr.exe\": [\"Task Manager\", \"neutral\"],\n        \"spotify.exe\": [\"Spotify\", \"neutral\"],\n        \"whatsapp.exe\": [\"WhatsApp\", \"distracting\"],\n        \"telegram.exe\": [\"Telegram\", \"distracting\"],\n        \"discord.exe\": [\"Discord\", \"distracting\"],\n        \"steam.exe\": [\"Steam\", \"distracting\"],\n        \"steamwebhelper.exe\": [\"Steam\", \"distracting\"],\n        \"epicgameslauncher.exe\": [\"Epic Games\", \"distracting\"],\n        \"vlc.exe\": [\"VLC\", \"distracting\"],\n        \"netflix.exe\": [\"Netflix\", \"distracting\"],\n    },\n    # Matched against browser tab titles (lower-case substring).\n    \"sites\": [\n        {\"name\": \"GitHub\", \"keywords\": [\"github\"], \"category\": \"productive\"},\n        {\"name\": \"Stack Overflow\", \"keywords\": [\"stack overflow\"], \"category\": \"productive\"},\n        {\"name\": \"GitLab\", \"keywords\": [\"gitlab\"], \"category\": \"productive\"},\n        {\"name\": \"ChatGPT\", \"keywords\": [\"chatgpt\"], \"category\": \"productive\"},\n        {\"name\": \"Claude\", \"keywords\": [\"claude\"], \"category\": \"productive\"},\n        {\"name\": \"Google Docs\", \"keywords\": [\"google docs\", \"- google docs\"], \"category\": \"productive\"},\n        {\"name\": \"Google Sheets\", \"keywords\": [\"google sheets\"], \"category\": \"productive\"},\n        {\"name\": \"Google Slides\", \"keywords\": [\"google slides\"], \"category\": \"productive\"},\n        {\"name\": \"Notion\", \"keywords\": [\"notion\"], \"category\": \"productive\"},\n        {\"name\": \"Figma\", \"keywords\": [\"figma\"], \"category\": \"productive\"},\n        {\"name\": \"Jira\", \"keywords\": [\"jira\"], \"category\": \"productive\"},\n        {\"name\": \"Confluence\", \"keywords\": [\"confluence\"], \"category\": \"productive\"},\n        {\"name\": \"Docs & references\", \"keywords\": [\"mdn web docs\", \"w3schools\", \"documentation\", \" docs\", \"devdocs\"], \"category\": \"productive\"},\n        {\"name\": \"Online courses\", \"keywords\": [\"coursera\", \"udemy\", \"edx\", \"khan academy\", \"linkedin learning\"], \"category\": \"productive\"},\n        {\"name\": \"LeetCode\", \"keywords\": [\"leetcode\"], \"category\": \"productive\"},\n        {\"name\": \"Overleaf\", \"keywords\": [\"overleaf\"], \"category\": \"productive\"},\n        {\"name\": \"Localhost\", \"keywords\": [\"localhost\", \"127.0.0.1\"], \"category\": \"productive\"},\n        {\"name\": \"Gmail\", \"keywords\": [\"gmail\", \"inbox (\"], \"category\": \"neutral\"},\n        {\"name\": \"Outlook Web\", \"keywords\": [\"outlook\"], \"category\": \"neutral\"},\n        {\"name\": \"Google Calendar\", \"keywords\": [\"google calendar\"], \"category\": \"neutral\"},\n        {\"name\": \"Google Search\", \"keywords\": [\"- google search\", \"google search\"], \"category\": \"neutral\"},\n        {\"name\": \"Google Translate\", \"keywords\": [\"google translate\"], \"category\": \"neutral\"},\n        {\"name\": \"Wikipedia\", \"keywords\": [\"wikipedia\"], \"category\": \"neutral\"},\n        {\"name\": \"LinkedIn\", \"keywords\": [\"linkedin\"], \"category\": \"neutral\"},\n        {\"name\": \"Medium\", \"keywords\": [\"medium\"], \"category\": \"neutral\"},\n        {\"name\": \"YouTube\", \"keywords\": [\"youtube\"], \"category\": \"distracting\", \"media\": True},\n        {\"name\": \"Netflix\", \"keywords\": [\"netflix\"], \"category\": \"distracting\", \"media\": True},\n        {\"name\": \"Prime Video\", \"keywords\": [\"prime video\"], \"category\": \"distracting\", \"media\": True},\n        {\"name\": \"Disney+\", \"keywords\": [\"disney+\"], \"category\": \"distracting\", \"media\": True},\n        {\"name\": \"Twitch\", \"keywords\": [\"twitch\"], \"category\": \"distracting\", \"media\": True},\n        {\"name\": \"Facebook\", \"keywords\": [\"facebook\"], \"category\": \"distracting\"},\n        {\"name\": \"Instagram\", \"keywords\": [\"instagram\"], \"category\": \"distracting\"},\n        {\"name\": \"TikTok\", \"keywords\": [\"tiktok\"], \"category\": \"distracting\"},\n        {\"name\": \"X / Twitter\", \"keywords\": [\"twitter\", \" / x\"], \"category\": \"distracting\"},\n        {\"name\": \"Reddit\", \"keywords\": [\"reddit\"], \"category\": \"distracting\"},\n        {\"name\": \"Pinterest\", \"keywords\": [\"pinterest\"], \"category\": \"distracting\"},\n        {\"name\": \"Snapchat\", \"keywords\": [\"snapchat\"], \"category\": \"distracting\"},\n        {\"name\": \"WhatsApp Web\", \"keywords\": [\"whatsapp\"], \"category\": \"distracting\"},\n        {\"name\": \"Messenger\", \"keywords\": [\"messenger\"], \"category\": \"distracting\"},\n        {\"name\": \"Online shopping\", \"keywords\": [\"amazon\", \"aliexpress\", \"shein\", \"temu\", \"jumia\", \"ebay\", \"zalando\", \"zara\"], \"category\": \"distracting\"},\n        {\"name\": \"News\", \"keywords\": [\"bbc\", \"cnn\", \"news\"], \"category\": \"distracting\"},\n    ],\n    # activity name -> category, set from the dashboard; wins over everything.\n    \"overrides\": {},\n}\n\n\ndef _merge_defaults(cfg):\n    out = copy.deepcopy(DEFAULT_CONFIG)\n    for key, value in cfg.items():\n        if isinstance(value, dict) and isinstance(out.get(key), dict):\n            out[key].update(value)\n        else:\n            out[key] = value\n    return out\n\n\ndef load_config():\n    with _lock:\n        if not os.path.exists(CONFIG_PATH):\n            save_config(DEFAULT_CONFIG)\n            return copy.deepcopy(DEFAULT_CONFIG)\n        try:\n            with open(CONFIG_PATH, encoding=\"utf-8\") as f:\n                return _merge_defaults(json.load(f))\n        except (OSError, json.JSONDecodeError):\n            return copy.deepcopy(DEFAULT_CONFIG)\n\n\ndef save_config(cfg):\n    tmp = CONFIG_PATH + \".tmp\"\n    with open(tmp, \"w\", encoding=\"utf-8\") as f:\n        json.dump(cfg, f, indent=2, ensure_ascii=False)\n    os.replace(tmp, CONFIG_PATH)\n\n\ndef update_config(mutator):\n    cfg = load_config()\n    mutator(cfg)\n    with _lock:\n        save_config(cfg)\n    return cfg\n\n\ndef _match_site(title, cfg):\n    low = title.lower()\n    for site in cfg[\"sites\"]:\n        if any(k in low for k in site[\"keywords\"]):\n            return site\n    return None\n\n\ndef is_media(exe, title, cfg):\n    if exe in BROWSERS:\n        site = _match_site(title, cfg)\n        return bool(site and site.get(\"media\"))\n    return exe in (\"vlc.exe\", \"netflix.exe\", \"spotify.exe\")\n\n\ndef _pretty_exe(exe):\n    name = exe[:-4] if exe.endswith(\".exe\") else exe\n    return name.replace(\"_\", \" \").replace(\"-\", \" \").title()\n\n\ndef classify(exe, title, cfg):\n    \"\"\"Return (activity, app, category).\"\"\"\n    if exe in BROWSERS:\n        app = BROWSERS[exe]\n        site = _match_site(title, cfg)\n        if site:\n            activity, category = site[\"name\"], site[\"category\"]\n        else:\n            activity, category = \"Web browsing\", \"neutral\"\n    elif exe in cfg[\"apps\"]:\n        app, category = cfg[\"apps\"][exe]\n        activity = app\n    else:\n        app = activity = _pretty_exe(exe)\n        category = \"neutral\"\n    category = cfg[\"overrides\"].get(activity, category)\n    return activity, app, category\n"
+      }
+     ]
+    },
+    {
+     "say": "Apps are matched by their file name. code dot exe is VS Code, and it's productive.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "\"code.exe\": [\"VS Code\", \"productive\"]",
+       "label": "App -> name + category"
+      }
+     ]
+    },
+    {
+     "say": "Browsers are trickier, because chrome dot exe could be anything. So for browsers, it looks for keywords in the tab title instead.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "{\"name\": \"YouTube\", \"keywords\"",
+       "label": "Keywords in the tab title"
+      }
+     ]
+    },
+    {
+     "say": "These rules are saved in a config dot json file you can edit. And when you change a category in the dashboard, it's stored as an override, which wins over every rule.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "category = cfg[\"overrides\"].get",
+       "label": "Your choice always wins"
+      }
+     ],
+     "hold": 0.5
+    },
+    {
+     "say": "Step three, analytics dot py, turns sessions into scores.",
+     "do": [
+      {
+       "k": "step",
+       "n": 3
+      },
+      {
+       "k": "file",
+       "path": "analytics.py",
+       "text": "\"\"\"Turns raw sessions into the numbers the dashboard shows.\"\"\"\nfrom collections import Counter, defaultdict\nfrom datetime import date, datetime, timedelta\n\nimport rules\nimport storage\n\nDEEP_WORK_MIN = 25 * 60       # a productive block this long counts as deep work\nFOCUS_GAP_TOLERANCE = 2 * 60  # short non-productive blips don't break a focus block\nSWITCH_MIN = 5                # ignore windows shown for less than this (alt-tab noise)\n\n\ndef day_bounds(d):\n    start = datetime(d.year, d.month, d.day).timestamp()\n    end = datetime.combine(d + timedelta(days=1), datetime.min.time()).timestamp()\n    return start, end\n\n\ndef _classified(conn, t0, t1, cfg):\n    out = []\n    for s, e, exe, title in storage.fetch(conn, t0, t1):\n        if exe == storage.IDLE:\n            out.append({\"start\": s, \"end\": e, \"activity\": \"Away\", \"app\": \"\", \"category\": \"idle\", \"title\": \"\"})\n        else:\n            activity, app, category = rules.classify(exe, title, cfg)\n            out.append({\"start\": s, \"end\": e, \"activity\": activity, \"app\": app,\n                        \"category\": category, \"title\": title})\n    return out\n\n\ndef _merge_runs(rows, gap=3):\n    \"\"\"Join consecutive rows of the same activity into one block.\"\"\"\n    blocks = []\n    for r in rows:\n        last = blocks[-1] if blocks else None\n        if last and last[\"activity\"] == r[\"activity\"] and r[\"start\"] - last[\"end\"] <= gap:\n            last[\"end\"] = max(last[\"end\"], r[\"end\"])\n        else:\n            blocks.append({k: r[k] for k in (\"start\", \"end\", \"activity\", \"app\", \"category\")})\n    return blocks\n\n\ndef _focus_blocks(blocks):\n    \"\"\"Productive stretches, tolerating short interruptions.\"\"\"\n    out, cur = [], None\n    for b in blocks:\n        if b[\"category\"] == \"productive\":\n            if cur and b[\"start\"] - cur[\"end\"] <= FOCUS_GAP_TOLERANCE:\n                cur[\"end\"] = b[\"end\"]\n                cur[\"work\"] += b[\"end\"] - b[\"start\"]\n            else:\n                cur = {\"start\": b[\"start\"], \"end\": b[\"end\"], \"work\": b[\"end\"] - b[\"start\"]}\n                out.append(cur)\n    return out\n\n\ndef _summary(rows):\n    totals = Counter()\n    for r in rows:\n        totals[r[\"category\"]] += r[\"end\"] - r[\"start\"]\n    active = totals[\"productive\"] + totals[\"neutral\"] + totals[\"distracting\"]\n    focus = round(100 * (totals[\"productive\"] + 0.4 * totals[\"neutral\"]) / active) if active else 0\n    return {\n        \"productive\": round(totals[\"productive\"]), \"neutral\": round(totals[\"neutral\"]),\n        \"distracting\": round(totals[\"distracting\"]), \"idle\": round(totals[\"idle\"]),\n        \"active\": round(active), \"focus_score\": focus,\n    }\n\n\ndef day_report(conn, d, cfg):\n    t0, t1 = day_bounds(d)\n    rows = _classified(conn, t0, t1, cfg)\n    blocks = _merge_runs(rows)\n    summary = _summary(rows)\n\n    hourly = [{\"hour\": h, \"productive\": 0, \"neutral\": 0, \"distracting\": 0} for h in range(24)]\n    for r in rows:\n        if r[\"category\"] == \"idle\":\n            continue\n        s = r[\"start\"]\n        while s < r[\"end\"]:\n            h = int((s - t0) // 3600)\n            if h > 23:\n                break\n            chunk_end = min(r[\"end\"], t0 + (h + 1) * 3600)\n            hourly[h][r[\"category\"]] += chunk_end - s\n            s = chunk_end\n    for h in hourly:\n        for c in rules.CATEGORIES:\n            h[c] = round(h[c])\n\n    acts = {}\n    for r in rows:\n        if r[\"category\"] == \"idle\":\n            continue\n        a = acts.setdefault(r[\"activity\"], {\"name\": r[\"activity\"], \"app\": r[\"app\"], \"category\": r[\"category\"],\n                                            \"seconds\": 0, \"sessions\": 0, \"titles\": Counter()})\n        dur = r[\"end\"] - r[\"start\"]\n        a[\"seconds\"] += dur\n        if r[\"title\"]:\n            a[\"titles\"][r[\"title\"]] += dur\n    for b in blocks:\n        if b[\"activity\"] in acts and b[\"end\"] - b[\"start\"] >= SWITCH_MIN:\n            acts[b[\"activity\"]][\"sessions\"] += 1\n    activities = sorted(acts.values(), key=lambda a: -a[\"seconds\"])\n    for a in activities:\n        a[\"seconds\"] = round(a[\"seconds\"])\n        a[\"titles\"] = [{\"title\": t, \"seconds\": round(s)} for t, s in a[\"titles\"].most_common(5)]\n\n    meaningful = [b for b in blocks if b[\"category\"] != \"idle\" and b[\"end\"] - b[\"start\"] >= SWITCH_MIN]\n    switches = sum(1 for a, b in zip(meaningful, meaningful[1:]) if a[\"activity\"] != b[\"activity\"])\n    focus = _focus_blocks(blocks)\n    deep = [f for f in focus if f[\"work\"] >= DEEP_WORK_MIN]\n    longest = max((f[\"work\"] for f in focus), default=0)\n    active_rows = [r for r in rows if r[\"category\"] != \"idle\"]\n\n    return {\n        \"date\": d.isoformat(),\n        \"summary\": summary,\n        \"switches\": switches,\n        \"switches_per_hour\": round(switches / (summary[\"active\"] / 3600), 1) if summary[\"active\"] >= 600 else 0,\n        \"longest_focus\": round(longest),\n        \"deep_sessions\": [{\"start\": f[\"start\"], \"end\": f[\"end\"], \"seconds\": round(f[\"work\"])} for f in deep],\n        \"first_seen\": active_rows[0][\"start\"] if active_rows else None,\n        \"last_seen\": active_rows[-1][\"end\"] if active_rows else None,\n        \"hourly\": hourly,\n        \"timeline\": [{**b, \"seconds\": round(b[\"end\"] - b[\"start\"])} for b in blocks if b[\"end\"] - b[\"start\"] >= 1],\n        \"activities\": activities,\n        \"goal_hours\": cfg[\"settings\"][\"goal_hours\"],\n    }\n\n\ndef range_report(conn, end, days, cfg):\n    out = []\n    for i in range(days - 1, -1, -1):\n        d = end - timedelta(days=i)\n        t0, t1 = day_bounds(d)\n        s = _summary(_classified(conn, t0, t1, cfg))\n        s[\"date\"] = d.isoformat()\n        out.append(s)\n    return out\n\n\ndef habits_report(conn, end, days, cfg):\n    \"\"\"Patterns across many days: when distraction happens and what triggers it.\"\"\"\n    t0, _ = day_bounds(end - timedelta(days=days - 1))\n    _, t1 = day_bounds(end)\n    rows = _classified(conn, t0, t1, cfg)\n\n    # weekday x hour grid of minutes per category\n    grid = defaultdict(lambda: Counter())\n    day_seen = set()\n    for r in rows:\n        if r[\"category\"] == \"idle\":\n            continue\n        s = r[\"start\"]\n        while s < r[\"end\"]:\n            dt = datetime.fromtimestamp(s)\n            day_seen.add(dt.date())\n            next_hour = (dt.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)).timestamp()\n            e = min(r[\"end\"], next_hour)\n            grid[(dt.weekday(), dt.hour)][r[\"category\"]] += e - s\n            s = e\n    weekday_count = Counter(d.weekday() for d in day_seen)\n    heat = []\n    for wd in range(7):\n        n = max(weekday_count[wd], 1)\n        for h in range(24):\n            c = grid[(wd, h)]\n            heat.append({\"weekday\": wd, \"hour\": h,\n                         \"productive\": round(c[\"productive\"] / n / 60, 1),\n                         \"neutral\": round(c[\"neutral\"] / n / 60, 1),\n                         \"distracting\": round(c[\"distracting\"] / n / 60, 1)})\n\n    # what you jump to right after productive work\n    blocks = [b for b in _merge_runs(rows) if b[\"end\"] - b[\"start\"] >= SWITCH_MIN]\n    triggers = Counter()\n    for a, b in zip(blocks, blocks[1:]):\n        if a[\"category\"] == \"productive\" and b[\"category\"] == \"distracting\":\n            triggers[(a[\"activity\"], b[\"activity\"])] += 1\n    top_triggers = [{\"from\": f, \"to\": t, \"count\": n} for (f, t), n in triggers.most_common(5)]\n\n    # how long distraction episodes last once they start\n    episodes = []\n    run = 0\n    for b in blocks:\n        if b[\"category\"] == \"distracting\":\n            run += b[\"end\"] - b[\"start\"]\n        elif run:\n            episodes.append(run)\n            run = 0\n    if run:\n        episodes.append(run)\n\n    return {\n        \"days\": days,\n        \"tracked_days\": len(day_seen),\n        \"heatmap\": heat,\n        \"triggers\": top_triggers,\n        \"distraction_episodes\": len(episodes),\n        \"avg_distraction_episode\": round(sum(episodes) / len(episodes)) if episodes else 0,\n    }\n\n\ndef parse_date(s):\n    try:\n        return date.fromisoformat(s)\n    except (TypeError, ValueError):\n        return date.today()\n"
+      }
+     ]
+    },
+    {
+     "say": "A deep-work block is twenty-five minutes or more of productive work. Interruptions under two minutes don't break it, so a quick glance at a message won't reset your streak.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "DEEP_WORK_MIN = 25 * 60",
+       "label": "Deep work rules",
+       "span": 2
+      }
+     ]
+    },
+    {
+     "say": "The focus score is your productive time, plus forty percent of neutral time like email, divided by your total active time.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "focus = round(100 * (totals[\"productive\"]",
+       "label": "The focus score"
+      }
+     ]
+    },
+    {
+     "say": "And here's how triggers are found. Every time a productive block is directly followed by a distracting one, that pair gets counted.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "if a[\"category\"] == \"productive\" and b[\"category\"] == \"distracting\"",
+       "label": "Habit loop detector"
+      }
+     ],
+     "hold": 0.5
+    },
+    {
+     "say": "Step four, app dot py, ties it all together. It starts the tracker in the background, next to a small web server for the dashboard.",
+     "do": [
+      {
+       "k": "step",
+       "n": 4
+      },
+      {
+       "k": "file",
+       "path": "app.py",
+       "text": "\"\"\"FocusLens - screen-time tracker + local dashboard.\n\n    python app.py            track this PC and serve the dashboard\n    python app.py --demo     dashboard over generated sample data (no tracking)\n    python app.py --no-browser\n\nThe dashboard is served only on 127.0.0.1; all data stays in this folder.\n\"\"\"\nimport argparse\nimport json\nimport os\nimport socket\nimport sys\nimport webbrowser\nfrom datetime import date\nfrom http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer\nfrom urllib.parse import parse_qs, urlparse\n\nimport analytics\nimport rules\nimport storage\n\nif getattr(sys, \"frozen\", False):  # running as FocusLens.exe: data next to the exe\n    BASE = os.path.dirname(sys.executable)\n    STATIC = os.path.join(sys._MEIPASS, \"static\")\nelse:\n    BASE = os.path.dirname(os.path.abspath(__file__))\n    STATIC = os.path.join(BASE, \"static\")\nPORT = 8765\n\n\nclass Handler(SimpleHTTPRequestHandler):\n    db_path = None\n    demo = False\n\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, directory=STATIC, **kwargs)\n\n    def log_message(self, *args):\n        pass\n\n    def _json(self, payload, status=200):\n        body = json.dumps(payload).encode(\"utf-8\")\n        self.send_response(status)\n        self.send_header(\"Content-Type\", \"application/json; charset=utf-8\")\n        self.send_header(\"Cache-Control\", \"no-store\")\n        self.send_header(\"Content-Length\", str(len(body)))\n        self.end_headers()\n        self.wfile.write(body)\n\n    def do_GET(self):\n        url = urlparse(self.path)\n        if not url.path.startswith(\"/api/\"):\n            return super().do_GET()\n        q = {k: v[0] for k, v in parse_qs(url.query).items()}\n        cfg = rules.load_config()\n        conn = storage.connect(self.db_path)\n        try:\n            d = analytics.parse_date(q.get(\"date\"))\n            if url.path == \"/api/day\":\n                return self._json(analytics.day_report(conn, d, cfg))\n            if url.path == \"/api/range\":\n                days = min(max(int(q.get(\"days\", 7)), 1), 90)\n                return self._json(analytics.range_report(conn, d, days, cfg))\n            if url.path == \"/api/habits\":\n                days = min(max(int(q.get(\"days\", 28)), 1), 90)\n                return self._json(analytics.habits_report(conn, d, days, cfg))\n            if url.path == \"/api/config\":\n                return self._json({\"settings\": cfg[\"settings\"], \"demo\": self.demo,\n                                   \"today\": date.today().isoformat()})\n            self._json({\"error\": \"not found\"}, 404)\n        finally:\n            conn.close()\n\n    def do_POST(self):\n        length = int(self.headers.get(\"Content-Length\") or 0)\n        try:\n            body = json.loads(self.rfile.read(length) or b\"{}\")\n        except json.JSONDecodeError:\n            return self._json({\"error\": \"bad json\"}, 400)\n        path = urlparse(self.path).path\n\n        if path == \"/api/override\":\n            activity, category = body.get(\"activity\"), body.get(\"category\")\n            if not activity or category not in rules.CATEGORIES:\n                return self._json({\"error\": \"invalid\"}, 400)\n            rules.update_config(lambda c: c[\"overrides\"].__setitem__(activity, category))\n            return self._json({\"ok\": True})\n\n        if path == \"/api/settings\":\n            def apply(c):\n                for key, lo, hi in ((\"goal_hours\", 0.5, 16), (\"idle_minutes\", 1, 60), (\"media_idle_minutes\", 1, 180)):\n                    if key in body:\n                        c[\"settings\"][key] = min(max(float(body[key]), lo), hi)\n            cfg = rules.update_config(apply)\n            return self._json({\"settings\": cfg[\"settings\"]})\n\n        self._json({\"error\": \"not found\"}, 404)\n\n\ndef port_in_use(port):\n    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:\n        return s.connect_ex((\"127.0.0.1\", port)) == 0\n\n\ndef main():\n    ap = argparse.ArgumentParser(description=\"FocusLens screen-time tracker\")\n    ap.add_argument(\"--demo\", action=\"store_true\", help=\"use generated sample data\")\n    ap.add_argument(\"--no-browser\", action=\"store_true\")\n    ap.add_argument(\"--port\", type=int, default=PORT)\n    args = ap.parse_args()\n    url = f\"http://127.0.0.1:{args.port}/\"\n\n    if port_in_use(args.port):\n        print(\"FocusLens is already running ->\", url)\n        if not args.no_browser:\n            webbrowser.open(url)\n        return\n\n    if args.demo:\n        import demo\n        Handler.db_path = os.path.join(BASE, \"demo.db\")\n        Handler.demo = True\n        demo.generate(Handler.db_path)\n    else:\n        if sys.platform != \"win32\":\n            sys.exit(\"Tracking works on Windows only. Use --demo to preview the dashboard.\")\n        from tracker import Tracker\n        Handler.db_path = os.path.join(BASE, \"screentime.db\")\n        storage.connect(Handler.db_path).close()\n        Tracker(Handler.db_path).start()\n\n    server = ThreadingHTTPServer((\"127.0.0.1\", args.port), Handler)\n    print(\"FocusLens dashboard ->\", url, \"(demo data)\" if args.demo else \"(tracking)\")\n    if not args.no_browser:\n        webbrowser.open(url)\n    try:\n        server.serve_forever()\n    except KeyboardInterrupt:\n        pass\n\n\nif __name__ == \"__main__\":\n    main()\n"
+      },
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "Tracker(Handler.db_path).start()",
+       "label": "Tracking runs in the background",
+       "at": 1.5
+      }
+     ]
+    },
+    {
+     "say": "The server only listens on one two seven dot zero dot zero dot one. That address means this computer, so nobody else on your network can open your data.",
+     "do": [
+      {
+       "k": "callout",
+       "target": "editor",
+       "match": "server = ThreadingHTTPServer((\"127.0.0.1\"",
+       "label": "Only your PC can connect"
+      }
+     ],
+     "hold": 0.5
+    },
+    {
+     "say": "Now let's run it. To try it with sample data first, add the demo flag.",
+     "do": [
+      {
+       "k": "step",
+       "n": 5
+      },
+      {
+       "k": "clear"
+      },
+      {
+       "k": "cmd",
+       "text": "python app.py --demo",
+       "out": [
+        "FocusLens dashboard -> http://127.0.0.1:8765/ (demo data)"
+       ],
+       "at": 1.5
+      }
+     ]
+    },
+    {
+     "say": "Your browser opens the dashboard with three weeks of sample data, so you can explore every chart before tracking anything."
+    },
+    {
+     "say": "To track for real, run it without the flag.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "python app.py",
+       "out": [
+        "FocusLens dashboard -> http://127.0.0.1:8765/ (tracking)"
+       ]
+      }
+     ]
+    },
+    {
+     "say": "I also packaged it as a Windows exe with PyInstaller, and put a shortcut in my Startup folder. Now it starts quietly every time I log in.",
+     "tts": "I also packaged it as a Windows exe with Pie Installer, and put a shortcut in my Startup folder. Now it starts quietly every time I log in.",
+     "do": [
+      {
+       "k": "cmd",
+       "text": "pip install pyinstaller",
+       "out": [
+        "Successfully installed pyinstaller"
+       ]
+      },
+      {
+       "k": "cmd",
+       "text": "python -m PyInstaller --onefile --windowed --name FocusLens --add-data \"static;static\" app.py",
+       "out": [
+        "Building EXE from EXE-00.toc completed successfully.",
+        "Build complete! The results are available in: dist"
+       ]
+      }
+     ],
+     "hold": 0.8
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "Tips",
+   "rail": false,
+   "kicker": "**06** · Tips",
+   "heading": "Get [[real value]] from it",
+   "cards": [
+    {
+     "title": "Fix categories on day one",
+     "text": "A YouTube tutorial can be work. Set your own rules."
+    },
+    {
+     "title": "Track a full week",
+     "text": "Habits show up as patterns, not in one day."
+    },
+    {
+     "title": "Protect your peak hour",
+     "text": "Do your hardest task in your best focus hour."
+    },
+    {
+     "title": "Break one loop at a time",
+     "text": "Pick your top trigger and replace it."
+    }
+   ],
+   "lines": [
+    {
+     "say": "A few tips to get real value from it.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "First, fix the categories on day one. A YouTube tutorial can be work for you. One click in the dashboard sets it.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Second, track a full week before judging. Habits show up as patterns, not in a single day.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "Third, find your peak focus hour, and protect it for your hardest task.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And fourth, break one loop at a time. Pick your top trigger, and when you feel the urge, stand up and stretch instead.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "checks",
+   "chapter": "Recap",
+   "heading": "Recap",
+   "items": [
+    "It **samples** the active window every second and merges it into sessions",
+    "**Rules** turn apps and tab titles into productive, neutral or distracting",
+    "**Analytics** reveal your focus score, deep work and habit loops"
+   ],
+   "lines": [
+    {
+     "say": "Let's recap.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "FocusLens samples the active window every second, and merges the samples into sessions.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Rules turn apps and tab titles into productive, neutral, or distracting time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "And the analytics reveal your focus score, your deep work, and the habit loops that steal your time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "chapter": "Get the code",
+   "title": "Find Your [[Focus]]",
+   "subtitle": "All the code is on GitHub: link in the description",
+   "cta": "Subscribe for more free AI builds",
+   "lines": [
+    {
+     "say": "All the code is on GitHub, linked in the description, with steps to run it yourself.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line1"
+      }
+     ]
+    },
+    {
+     "say": "If this helped, subscribe for more free AI builds. See you in the next one.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line2"
+      }
+     ],
+     "hold": 1.2
+    }
+   ]
+  }
+ ]
+}

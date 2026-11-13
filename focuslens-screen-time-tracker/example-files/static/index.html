@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FocusLens</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235b4bd6'/><circle cx='16' cy='16' r='8' fill='none' stroke='white' stroke-width='3'/><circle cx='16' cy='16' r='3' fill='white'/></svg>">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try { const t = localStorage.getItem("fl-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg></div>
+      <div><strong>FocusLens</strong><span>Screen-time coach</span></div>
+    </div>
+    <nav>
+      <a href="#overview" class="active"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zm10 7h6V11h-6zM4 20h6v-4H4zm10-16v4h6V4z"/></svg>Overview</a>
+      <a href="#timeline"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Timeline</a>
+      <a href="#activities"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg>Activities</a>
+      <a href="#trends"><svg viewBox="0 0 24 24"><path d="M5 20V10m7 10V4m7 16v-7"/></svg>Trends</a>
+      <a href="#habits"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9M12 7v5l3 3"/></svg>Habits</a>
+      <a href="#log"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h3"/></svg>Session log</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="live"><span class="dot"></span><span id="liveText">Tracking active</span></div>
+      <p>Data is stored only on this PC.</p>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <h1 id="greeting">Your day</h1>
+        <p class="sub" id="dateLabel">—</p>
+      </div>
+      <div class="controls">
+        <span class="badge" id="demoBadge" hidden>Demo data</span>
+        <div class="datenav">
+          <button class="icon-btn" id="prevDay" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <input type="date" id="datePick" aria-label="Pick a date">
+          <button class="icon-btn" id="nextDay" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+          <button class="btn ghost" id="todayBtn">Today</button>
+        </div>
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><svg viewBox="0 0 24 24"><path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/></svg></button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      </div>
+    </header>
+
+    <section id="overview" class="grid kpis">
+      <article class="card score-card">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
+            <circle cx="60" cy="60" r="50" class="ring-track"/>
+            <circle cx="60" cy="60" r="50" class="ring-value" id="scoreRing"/>
+          </svg>
+          <div class="ring-label"><strong id="scoreValue">0</strong><span>focus score</span></div>
+        </div>
+        <div class="score-text">
+          <h3 id="scoreTitle">—</h3>
+          <p id="scoreDesc">—</p>
+          <div class="split" id="splitBar" aria-hidden="true"></div>
+          <ul class="legend" id="splitLegend"></ul>
+        </div>
+      </article>
+      <article class="card kpi"><span class="kpi-label">Screen time</span><strong class="kpi-value" id="kActive">—</strong><span class="kpi-foot" id="kActiveFoot">—</span></article>
+      <article class="card kpi"><span class="kpi-label"><i class="sw productive"></i>Productive</span><strong class="kpi-value" id="kProd">—</strong>
+        <div class="goal"><div class="goal-bar"><span id="goalFill"></span></div><span class="kpi-foot" id="goalText">—</span></div></article>
+      <article class="card kpi"><span class="kpi-label"><i class="sw distracting"></i>Time lost</span><strong class="kpi-value" id="kLost">—</strong><span class="kpi-foot" id="kLostFoot">—</span></article>
+      <article class="card kpi"><span class="kpi-label">Longest focus</span><strong class="kpi-value" id="kStreak">—</strong><span class="kpi-foot" id="kStreakFoot">—</span></article>
+      <article class="card kpi"><span class="kpi-label">Context switches</span><strong class="kpi-value" id="kSwitch">—</strong><span class="kpi-foot" id="kSwitchFoot">—</span></article>
+    </section>
+
+    <section class="grid two">
+      <article class="card" id="timeline">
+        <div class="card-head"><div><h2>Day timeline</h2><p>Every activity, minute by minute. Hover for details.</p></div>
+          <ul class="legend inline"><li><i class="sw productive"></i>Productive</li><li><i class="sw neutral"></i>Neutral</li><li><i class="sw distracting"></i>Distracting</li><li><i class="sw idle"></i>Away</li></ul></div>
+        <div class="timeline" id="timelineChart"></div>
+        <div class="deep" id="deepList"></div>
+        <h3 class="minor">Hour by hour</h3>
+        <div class="chart" id="hourlyChart"></div>
+      </article>
+      <article class="card insights-card">
+        <div class="card-head"><div><h2>Coach insights</h2><p>What your habits say today.</p></div></div>
+        <ul class="insights" id="insights"></ul>
+      </article>
+    </section>
+
+    <section class="card" id="activities">
+      <div class="card-head"><div><h2>Where your time went</h2><p>Each app and website, linked to the time you spent. Change a category and every day updates.</p></div>
+        <div class="seg" id="actFilter" role="tablist">
+          <button class="on" data-f="all">All</button><button data-f="productive">Productive</button><button data-f="neutral">Neutral</button><button data-f="distracting">Distracting</button>
+        </div></div>
+      <div class="acts" id="actList"></div>
+    </section>
+
+    <section class="grid two-even">
+      <article class="card" id="trends">
+        <div class="card-head"><div><h2>Trend</h2><p>Productive vs. lost time per day.</p></div>
+          <div class="seg" id="rangeSeg"><button class="on" data-d="7">7 days</button><button data-d="14">14 days</button><button data-d="30">30 days</button></div></div>
+        <div class="trend-stats" id="trendStats"></div>
+        <div class="chart" id="trendChart"></div>
+      </article>
+      <article class="card" id="habits">
+        <div class="card-head"><div><h2>Distraction habits</h2><p>Average minutes lost by weekday and hour, last 4 weeks.</p></div></div>
+        <div class="heat" id="heatmap"></div>
+        <div class="heat-scale"><span>less</span><i></i><span>more lost time</span></div>
+        <h3 class="minor">Your triggers</h3>
+        <ul class="triggers" id="triggers"></ul>
+      </article>
+    </section>
+
+    <section class="card" id="log">
+      <div class="card-head"><div><h2>Session log</h2><p>Every block of the selected day.</p></div>
+        <button class="btn ghost" id="logToggle">Show all</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Start</th><th>End</th><th>Duration</th><th>Activity</th><th>App</th><th>Category</th></tr></thead><tbody id="logBody"></tbody></table></div>
+    </section>
+    <footer class="foot">FocusLens · runs locally at 127.0.0.1 · edit categories in <code>config.json</code></footer>
+  </main>
+</div>
+
+<div class="tooltip" id="tip" role="tooltip"></div>
+
+<dialog id="settings">
+  <form method="dialog" class="settings">
+    <h2>Settings</h2>
+    <label>Daily productive goal (hours)<input type="number" step="0.5" min="0.5" max="16" id="sGoal"></label>
+    <label>Mark me as away after no input for (minutes)<input type="number" min="1" max="60" id="sIdle"></label>
+    <label>…but while watching a video, wait (minutes)<input type="number" min="1" max="180" id="sMedia"></label>
+    <div class="row"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" id="sSave" value="save">Save</button></div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
