@@ -24,7 +24,7 @@ DEFAULT_CONFIG = {
     "settings": {
         "goal_hours": 6,            # daily productive-time goal
         "idle_minutes": 3,          # no input for this long = away
-        "media_idle_minutes": 30,   # grace period while a video is playing
+        "audio_idle_minutes": 240,  # while a video/call plays sound, stay "present" up to this long
     },
     # exe -> [display name, category]
     "apps": {
@@ -108,11 +108,11 @@ DEFAULT_CONFIG = {
         {"name": "Wikipedia", "keywords": ["wikipedia"], "category": "neutral"},
         {"name": "LinkedIn", "keywords": ["linkedin"], "category": "neutral"},
         {"name": "Medium", "keywords": ["medium"], "category": "neutral"},
-        {"name": "YouTube", "keywords": ["youtube"], "category": "distracting", "media": True},
-        {"name": "Netflix", "keywords": ["netflix"], "category": "distracting", "media": True},
-        {"name": "Prime Video", "keywords": ["prime video"], "category": "distracting", "media": True},
-        {"name": "Disney+", "keywords": ["disney+"], "category": "distracting", "media": True},
-        {"name": "Twitch", "keywords": ["twitch"], "category": "distracting", "media": True},
+        {"name": "YouTube", "keywords": ["youtube"], "category": "distracting"},
+        {"name": "Netflix", "keywords": ["netflix"], "category": "distracting"},
+        {"name": "Prime Video", "keywords": ["prime video"], "category": "distracting"},
+        {"name": "Disney+", "keywords": ["disney+"], "category": "distracting"},
+        {"name": "Twitch", "keywords": ["twitch"], "category": "distracting"},
         {"name": "Facebook", "keywords": ["facebook"], "category": "distracting"},
         {"name": "Instagram", "keywords": ["instagram"], "category": "distracting"},
         {"name": "TikTok", "keywords": ["tiktok"], "category": "distracting"},
@@ -175,11 +175,16 @@ def _match_site(title, cfg):
     return None
 
 
-def is_media(exe, title, cfg):
-    if exe in BROWSERS:
-        site = _match_site(title, cfg)
-        return bool(site and site.get("media"))
-    return exe in ("vlc.exe", "netflix.exe", "spotify.exe")
+# Apps where you watch or listen without touching the mouse: sound from them means you are present.
+MEDIA_APPS = {
+    "vlc.exe", "netflix.exe", "spotify.exe", "wmplayer.exe", "potplayer64.exe", "mpc-hc64.exe",
+    "video.ui.exe", "microsoft.media.player.exe", "zoom.exe", "ms-teams.exe", "teams.exe",
+    "slack.exe", "discord.exe", "whatsapp.exe", "telegram.exe",
+}
+
+
+def plays_media(exe):
+    return exe in BROWSERS or exe in MEDIA_APPS
 
 
 def _pretty_exe(exe):

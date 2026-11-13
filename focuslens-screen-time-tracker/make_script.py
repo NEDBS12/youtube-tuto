@@ -117,8 +117,8 @@ scenes = [
        call("def foreground_window", "Which window is active?")),
      L("The third clue is idle time: the seconds since your last mouse move or key press.",
        call("def idle_seconds", "Time since your last input")),
-     L("After three minutes without input, you're marked as away. But while a video plays, it waits thirty minutes, because watching doesn't need clicks.",
-       call("threshold = max(threshold", "Videos get a longer grace period")),
+     L("After three minutes without input, you're marked as away. But watching a course or a video needs no clicks, so it also listens: while a browser or video player is playing sound, you still count as present.",
+       call("if exe and rules.plays_media(exe)", "Sound playing? You're still watching")),
      L("Every second, the loop compares the new sample with the current one. If nothing changed, it just extends the session. So an hour in one app is one database row, not thirty-six hundred.",
        call('if current and current["exe"] == exe', "Same window? Extend the session", span=2), hold=0.5),
 

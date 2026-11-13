@@ -34,7 +34,7 @@ Copy the whole `example-files/` folder. All the files work together:
 
 - Tracking works on Windows only. On Mac/Linux, `python3 app.py --demo` still shows the dashboard.
 - Change categories in the dashboard, or edit `config.json` (created on first run) to add apps and sites.
-- Away time: 3 minutes without input (30 while a video plays). Change it in the dashboard's settings.
+- Away time: 3 minutes without input. While a browser, video player or call app is playing sound (a course, a video, a meeting), you stay present for up to 4 hours. Change both in the dashboard's settings.
 
 ## Files in this folder
 

@@ -131,110 +131,110 @@ This function returns two clues: the program's file name, like chrome dot exe, a
 The third clue is idle time: the seconds since your last mouse move or key press.
 
 34
-00:03:56,977 --> 00:04:05,079
-After three minutes without input, you're marked as away. But while a video plays, it waits thirty minutes, because watching doesn't need clicks.
+00:03:56,977 --> 00:04:08,815
+After three minutes without input, you're marked as away. But watching a course or a video needs no clicks, so it also listens: while a browser or video player is playing sound, you still count as present.
 
 35
-00:04:05,529 --> 00:04:16,551
+00:04:09,265 --> 00:04:20,286
 Every second, the loop compares the new sample with the current one. If nothing changed, it just extends the session. So an hour in one app is one database row, not thirty-six hundred.
 
 36
-00:04:17,501 --> 00:04:22,129
+00:04:21,236 --> 00:04:25,864
 Step two: turning raw data into names. That's rules dot py.
 
 37
-00:04:22,579 --> 00:04:27,760
+00:04:26,314 --> 00:04:31,496
 Apps are matched by their file name. code dot exe is VS Code, and it's productive.
 
 38
-00:04:28,210 --> 00:04:35,553
+00:04:31,946 --> 00:04:39,288
 Browsers are trickier, because chrome dot exe could be anything. So for browsers, it looks for keywords in the tab title instead.
 
 39
-00:04:36,003 --> 00:04:45,695
+00:04:39,738 --> 00:04:49,431
 These rules are saved in a config dot json file you can edit. And when you change a category in the dashboard, it's stored as an override, which wins over every rule.
 
 40
-00:04:46,645 --> 00:04:50,948
+00:04:50,381 --> 00:04:54,684
 Step three, analytics dot py, turns sessions into scores.
 
 41
-00:04:51,398 --> 00:05:01,171
+00:04:55,134 --> 00:05:04,907
 A deep-work block is twenty-five minutes or more of productive work. Interruptions under two minutes don't break it, so a quick glance at a message won't reset your streak.
 
 42
-00:05:01,621 --> 00:05:09,004
+00:05:05,357 --> 00:05:12,739
 The focus score is your productive time, plus forty percent of neutral time like email, divided by your total active time.
 
 43
-00:05:09,454 --> 00:05:16,575
+00:05:13,189 --> 00:05:20,310
 And here's how triggers are found. Every time a productive block is directly followed by a distracting one, that pair gets counted.
 
 44
-00:05:17,525 --> 00:05:25,537
+00:05:21,260 --> 00:05:29,272
 Step four, app dot py, ties it all together. It starts the tracker in the background, next to a small web server for the dashboard.
 
 45
-00:05:25,987 --> 00:05:35,152
+00:05:29,722 --> 00:05:38,888
 The server only listens on one two seven dot zero dot zero dot one. That address means this computer, so nobody else on your network can open your data.
 
 46
-00:05:36,102 --> 00:05:40,065
+00:05:39,838 --> 00:05:43,801
 Now let's run it. To try it with sample data first, add the demo flag.
 
 47
-00:05:40,515 --> 00:05:47,133
+00:05:44,251 --> 00:05:50,868
 Your browser opens the dashboard with three weeks of sample data, so you can explore every chart before tracking anything.
 
 48
-00:05:47,583 --> 00:05:49,979
+00:05:51,318 --> 00:05:53,715
 To track for real, run it without the flag.
 
 49
-00:05:50,429 --> 00:05:58,302
+00:05:54,165 --> 00:06:02,037
 I also packaged it as a Windows exe with PyInstaller, and put a shortcut in my Startup folder. Now it starts quietly every time I log in.
 
 50
-00:06:00,052 --> 00:06:02,042
+00:06:03,787 --> 00:06:05,778
 A few tips to get real value from it.
 
 51
-00:06:02,492 --> 00:06:09,004
+00:06:06,228 --> 00:06:12,739
 First, fix the categories on day one. A YouTube tutorial can be work for you. One click in the dashboard sets it.
 
 52
-00:06:09,454 --> 00:06:15,294
+00:06:13,189 --> 00:06:19,029
 Second, track a full week before judging. Habits show up as patterns, not in a single day.
 
 53
-00:06:15,744 --> 00:06:19,855
+00:06:19,479 --> 00:06:23,590
 Third, find your peak focus hour, and protect it for your hardest task.
 
 54
-00:06:20,305 --> 00:06:26,979
+00:06:24,040 --> 00:06:30,714
 And fourth, break one loop at a time. Pick your top trigger, and when you feel the urge, stand up and stretch instead.
 
 55
-00:06:28,429 --> 00:06:29,082
+00:06:32,164 --> 00:06:32,818
 Let's recap.
 
 56
-00:06:29,532 --> 00:06:34,910
+00:06:33,268 --> 00:06:38,646
 FocusLens samples the active window every second, and merges the samples into sessions.
 
 57
-00:06:35,360 --> 00:06:40,484
+00:06:39,096 --> 00:06:44,219
 Rules turn apps and tab titles into productive, neutral, or distracting time.
 
 58
-00:06:40,934 --> 00:06:46,229
+00:06:44,669 --> 00:06:49,965
 And the analytics reveal your focus score, your deep work, and the habit loops that steal your time.
 
 59
-00:06:47,779 --> 00:06:52,655
+00:06:51,515 --> 00:06:56,390
 All the code is on GitHub, linked in the description, with steps to run it yourself.
 
 60
-00:06:53,105 --> 00:06:57,419
+00:06:56,840 --> 00:07:01,155
 If this helped, subscribe for more free AI builds. See you in the next one.
 

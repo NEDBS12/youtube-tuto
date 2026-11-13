@@ -89,7 +89,7 @@ class Handler(SimpleHTTPRequestHandler):
 
         if path == "/api/settings":
             def apply(c):
-                for key, lo, hi in (("goal_hours", 0.5, 16), ("idle_minutes", 1, 60), ("media_idle_minutes", 1, 180)):
+                for key, lo, hi in (("goal_hours", 0.5, 16), ("idle_minutes", 1, 60), ("audio_idle_minutes", 5, 600)):
                     if key in body:
                         c["settings"][key] = min(max(float(body[key]), lo), hi)
             cfg = rules.update_config(apply)

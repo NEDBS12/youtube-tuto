@@ -367,12 +367,12 @@ $("#themeBtn").onclick = () => {
 };
 $("#settingsBtn").onclick = async () => {
   const { settings } = await api("/api/config");
-  $("#sGoal").value = settings.goal_hours; $("#sIdle").value = settings.idle_minutes; $("#sMedia").value = settings.media_idle_minutes;
+  $("#sGoal").value = settings.goal_hours; $("#sIdle").value = settings.idle_minutes; $("#sMedia").value = settings.audio_idle_minutes;
   $("#settings").showModal();
 };
 $("#sSave").onclick = async (e) => {
   e.preventDefault();
-  await api("/api/settings", { goal_hours: +$("#sGoal").value, idle_minutes: +$("#sIdle").value, media_idle_minutes: +$("#sMedia").value });
+  await api("/api/settings", { goal_hours: +$("#sGoal").value, idle_minutes: +$("#sIdle").value, audio_idle_minutes: +$("#sMedia").value });
   $("#settings").close();
   load();
 };
