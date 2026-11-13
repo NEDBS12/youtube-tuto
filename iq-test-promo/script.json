@@ -1,0 +1,701 @@
+{
+ "title": "iq-test-promo",
+ "voice": "en-US-AvaMultilingualNeural",
+ "rate": "+0%",
+ "steps": [
+  "Open",
+  "Answer",
+  "Review"
+ ],
+ "scenes": [
+  {
+   "type": "title",
+   "chapter": "Introduction",
+   "kicker": "Free desktop app · Windows",
+   "title": "How Sharp Is\n[[Your Mind?]]",
+   "subtitle": "Meet Adult IQ Test: 32 questions, 25 minutes, instant results",
+   "lines": [
+    {
+     "say": "Have you ever wondered how sharp your mind really is?"
+    },
+    {
+     "say": "Meet Adult IQ Test, a free app that challenges your reasoning in just twenty-five minutes.",
+     "tts": "Meet Adult I Q Test, a free app that challenges your reasoning in just twenty-five minutes."
+    },
+    {
+     "say": "And the moment you finish, it shows you exactly where you stand.",
+     "hold": 0.7
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "What it tests",
+   "rail": false,
+   "kicker": "**01** · What it tests",
+   "heading": "Four ways of [[thinking]]",
+   "cards": [
+    {
+     "title": "Numerical",
+     "text": "Number sequences and quick math traps"
+    },
+    {
+     "title": "Verbal",
+     "text": "Analogies, vocabulary and odd-one-out"
+    },
+    {
+     "title": "Logical",
+     "text": "Deduction and lateral thinking"
+    },
+    {
+     "title": "Pattern & Spatial",
+     "text": "Letter patterns, cubes and mirrors"
+    }
+   ],
+   "lines": [
+    {
+     "say": "The test has thirty-two questions, covering four ways of thinking.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Numerical reasoning, with sequences and sneaky math traps.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Verbal reasoning, with analogies and vocabulary.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "Logical reasoning, where you follow the clues to the only possible answer.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And pattern and spatial reasoning, where you turn shapes around in your head.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "compare",
+   "chapter": "Try one now",
+   "kicker": "**02** · Try one now",
+   "heading": "Can you [[solve this?]]",
+   "left": {
+    "title": "The question",
+    "body": "A bat and a ball cost **$1.10** in total.\nThe bat costs **$1.00 more** than the ball.\n\nHow much does the ball cost?"
+   },
+   "right": {
+    "title": "The answer",
+    "body": "**5 cents**, not 10.\n\nBall = x, bat = x + $1.00\n2x + $1.00 = $1.10\nx = **$0.05**"
+   },
+   "lines": [
+    {
+     "say": "Let's warm up with a real question from the test.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "A bat and a ball cost one dollar ten in total. The bat costs one dollar more than the ball. How much does the ball cost?",
+     "do": [
+      {
+       "k": "show",
+       "el": "left"
+      }
+     ]
+    },
+    {
+     "say": "Pause the video if you want to think about it.",
+     "hold": 2.5
+    },
+    {
+     "say": "Most people say ten cents. But then the bat would cost one dollar ten, and the total would be one dollar twenty.",
+     "do": [
+      {
+       "k": "show",
+       "el": "arrow"
+      }
+     ]
+    },
+    {
+     "say": "The right answer is five cents. That's the kind of trap the test is full of.",
+     "do": [
+      {
+       "k": "show",
+       "el": "right"
+      }
+     ],
+     "hold": 0.7
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "chapter": "Take the test",
+   "kicker": "**03** · Take the test",
+   "heading": "A clean, [[calm]] start",
+   "img": "shots/01-intro.png",
+   "w": 2160,
+   "h": 1215,
+   "label": "Adult IQ Test",
+   "points": [
+    "**32 questions** in **25 minutes**",
+    "Harder questions are **worth more**",
+    "Add your name, then press **Start**"
+   ],
+   "lines": [
+    {
+     "say": "When you open the app, you're welcomed by a clean, calm start screen.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "You'll get thirty-two questions and twenty-five minutes.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "Harder questions are worth more points, so every answer counts.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "Just type your name, press start, and the clock begins.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "kicker": "**03** · Take the test",
+   "heading": "One question at a [[time]]",
+   "img": "shots/03-logical.png",
+   "w": 2160,
+   "h": 1215,
+   "label": "Question 20 of 32",
+   "marks": [
+    {
+     "x": 89,
+     "y": 1,
+     "w": 9,
+     "h": 7,
+     "label": "Live timer",
+     "below": true
+    },
+    {
+     "x": 70.5,
+     "y": 21.5,
+     "w": 7.5,
+     "h": 4,
+     "label": "Difficulty",
+     "below": true
+    },
+    {
+     "x": 21,
+     "y": 73,
+     "w": 58.5,
+     "h": 25,
+     "label": "Jump to any question"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Each question has its own card, so you can focus on one thing at a time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "The timer stays in the corner, and turns red in the final minute.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark1"
+      }
+     ]
+    },
+    {
+     "say": "These little bars tell you how hard the question is.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark2"
+      }
+     ]
+    },
+    {
+     "say": "And if you get stuck, use this map to skip ahead, then come back whenever you like.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "kicker": "**03** · Take the test",
+   "heading": "From numbers to [[3D thinking]]",
+   "img": "shots/04-spatial.png",
+   "w": 2160,
+   "h": 1215,
+   "label": "Question 27 of 32",
+   "zoom": 0.06,
+   "lines": [
+    {
+     "say": "The questions get more interesting as you go, all the way to spatial puzzles like this painted cube.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "Take your time on these. They're the ones that turn a good score into a great one.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "chapter": "Your results",
+   "kicker": "**04** · Your results",
+   "heading": "Your [[estimated IQ]]",
+   "img": "shots/05-result.png",
+   "w": 2160,
+   "h": 1215,
+   "label": "Results",
+   "points": [
+    "Score on a **55 to 145** scale",
+    "Your **percentile**",
+    "Classification and **time taken**"
+   ],
+   "lines": [
+    {
+     "say": "Now for the exciting part. Your results appear instantly.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "Your estimated IQ is shown on a gauge, from fifty-five to one hundred forty-five.",
+     "tts": "Your estimated I Q is shown on a gauge, from fifty-five to one hundred forty-five.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "You also see your percentile, so you know how you compare with everyone else.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "Plus your classification, how many you got right, and how long you took.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "kicker": "**04** · Your results",
+   "heading": "Your strengths at a [[glance]]",
+   "img": "shots/06-skills.png",
+   "w": 2160,
+   "h": 1215,
+   "label": "Score by skill area",
+   "marks": [
+    {
+     "x": 22,
+     "y": 60,
+     "w": 56,
+     "h": 15.5,
+     "label": "One bar per skill area"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Scroll down, and your score is broken down by skill area.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "So you can see exactly where you shine, and where there's room to grow.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark1"
+      }
+     ],
+     "hold": 0.5
+    }
+   ]
+  },
+  {
+   "type": "shot",
+   "kicker": "**04** · Your results",
+   "heading": "Learn from every [[mistake]]",
+   "img": "shots/07-review.png",
+   "w": 2160,
+   "h": 1215,
+   "label": "Answer review",
+   "marks": [
+    {
+     "x": 20.5,
+     "y": 11,
+     "w": 59,
+     "h": 23.5,
+     "label": "Your answer, the right one, and why",
+     "below": true
+    }
+   ],
+   "lines": [
+    {
+     "say": "And here's what makes this app special: the answer review.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      },
+      {
+       "k": "show",
+       "el": "frame"
+      }
+     ]
+    },
+    {
+     "say": "For every question, you see your answer, the correct one, and a short explanation.",
+     "do": [
+      {
+       "k": "show",
+       "el": "mark1"
+      }
+     ]
+    },
+    {
+     "say": "So it's not just a score. It's practice that makes you sharper every time.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "rows",
+   "chapter": "Get started",
+   "kicker": "**05** · Get started",
+   "heading": "Ready in [[seconds]]",
+   "rows": [
+    {
+     "label": "Unzip",
+     "text": "Extract the **IQTest** folder anywhere on your PC"
+    },
+    {
+     "label": "Open",
+     "text": "Double-click **IQTest.exe**"
+    },
+    {
+     "label": "Play",
+     "text": "The test opens in your **browser**, ready to start"
+    }
+   ],
+   "banner": "Windows · Free · No installation · No Java needed",
+   "lines": [
+    {
+     "say": "Getting started takes just a few seconds.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Unzip the IQTest folder anywhere on your computer.",
+     "tts": "Unzip the I Q Test folder anywhere on your computer.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row1"
+      }
+     ]
+    },
+    {
+     "say": "Double-click IQTest.exe.",
+     "tts": "Double-click I Q Test dot E X E.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row2"
+      }
+     ]
+    },
+    {
+     "say": "A small window opens, and the test appears right in your browser.",
+     "do": [
+      {
+       "k": "show",
+       "el": "row3"
+      }
+     ]
+    },
+    {
+     "say": "There's nothing to install, and you don't need Java. It just works.",
+     "do": [
+      {
+       "k": "show",
+       "el": "banner"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "cards",
+   "chapter": "Tips for your best score",
+   "rail": false,
+   "kicker": "**06** · Tips",
+   "heading": "Tips for your [[best score]]",
+   "cards": [
+    {
+     "title": "Find a quiet spot",
+     "text": "Give yourself 25 uninterrupted minutes"
+    },
+    {
+     "title": "Don't rush",
+     "text": "Hard questions are worth 3× the points"
+    },
+    {
+     "title": "Skip and return",
+     "text": "Use the question map when you're stuck"
+    },
+    {
+     "title": "Read the review",
+     "text": "The explanations are how you improve"
+    }
+   ],
+   "lines": [
+    {
+     "say": "Before you begin, here are four quick tips.",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Find a quiet spot, and give yourself twenty-five minutes without interruptions.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card1"
+      }
+     ]
+    },
+    {
+     "say": "Don't rush. The hardest questions are worth three times as much.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card2"
+      }
+     ]
+    },
+    {
+     "say": "If a question stops you, skip it, and come back with the question map.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card3"
+      }
+     ]
+    },
+    {
+     "say": "And afterwards, read the explanations. That's where the real progress happens.",
+     "do": [
+      {
+       "k": "show",
+       "el": "card4"
+      }
+     ],
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "checks",
+   "chapter": "Why you'll love it",
+   "heading": "Why you'll [[love it]]",
+   "items": [
+    "**32 questions** across 4 reasoning areas",
+    "Instant **IQ estimate**, percentile and breakdown",
+    "An **answer review** that helps you improve"
+   ],
+   "lines": [
+    {
+     "say": "So, why will you love it?",
+     "do": [
+      {
+       "k": "show",
+       "el": "heading"
+      }
+     ]
+    },
+    {
+     "say": "Thirty-two carefully chosen questions, across four reasoning areas.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item1"
+      }
+     ]
+    },
+    {
+     "say": "An instant IQ estimate, with your percentile and a full breakdown.",
+     "tts": "An instant I Q estimate, with your percentile and a full breakdown.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item2"
+      }
+     ]
+    },
+    {
+     "say": "And an answer review that helps you get better every time.",
+     "do": [
+      {
+       "k": "show",
+       "el": "item3"
+      }
+     ]
+    },
+    {
+     "say": "Just remember, it's a fun estimate for self-assessment, not a clinical IQ test.",
+     "tts": "Just remember, it's a fun estimate for self-assessment, not a clinical I Q test.",
+     "hold": 0.6
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "title": "Challenge Your Mind",
+   "subtitle": "Take the test and share your score in the comments",
+   "cta": "Subscribe to Zero Cost AI for more free apps",
+   "lines": [
+    {
+     "say": "Now it's your turn. Take the test, and tell me your score in the comments.",
+     "do": [
+      {
+       "k": "show",
+       "el": "line1"
+      }
+     ]
+    },
+    {
+     "say": "And subscribe to Zero Cost AI for more free apps like this one. See you next time!",
+     "do": [
+      {
+       "k": "show",
+       "el": "line2",
+       "at": 1.0
+      }
+     ],
+     "hold": 1.5
+    }
+   ]
+  }
+ ]
+}

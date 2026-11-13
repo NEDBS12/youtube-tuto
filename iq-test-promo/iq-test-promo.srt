@@ -1,0 +1,196 @@
+1
+00:00:00,600 --> 00:00:03,353
+Have you ever wondered how sharp your mind really is?
+
+2
+00:00:03,803 --> 00:00:09,510
+Meet Adult IQ Test, a free app that challenges your reasoning in just twenty-five minutes.
+
+3
+00:00:09,960 --> 00:00:13,730
+And the moment you finish, it shows you exactly where you stand.
+
+4
+00:00:15,380 --> 00:00:19,017
+The test has thirty-two questions, covering four ways of thinking.
+
+5
+00:00:19,467 --> 00:00:23,129
+Numerical reasoning, with sequences and sneaky math traps.
+
+6
+00:00:23,579 --> 00:00:26,520
+Verbal reasoning, with analogies and vocabulary.
+
+7
+00:00:26,970 --> 00:00:31,240
+Logical reasoning, where you follow the clues to the only possible answer.
+
+8
+00:00:31,690 --> 00:00:35,889
+And pattern and spatial reasoning, where you turn shapes around in your head.
+
+9
+00:00:37,439 --> 00:00:39,897
+Let's warm up with a real question from the test.
+
+10
+00:00:40,347 --> 00:00:47,684
+A bat and a ball cost one dollar ten in total. The bat costs one dollar more than the ball. How much does the ball cost?
+
+11
+00:00:48,134 --> 00:00:50,036
+Pause the video if you want to think about it.
+
+12
+00:00:52,986 --> 00:01:00,097
+Most people say ten cents. But then the bat would cost one dollar ten, and the total would be one dollar twenty.
+
+13
+00:01:00,547 --> 00:01:05,380
+The right answer is five cents. That's the kind of trap the test is full of.
+
+14
+00:01:07,030 --> 00:01:11,256
+When you open the app, you're welcomed by a clean, calm start screen.
+
+15
+00:01:11,706 --> 00:01:14,955
+You'll get thirty-two questions and twenty-five minutes.
+
+16
+00:01:15,405 --> 00:01:19,518
+Harder questions are worth more points, so every answer counts.
+
+17
+00:01:19,968 --> 00:01:23,295
+Just type your name, press start, and the clock begins.
+
+18
+00:01:24,745 --> 00:01:28,991
+Each question has its own card, so you can focus on one thing at a time.
+
+19
+00:01:29,441 --> 00:01:33,251
+The timer stays in the corner, and turns red in the final minute.
+
+20
+00:01:33,701 --> 00:01:36,354
+These little bars tell you how hard the question is.
+
+21
+00:01:36,804 --> 00:01:41,631
+And if you get stuck, use this map to skip ahead, then come back whenever you like.
+
+22
+00:01:43,081 --> 00:01:48,397
+The questions get more interesting as you go, all the way to spatial puzzles like this painted cube.
+
+23
+00:01:48,847 --> 00:01:53,203
+Take your time on these. They're the ones that turn a good score into a great one.
+
+24
+00:01:54,753 --> 00:01:58,383
+Now for the exciting part. Your results appear instantly.
+
+25
+00:01:58,833 --> 00:02:03,943
+Your estimated IQ is shown on a gauge, from fifty-five to one hundred forty-five.
+
+26
+00:02:04,393 --> 00:02:08,256
+You also see your percentile, so you know how you compare with everyone else.
+
+27
+00:02:08,706 --> 00:02:12,429
+Plus your classification, how many you got right, and how long you took.
+
+28
+00:02:13,879 --> 00:02:17,563
+Scroll down, and your score is broken down by skill area.
+
+29
+00:02:18,013 --> 00:02:21,687
+So you can see exactly where you shine, and where there's room to grow.
+
+30
+00:02:23,137 --> 00:02:26,504
+And here's what makes this app special: the answer review.
+
+31
+00:02:26,954 --> 00:02:32,330
+For every question, you see your answer, the correct one, and a short explanation.
+
+32
+00:02:32,780 --> 00:02:37,423
+So it's not just a score. It's practice that makes you sharper every time.
+
+33
+00:02:38,973 --> 00:02:41,412
+Getting started takes just a few seconds.
+
+34
+00:02:41,862 --> 00:02:45,009
+Unzip the IQTest folder anywhere on your computer.
+
+35
+00:02:45,459 --> 00:02:47,943
+Double-click IQTest.exe.
+
+36
+00:02:48,393 --> 00:02:52,064
+A small window opens, and the test appears right in your browser.
+
+37
+00:02:52,514 --> 00:02:56,540
+There's nothing to install, and you don't need Java. It just works.
+
+38
+00:02:58,090 --> 00:03:00,909
+Before you begin, here are four quick tips.
+
+39
+00:03:01,359 --> 00:03:05,989
+Find a quiet spot, and give yourself twenty-five minutes without interruptions.
+
+40
+00:03:06,439 --> 00:03:10,500
+Don't rush. The hardest questions are worth three times as much.
+
+41
+00:03:10,950 --> 00:03:15,070
+If a question stops you, skip it, and come back with the question map.
+
+42
+00:03:15,520 --> 00:03:20,469
+And afterwards, read the explanations. That's where the real progress happens.
+
+43
+00:03:22,019 --> 00:03:23,857
+So, why will you love it?
+
+44
+00:03:24,307 --> 00:03:28,669
+Thirty-two carefully chosen questions, across four reasoning areas.
+
+45
+00:03:29,119 --> 00:03:33,556
+An instant IQ estimate, with your percentile and a full breakdown.
+
+46
+00:03:34,006 --> 00:03:37,657
+And an answer review that helps you get better every time.
+
+47
+00:03:38,107 --> 00:03:42,927
+Just remember, it's a fun estimate for self-assessment, not a clinical IQ test.
+
+48
+00:03:44,477 --> 00:03:48,797
+Now it's your turn. Take the test, and tell me your score in the comments.
+
+49
+00:03:49,247 --> 00:03:54,333
+And subscribe to Zero Cost AI for more free apps like this one. See you next time!
+
