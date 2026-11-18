@@ -30,6 +30,10 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | 2.2 | Structured output as Java records | CV parser with Java records | [`labs/cv-parser`](labs/cv-parser) |
 | 2.3 | Advisors: the interceptor chain | Logger, SafeGuard and a custom advisor | [`labs/advisors-demo`](labs/advisors-demo) |
 | 2.4 | Chat memory | Support bot with memory that survives restarts | [`labs/support-bot`](labs/support-bot) |
+| **3** | **Tools and agents** | | |
+| 3.1 | Tool calling with @Tool and @ToolParam | Order assistant with tool calling | [`labs/order-assistant`](labs/order-assistant) |
+| 3.2 | The tool loop: ToolCallingAdvisor and tool search | Watch the tool loop, measure tokens, try tool search | [`labs/tool-loop`](labs/tool-loop) |
+| 3.3 | Agents vs workflows: 5 agentic patterns | Ticket-triage agent with routing and a review loop | [`labs/ticket-triage`](labs/ticket-triage) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
@@ -50,6 +54,8 @@ Each project already includes the Maven wrapper, so you don't need to install Ma
 Endpoints and requests for each lab are shown step by step in its lab video.
 
 Notes:
+- `labs/order-assistant` uses `qwen2.5:3b` and `labs/tool-loop` uses `qwen2.5:7b` (models that handle tool calls well):
+  `ollama pull qwen2.5:3b` / `ollama pull qwen2.5:7b`.
 - `labs/model-options` also uses `llama3.2:1b` (`ollama pull llama3.2:1b`). Its `openai` profile needs an
   `OPENAI_API_KEY` environment variable. Never put a key in a properties file.
 - `labs/support-bot` stores conversations in a local H2 database under `data/`, created on first run.

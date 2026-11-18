@@ -1,0 +1,75 @@
+{
+  "section": 3,
+  "title": "Tools and agents",
+  "springAi": "2.0.x",
+  "quizzes": [
+    {
+      "id": "3.1",
+      "title": "Tool calling",
+      "questions": [
+        {"q": "What does tool calling let a model do?", "options": ["Run Java code directly inside the model", "Ask your application to call a Java method and use the result", "Train itself on your data", "Access the internet freely"], "answer": 1, "why": "The model only requests a call; Spring AI executes your method and sends the result back."},
+        {"q": "Which annotation turns a Java method into a tool?", "options": ["@Function", "@Tool", "@AiMethod", "@Bean"], "answer": 1, "why": "@Tool(description = ...) with @ToolParam for parameter descriptions."},
+        {"q": "Why does the tool description matter so much?", "options": ["It is shown to end users", "The model uses it to decide when and how to call the tool", "It sets the timeout", "It is required by Java"], "answer": 1, "why": "Clear names and descriptions are how the model picks the right tool."},
+        {"q": "How do you give tools to a single request?", "options": [".tools(orderTools)", ".functions(orderTools)", ".advisors(orderTools)", ".options(orderTools)"], "answer": 0, "why": ".tools(...) per request, or .defaultTools(...) on the builder; per-request tools are added to the defaults."},
+        {"q": "Your Ollama model returns an error that it does not support tools. Why?", "options": ["Spring AI has a bug", "Not every model is trained for tool calling: pick one with the 'tools' capability", "Tools only work with OpenAI", "You forgot @ToolParam"], "answer": 1, "why": "In this course, gemma3:4b has no tool capability, so we switched to qwen2.5:3b."}
+      ]
+    },
+    {
+      "id": "3.2",
+      "title": "The tool loop as an advisor",
+      "questions": [
+        {"q": "In Spring AI 2.0, what drives the tool calling loop?", "options": ["The ChatModel implementation of each provider", "The auto-registered ToolCallingAdvisor in the advisor chain", "A scheduled job", "The controller"], "answer": 1, "why": "The loop became a composable advisor in 2.0."},
+        {"q": "One question needed findOrder, then daysUntil. How many model calls happened?", "options": ["1", "2", "3", "10"], "answer": 2, "why": "Call 1 asks for findOrder, call 2 asks for daysUntil, call 3 writes the final answer."},
+        {"q": "Your advisor has order ToolCallingAdvisor.DEFAULT_ORDER + 100. Where does it run?", "options": ["Once, outside the loop", "Inside the loop: once per model call", "Never", "Only on errors"], "answer": 1, "why": "Advisors ordered after the tool advisor sit inside the loop and see every iteration."},
+        {"q": "What does ToolSearchToolCallingAdvisor do?", "options": ["Searches the web", "Sends only a search tool first, then the tools the model discovers: fewer tokens with many tools", "Caches tool results", "Validates tool parameters"], "answer": 1, "why": "Progressive tool disclosure, useful with dozens or hundreds of tools."},
+        {"q": "In the lab, tool search with qwen2.5:3b failed. What did we learn?", "options": ["Tool search is broken", "Progressive disclosure needs a capable model; with 10 tools, sending them all is fine", "Always use regex indexes", "Never use tools with Ollama"], "answer": 1, "why": "It cut prompt tokens, but small models did not use the search tool reliably."}
+      ]
+    },
+    {
+      "id": "3.3",
+      "title": "Agentic patterns",
+      "questions": [
+        {"q": "What is the difference between a workflow and an agent?", "options": ["There is none", "A workflow follows code paths you define; an agent lets the model direct its own steps and tools", "Agents are always faster", "Workflows cannot use LLMs"], "answer": 1, "why": "Workflows are more predictable, which suits most business tasks."},
+        {"q": "Which pattern classifies an input, then sends it to a specialised prompt?", "options": ["Chain", "Routing", "Parallelization", "Evaluator-optimizer"], "answer": 1, "why": "Routing: classify with structured output, then pick the expert."},
+        {"q": "Which pattern drafts, reviews, and retries with feedback?", "options": ["Evaluator-optimizer", "Orchestrator-workers", "Chain", "Routing"], "answer": 0, "why": "A generator and an evaluator in a loop, with a maximum number of attempts."},
+        {"q": "Why check the word count in Java instead of asking the reviewer model?", "options": ["Java is faster to write", "Models are unreliable at counting; code checks what code can check", "The model cannot read numbers", "It is required by Spring AI"], "answer": 1, "why": "In the lab, the drafter wrote 'Approximately 85 words' under a much longer reply."},
+        {"q": "The reviewer approved a reply claiming a refund that never happened. Best fix?", "options": ["Trust the reviewer", "Add deterministic checks or human approval for risky actions, and real tools for real actions", "Increase the temperature", "Remove the reviewer"], "answer": 1, "why": "LLM judges miss things; risky outputs need guardrails."}
+      ]
+    }
+  ],
+  "eval": {
+    "title": "Section 3 eval: Tools and agents",
+    "passMark": 70,
+    "questions": [
+      {"q": "Who executes the Java method when a model 'calls a tool'?", "options": ["The model provider", "Your application, via Spring AI", "The browser", "Ollama"], "answer": 1},
+      {"q": "Which annotation documents a tool parameter for the model?", "options": ["@Param", "@ToolParam", "@RequestParam", "@Description"], "answer": 1},
+      {"q": "A tool must count days until a delivery date. Why compute it in the tool, not in the model?", "options": ["Models are reliable at date math", "Date math is deterministic code; models can get it wrong", "Tools are faster to write", "It saves no tokens"], "answer": 1},
+      {"q": "Tools on the builder are .defaultTools(a). The request adds .tools(b). Which tools are available?", "options": ["Only a", "Only b", "Both a and b", "None"], "answer": 2},
+      {"q": "Every iteration of the tool loop resends all tool definitions. What is the consequence?", "options": ["More input tokens per call", "Fewer tokens", "No effect", "The model forgets the tools"], "answer": 0},
+      {"q": "Which property disables the automatic tool loop for the whole app?", "options": ["spring.ai.tools.enabled=false", "spring.ai.chat.client.tool-calling.enabled=false", "spring.ai.ollama.tools=off", "spring.ai.loop=false"], "answer": 1},
+      {"q": "Tool search failed with 'context must contain a non-null value for chat_memory_conversation_id'. Fix?", "options": ["Add ChatMemory.CONVERSATION_ID as an advisor param", "Add more tools", "Use regex", "Lower the temperature"], "answer": 0},
+      {"q": "Your app has 300 tools. Which approach scales best with a capable model?", "options": ["Send all 300 on every call", "ToolSearchToolCallingAdvisor with a Lucene or vector index", "One prompt per tool", "Remove tools"], "answer": 1},
+      {"q": "Which pattern runs independent subtasks at the same time and combines the results?", "options": ["Parallelization", "Routing", "Chain", "Evaluator-optimizer"], "answer": 0},
+      {"q": "What must every evaluator-optimizer loop have?", "options": ["A maximum number of attempts", "A temperature of 2", "Streaming", "Chat memory"], "answer": 0},
+      {"q": "How did the lab use a stronger model only for reviewing?", "options": ["A second application", ".options(ChatOptions.builder().model(\"qwen2.5:7b\")) on the review request", "A new starter", "It is not possible"], "answer": 1},
+      {"q": "For most business tasks, the Spring AI guide recommends starting with:", "options": ["Fully autonomous agents", "The simplest workflow that works", "Hundreds of tools", "Fine-tuning"], "answer": 1}
+    ],
+    "challenge": {
+      "title": "Travel planner agent",
+      "task": "Build GET /plan?city=...&days=... that plans a short trip with 3 tools: getWeather(city, date), findHotels(city, maxPrice) and getEvents(city, date). Return a TripPlan record (days, hotel, activities, totalCost).",
+      "requirements": [
+        "Implement the 3 tools with @Tool/@ToolParam over fake in-memory data, and compute totalCost in Java",
+        "Log every iteration of the tool loop with an advisor placed inside the loop",
+        "Route requests: 'budget' trips use a cheaper prompt, 'luxury' trips another",
+        "Add an evaluator-optimizer step (max 3 drafts) that rejects plans exceeding the budget, checked in code",
+        "Use a tool-capable model (e.g. qwen2.5:3b) and write down how many model calls one plan takes"
+      ],
+      "selfCheck": [
+        "The plan never contains a hotel above maxPrice",
+        "totalCost is always computed in Java, never by the model",
+        "You can explain each line of your loop log"
+      ]
+    }
+  },
+  "levels": [[0, "Novice"], [50, "Apprentice"], [70, "Practitioner"], [85, "Expert-ready"]]
+}
