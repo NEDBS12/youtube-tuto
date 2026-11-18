@@ -10,10 +10,11 @@ Every lab runs on a free local model with Ollama, so the whole course costs noth
 | Folder | Contents |
 |---|---|
 | [`labs/`](labs) | One ready-to-run Spring Boot project per lesson |
+| [`quiz/`](quiz) | The interactive quiz page (open it at https://nedbs12.github.io/youtube-tuto/spring-ai-course/quiz/) |
 | [`quizzes/`](quizzes) | The quiz and section eval questions for each section (JSON) |
 | [`curriculum.md`](curriculum.md) | The full course plan: all sections, lessons and labs |
 
-Take the quizzes and section evals online: [Spring AI course quizzes](https://claude.ai/artifact/Q7KCQ5URztbaQD8HfTBj7R)
+Take the quizzes and section evals online, free, no account needed: [Spring AI course quizzes](https://nedbs12.github.io/youtube-tuto/spring-ai-course/quiz/)
 
 ## Lessons
 
