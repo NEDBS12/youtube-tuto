@@ -1,0 +1,350 @@
+{
+ "section": 7,
+ "title": "Production-ready AI",
+ "springAi": "2.0.x",
+ "quizzes": [
+  {
+   "id": "7.1",
+   "title": "Evaluating AI",
+   "questions": [
+    {
+     "q": "Why does assertEquals fail for AI answers?",
+     "options": [
+      "Answers are too long",
+      "The same correct answer comes with different words each time",
+      "Models are always wrong",
+      "JUnit can't call models"
+     ],
+     "answer": 1,
+     "why": "Test the meaning, not the exact wording."
+    },
+    {
+     "q": "Which evaluator checks if an answer is supported by the documents (hallucination detection)?",
+     "options": [
+      "FactCheckingEvaluator",
+      "SafeGuardAdvisor",
+      "TokenTextSplitter",
+      "RelevancyEvaluator"
+     ],
+     "answer": 0,
+     "why": "It asks the judge whether the claim is supported by the document."
+    },
+    {
+     "q": "What does an EvaluationRequest contain?",
+     "options": [
+      "The question, the retrieved documents and the answer",
+      "Only the answer",
+      "The embedding",
+      "The model name"
+     ],
+     "answer": 0,
+     "why": "new EvaluationRequest(question, documents, answer)."
+    },
+    {
+     "q": "In the lab, the judge replied 'Yes' plus an explanation, and the test failed. Why?",
+     "options": [
+      "Ollama timed out",
+      "The judge model was too small",
+      "The answer was wrong",
+      "The evaluator only passes on a bare 'yes': a one-word prompt fixed it"
+     ],
+     "answer": 3,
+     "why": "Read what your judge really says."
+    },
+    {
+     "q": "How do you make sure your judge works?",
+     "options": [
+      "Use temperature 1",
+      "Trust it",
+      "Give it a wrong answer on purpose: it must fail",
+      "Use the same model as the app"
+     ],
+     "answer": 2,
+     "why": "The lab's judgeCatchesAHallucination test uses '35 vacation days'."
+    }
+   ]
+  },
+  {
+   "id": "7.2",
+   "title": "Observability",
+   "questions": [
+    {
+     "q": "What do you add to see Spring AI's metrics?",
+     "options": [
+      "A vector store",
+      "Nothing is measured",
+      "A custom advisor",
+      "Spring Boot Actuator (and a registry like Prometheus)"
+     ],
+     "answer": 3,
+     "why": "Spring AI records Micrometer observations; Actuator exposes them."
+    },
+    {
+     "q": "Which metric counts tokens, split into input, output and total?",
+     "options": [
+      "gen_ai.client.token.usage",
+      "db.vector.client.operation",
+      "spring.ai.advisor",
+      "gen_ai.client.operation"
+     ],
+     "answer": 0,
+     "why": "Tag gen_ai.token.type: input, output or total."
+    },
+    {
+     "q": "In the lab, one RAG question used ~350 input tokens and 14 output tokens. Why so many input tokens?",
+     "options": [
+      "A bug",
+      "A long answer",
+      "Embeddings count as input",
+      "The retrieved chunks are added to the prompt"
+     ],
+     "answer": 3,
+     "why": "With RAG, topK and chunk size drive the cost."
+    },
+    {
+     "q": "Where do you get the tokens of one specific call?",
+     "options": [
+      "chatResponse().getMetadata().getUsage()",
+      "From Grafana",
+      "From the logs only",
+      "From the vector store"
+     ],
+     "answer": 0,
+     "why": "Usage has the prompt (input) and completion (output) tokens."
+    },
+    {
+     "q": "Why is spring.ai.chat.observations.log-prompt false by default?",
+     "options": [
+      "Prompts contain user data: logging them risks privacy",
+      "It breaks metrics",
+      "It's deprecated",
+      "It's slow"
+     ],
+     "answer": 0,
+     "why": "Turn it on only to debug, never with real user data."
+    }
+   ]
+  },
+  {
+   "id": "7.3",
+   "title": "Guardrails and prompt injection",
+   "questions": [
+    {
+     "q": "What is an indirect prompt injection?",
+     "options": [
+      "A slow model",
+      "A user typing 'ignore your instructions'",
+      "Orders hidden in data the model reads, like a document in your vector store",
+      "A SQL injection"
+     ],
+     "answer": 2,
+     "why": "In the lab, a wiki page told the assistant to ask for passwords."
+    },
+    {
+     "q": "In the lab, did a stricter system prompt stop the wiki attack?",
+     "options": [
+      "It crashed the app",
+      "No: the model still asked for the password",
+      "Only for some users",
+      "Yes, completely"
+     ],
+     "answer": 1,
+     "why": "A prompt is not a security boundary."
+    },
+    {
+     "q": "Which two layers blocked the attack in the lab?",
+     "options": [
+      "Chat memory and streaming",
+      "A bigger model and more chunks",
+      "Temperature and topK",
+      "Scanning chunks at ingestion, and checking answers in an output guard advisor"
+     ],
+     "answer": 3,
+     "why": "Data and output checks, in code."
+    },
+    {
+     "q": "Why does the OutputGuardAdvisor use Ordered.HIGHEST_PRECEDENCE?",
+     "options": [
+      "First in, last out: it sees the final answer after every other advisor",
+      "It's required by Spring",
+      "To run faster",
+      "To skip the RAG advisor"
+     ],
+     "answer": 0,
+     "why": "It wraps the whole chain."
+    },
+    {
+     "q": "A user used up their token budget. What does the API return?",
+     "options": [
+      "429 Too Many Requests",
+      "401",
+      "500",
+      "200 with an empty answer"
+     ],
+     "answer": 0,
+     "why": "The budget is checked before each call."
+    }
+   ]
+  }
+ ],
+ "eval": {
+  "title": "Section 7 eval: Production-ready AI",
+  "passMark": 70,
+  "questions": [
+   {
+    "q": "A good AI test strategy starts with...",
+    "options": [
+     "An LLM judge for everything",
+     "Plain code assertions, then a judge for meaning",
+     "Manual testing only",
+     "No tests"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "The judge model should be...",
+    "options": [
+     "The same model as the app, at temperature 1",
+     "The smallest model",
+     "A different (often bigger) model, at temperature 0",
+     "Any embedding model"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "The fact checker failed on the answer '14'. Why?",
+    "options": [
+     "Temperature was too high",
+     "14 is wrong",
+     "A bare number isn't a claim it can check: ask for full sentences",
+     "The PDF had no numbers"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "Why keep evals out of every build?",
+    "options": [
+     "They change the data",
+     "They never pass",
+     "They need the internet",
+     "They are slow (8 tests took ~3 minutes) and slightly unstable"
+    ],
+    "answer": 3
+   },
+   {
+    "q": "gen_ai.client.operation measures...",
+    "options": [
+     "Errors only",
+     "The time of each model call",
+     "Vector store size",
+     "Tokens"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "How do metrics reach Grafana?",
+    "options": [
+     "Directly from the model",
+     "Through the vector store",
+     "Actuator exposes /actuator/prometheus, Prometheus scrapes it, Grafana reads Prometheus",
+     "Through the logs"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "Estimated cost of a call =",
+    "options": [
+     "Input tokens × input price + output tokens × output price",
+     "Answer length × topK",
+     "Embedding dimensions × price",
+     "Latency × tokens"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "Why not tag metrics with a user ID?",
+    "options": [
+     "It hides errors",
+     "It creates one time series per user (high cardinality)",
+     "Micrometer forbids tags",
+     "It's illegal"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "Where can an indirect injection come from?",
+    "options": [
+     "The JVM",
+     "Only the user's question",
+     "The metrics endpoint",
+     "Documents, web pages or emails the model reads"
+    ],
+    "answer": 3
+   },
+   {
+    "q": "Which layer is NOT a security boundary on its own?",
+    "options": [
+     "A system prompt",
+     "An output check in code",
+     "An ingestion scan",
+     "An input length limit"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "For tools that change data, the safest rule is...",
+    "options": [
+     "Use a bigger model",
+     "Least privilege, and a human confirms irreversible actions",
+     "Disable logging",
+     "Let the model decide"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "Which three controls protect your bill?",
+    "options": [
+     "maxTokens, an input length limit and a per-user token budget",
+     "More chunks, higher topK, bigger model",
+     "A system prompt only",
+     "Streaming, memory and tools"
+    ],
+    "answer": 0
+   }
+  ],
+  "challenge": {
+   "title": "Make your own AI app production-ready",
+   "task": "Take one app you built in this course (or your own) and add evals, metrics and guardrails.",
+   "requirements": [
+    "A golden set of at least 8 questions, tested with plain assertions plus RelevancyEvaluator and FactCheckingEvaluator, and a judge on another model",
+    "One test that proves the judge fails a made-up answer",
+    "Actuator and Prometheus metrics, and an endpoint that reports tokens and an estimated cost",
+    "One real prompt injection attack you wrote yourself, blocked by a check in code (ingestion or output)",
+    "maxTokens, an input length limit and a per-user token budget"
+   ],
+   "selfCheck": [
+    "Your evals pass at least twice in a row",
+    "You can say how many input tokens one request costs, and why",
+    "Your attack works with the guardrails off, and is blocked with them on"
+   ]
+  }
+ },
+ "levels": [
+  [
+   0,
+   "Novice"
+  ],
+  [
+   50,
+   "Apprentice"
+  ],
+  [
+   70,
+   "Practitioner"
+  ],
+  [
+   85,
+   "Expert-ready"
+  ]
+ ]
+}

@@ -39,6 +39,16 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | 4.2 | Vector stores: PGVector, filters, topK | Product search on PGVector with Docker Compose | [`labs/product-store`](labs/product-store) |
 | 4.3 | The ETL pipeline: readers, splitters, enrichers | Ingest PDF and Markdown into PGVector | [`labs/doc-ingest`](labs/doc-ingest) |
 | 4.4 | RAG advisors compared | Chat with your docs, and debug a wrong answer | [`labs/docs-chat`](labs/docs-chat) |
+| **5** | **Model Context Protocol (MCP)** | | |
+| 5.1 | MCP: hosts, clients, servers, transports | Connect a filesystem MCP server to a Spring AI app | [`labs/mcp-files-client`](labs/mcp-files-client) |
+| 5.2 | Build an MCP server | Expose the order database as an MCP server | [`labs/order-mcp-server`](labs/order-mcp-server) |
+| 5.3 | MCP clients and security (OAuth 2.0) | A secured MCP client and server pair | [`labs/auth-server`](labs/auth-server), [`labs/secure-order-server`](labs/secure-order-server), [`labs/secure-order-client`](labs/secure-order-client) |
+| **6** | **Multimodality** | | |
+| 6.1 | Vision: images as input | Receipt reader: image to Java record | [`labs/receipt-reader`](labs/receipt-reader) |
+| **7** | **Production-ready AI** | | |
+| 7.1 | Evaluating AI: LLM as a judge | JUnit tests that grade the RAG app | [`labs/rag-evals`](labs/rag-evals) |
+| 7.2 | Observability: metrics, tracing, token cost | Token metrics and a cost report | [`labs/rag-observability`](labs/rag-observability) |
+| 7.3 | Guardrails and prompt injection | Stop a prompt injection attack, add a token budget | [`labs/rag-guardrails`](labs/rag-guardrails) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
@@ -67,6 +77,15 @@ Notes:
 - Section 4 labs use the embedding model `mxbai-embed-large` (`ollama pull mxbai-embed-large`).
   `labs/product-store`, `labs/doc-ingest` and `labs/docs-chat` start PGVector automatically with Docker Compose,
   so you need **Docker** running.
+- `labs/mcp-files-client` starts the official filesystem MCP server with `npx`, so you need **Node.js**. On macOS or Linux,
+  change `npx.cmd` to `npx` in `application.properties`. It uses `qwen2.5:7b`.
+- Lesson 5.3 runs three apps: start `labs/auth-server` first, then `labs/secure-order-server`, then `labs/secure-order-client`.
+  The client secret `order-secret` is a demo value for this local setup only.
+- `labs/receipt-reader` uses the vision capability of `gemma3:4b`. Two sample receipts are in `src/main/resources/receipts`.
+- Section 7 labs build on `labs/docs-chat` (PGVector with Docker Compose). `labs/rag-evals` uses `qwen2.5:7b` as the judge:
+  run the evals with `./mvnw test` (about 3 minutes).
+- `labs/rag-guardrails` contains a poisoned wiki page on purpose (`team-wiki.md`), to show a prompt injection attack.
+  Set `app.guard.scan`, `app.guard.prompt` or `app.guard.output` to `false` to see what each guardrail stops.
 
 ---
 

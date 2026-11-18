@@ -47,7 +47,7 @@ Each lab notes where to swap in OpenAI or Anthropic with a one-line dependency a
 | 🏁 | **Eval 6** | Multimodality | Challenge: a product-photo cataloguer |
 | **7** | **Production-ready AI** | | |
 | 7.1 | | Evaluating AI (`RelevancyEvaluator`, `FactCheckingEvaluator`, LLM as judge) | JUnit tests that grade the RAG app |
-| 7.2 | | Observability: metrics, tracing, token cost | Grafana dashboard for token usage |
+| 7.2 | | Observability: metrics, tracing, token cost | Token metrics and a cost report (Actuator, Prometheus) |
 | 7.3 | | Guardrails, security, prompt injection, cost control | Harden the "chat with your docs" app |
 | 🏁 | **Eval 7** | Production | Challenge: add evals and metrics to your own app |
 | 🎓 | **Final exam and capstone** | Expert level | Capstone: support agent = RAG + tools + memory + MCP + evals |

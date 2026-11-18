@@ -1,0 +1,86 @@
+{
+ "section": 6,
+ "title": "Multimodality",
+ "springAi": "2.0.x",
+ "quizzes": [
+  {
+   "id": "6.1",
+   "title": "Vision: images as input",
+   "questions": [
+    {
+     "q": "What does a multimodal (vision) model accept in one message?",
+     "options": [
+      "Audio only",
+      "Only images",
+      "Text and images, and it answers in text",
+      "Only text"
+     ],
+     "answer": 2,
+     "why": "You send a question and an image together; the answer is text."
+    },
+    {
+     "q": "How do you add an image to a ChatClient prompt?",
+     "options": [
+      ".user(u -> u.text(...).media(mimeType, resource))",
+      ".options(image)",
+      ".advisors(image)",
+      ".system(image)"
+     ],
+     "answer": 0,
+     "why": "The image is a Media: a MIME type plus a Resource (or a URL), on the user message."
+    },
+    {
+     "q": "Which local Ollama model in the course can read images?",
+     "options": [
+      "mxbai-embed-large",
+      "gemma3:4b",
+      "llama3.2:1b",
+      "nomic-embed-text"
+     ],
+     "answer": 1,
+     "why": "ollama show gemma3:4b lists the vision capability."
+    },
+    {
+     "q": "The model read 'BRICO' as 'Brico' and could misread a digit. What did the lab do?",
+     "options": [
+      "Retry until it changes",
+      "Validate: the lines plus tax must equal the total (addsUp)",
+      "Nothing, models are exact",
+      "Use a higher temperature"
+     ],
+     "answer": 1,
+     "why": "Check what you can compute, and let the user confirm before saving."
+    },
+    {
+     "q": "Why use temperature 0 for receipt extraction?",
+     "options": [
+      "Vision needs it",
+      "You want to copy data, not be creative: the same answer every time",
+      "It's faster",
+      "It reduces tokens"
+     ],
+     "answer": 1,
+     "why": "Extraction should be repeatable."
+    }
+   ]
+  }
+ ],
+ "levels": [
+  [
+   0,
+   "Novice"
+  ],
+  [
+   50,
+   "Apprentice"
+  ],
+  [
+   70,
+   "Practitioner"
+  ],
+  [
+   85,
+   "Expert-ready"
+  ]
+ ]
+}
