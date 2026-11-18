@@ -1,0 +1,86 @@
+{
+  "section": 1,
+  "title": "Foundations",
+  "springAi": "2.0.x",
+  "quizzes": [
+    {
+      "id": "1.1",
+      "title": "What is Spring AI?",
+      "questions": [
+        {"q": "What is the main goal of Spring AI?", "options": ["Train new language models in Java", "Give Java/Spring apps one portable API to use AI models", "Replace Spring Boot auto-configuration", "Host models in the cloud"], "answer": 1, "why": "Spring AI is for using models inside applications through a portable API, not for training them."},
+        {"q": "An LLM generates its answer by…", "options": ["Searching the web", "Querying a database of answers", "Predicting the next token, over and over", "Running your Java code"], "answer": 2, "why": "An LLM is a next-token predictor. Tools and RAG add web/DB access later."},
+        {"q": "You send two requests to a model. Does the model remember the first one when answering the second?", "options": ["Yes, always", "Only with OpenAI", "No: models are stateless, the app must send the history", "Only if temperature is 0"], "answer": 2, "why": "Models are stateless; Spring AI's chat memory resends the conversation."},
+        {"q": "In the Spring AI layers, what sits directly under the ChatClient?", "options": ["The ChatModel interface", "The RestController", "The vector store", "The JVM"], "answer": 0, "why": "ChatClient (fluent API) → ChatModel (portable interface) → provider module."},
+        {"q": "How do you move an app from Ollama to OpenAI?", "options": ["Rewrite every controller", "Swap the starter dependency and the properties", "Use a different ChatClient class", "It is not possible"], "answer": 1, "why": "Your code targets the portable API; the provider is configuration."}
+      ]
+    },
+    {
+      "id": "1.2",
+      "title": "The ChatClient API",
+      "questions": [
+        {"q": "How do you usually get a ChatClient in a Spring Boot app with a model starter?", "options": ["new ChatClient()", "Inject ChatClient.Builder and call build()", "ChatClient.getInstance()", "Read it from application.properties"], "answer": 1, "why": "The starter auto-configures a ChatClient.Builder bean."},
+        {"q": "Which call chain returns the answer as a String?", "options": ["prompt().user(..).call().content()", "prompt().send(..).text()", "chat(..).get()", "prompt().user(..).stream().string()"], "answer": 0, "why": "call() is the blocking call; content() returns the text."},
+        {"q": "You need the token usage of a call. What do you use instead of content()?", "options": ["entity()", "chatResponse()", "metadata()", "tokens()"], "answer": 1, "why": "chatResponse().getMetadata().getUsage() exposes prompt/completion/total tokens."},
+        {"q": "Where do you set a system message that applies to every request of a ChatClient?", "options": ["builder.defaultSystem(..)", "application.yml only", "In every user message", "@SystemPrompt annotation"], "answer": 0, "why": "defaultSystem on the builder; .system(..) per request overrides it."},
+        {"q": "Which method returns a Flux<String> for streaming?", "options": ["call().flux()", "stream().content()", "async().content()", "call().stream()"], "answer": 1, "why": "stream() is the reactive counterpart of call()."}
+      ]
+    },
+    {
+      "id": "1.3",
+      "title": "Prompts and templates",
+      "questions": [
+        {"q": "Which message type sets the model's role, rules and tone?", "options": ["UserMessage", "SystemMessage", "AssistantMessage", "ToolResponseMessage"], "answer": 1, "why": "System messages guide behaviour; user messages carry the request."},
+        {"q": "What is the default placeholder syntax in a PromptTemplate?", "options": ["${name}", "{{name}}", "{name}", "#name"], "answer": 2, "why": "The default StTemplateRenderer uses { and } delimiters."},
+        {"q": "Which class renders templates by default?", "options": ["MustacheRenderer", "StTemplateRenderer", "ThymeleafRenderer", "JinjaRenderer"], "answer": 1, "why": "It is based on Terence Parr's StringTemplate."},
+        {"q": "Your template must contain JSON with curly braces. What is the cleanest fix?", "options": ["Escape every brace by hand", "Configure different delimiters (e.g. < >) on the renderer", "Remove the JSON", "Use string concatenation"], "answer": 1, "why": "StTemplateRenderer.builder().startDelimiterToken('<').endDelimiterToken('>')."},
+        {"q": "Why keep long prompts in a resource file (e.g. classpath:/prompts/review.st)?", "options": ["It makes the model faster", "Versioning, reviews and editing without touching Java code", "It is required by Spring AI", "Templates in Java do not work"], "answer": 1, "why": "Prompts are code: keep them versioned and reviewable."}
+      ]
+    },
+    {
+      "id": "1.4",
+      "title": "Model options and providers",
+      "questions": [
+        {"q": "What does a temperature of 0 tend to produce?", "options": ["Random, creative answers", "Focused, more repeatable answers", "Longer answers", "No answer"], "answer": 1, "why": "Low temperature = less randomness in token sampling."},
+        {"q": "Which property sets the Ollama chat model in Spring AI 2.0?", "options": ["spring.ai.ollama.chat.options.model", "spring.ai.ollama.chat.model", "spring.ai.model.ollama", "ollama.model"], "answer": 1, "why": "2.0 removed the artificial .options segment from property keys."},
+        {"q": "Default options are set in properties. A request passes its own temperature. Which wins?", "options": ["The property", "The request (runtime) option", "The higher value", "Neither: an error is thrown"], "answer": 1, "why": "Runtime options override start-up defaults."},
+        {"q": "How are chat options created in Spring AI 2.0?", "options": ["With public constructors", "With builders, and they are immutable", "Only via properties", "With setters on the model"], "answer": 1, "why": "2.0 moved to builder-created, immutable options."},
+        {"q": "What does maxTokens limit?", "options": ["The prompt length", "The length of the generated answer", "The number of requests per minute", "The size of the context window"], "answer": 1, "why": "It caps the completion tokens the model may generate."}
+      ]
+    }
+  ],
+  "eval": {
+    "title": "Section 1 eval: Foundations",
+    "passMark": 70,
+    "questions": [
+      {"q": "Spring AI is best compared to which Spring project?", "options": ["Spring Security", "Spring Data: it hides the provider behind a portable API", "Spring Batch", "Spring Shell"], "answer": 1},
+      {"q": "Which bean does a model starter auto-configure for the fluent API?", "options": ["ChatClient.Builder", "RestTemplate", "PromptTemplate", "VectorStore"], "answer": 0},
+      {"q": "Roughly how many English words is 1,000 tokens?", "options": ["About 100", "About 750", "About 5,000", "Exactly 1,000"], "answer": 1},
+      {"q": "A model states a wrong fact with confidence. This is called…", "options": ["Overfitting", "A hallucination", "A timeout", "Token drift"], "answer": 1},
+      {"q": "Which code returns a ChatResponse with metadata?", "options": ["chatClient.prompt().user(q).call().chatResponse()", "chatClient.call(q)", "chatClient.prompt(q).metadata()", "chatModel.content(q)"], "answer": 0},
+      {"q": "Where is the token usage?", "options": ["response.getUsage()", "response.getMetadata().getUsage()", "response.getTokens()", "Only in the logs"], "answer": 1},
+      {"q": "In 'Summarise {text} in {n} bullets', what are {text} and {n}?", "options": ["SpEL expressions", "Template placeholders filled at render time", "JSON fields", "Spring properties"], "answer": 1},
+      {"q": "Which role carries the instructions 'You are a strict code reviewer…'?", "options": ["user", "system", "assistant", "tool"], "answer": 1},
+      {"q": "You want deterministic unit-test-like answers. Which temperature?", "options": ["0.0", "0.7", "1.0", "2.0"], "answer": 0},
+      {"q": "Spring AI 2.0.x requires which Spring Boot line?", "options": ["2.7", "3.3", "4.0 / 4.1", "Any"], "answer": 2},
+      {"q": "Which is NOT a good use of Spring AI?", "options": ["A support chatbot", "Fine-tuning a model's weights", "Summarising tickets", "Extracting data from emails"], "answer": 1},
+      {"q": "Where should an OpenAI API key live?", "options": ["Hard-coded in the controller", "Committed in application.properties", "An environment variable referenced as ${OPENAI_API_KEY}", "In the prompt"], "answer": 2}
+    ],
+    "challenge": {
+      "title": "Commit message writer",
+      "task": "Build POST /commit-message that receives a git diff as the request body and returns a Conventional Commits message (type(scope): subject, max 72 chars, then a short body).",
+      "requirements": [
+        "Use ChatClient with a defaultSystem prompt that defines the format rules",
+        "Keep the user prompt in src/main/resources/prompts/commit.st with a {diff} placeholder",
+        "Set temperature to 0.2 for this endpoint only (runtime option)",
+        "Log prompt and completion token usage for every call",
+        "Run it on Ollama, then switch to another provider with a Spring profile, without code changes"
+      ],
+      "selfCheck": [
+        "The subject line is ≤ 72 characters for 5 different diffs",
+        "The same diff gives very similar messages on 3 runs",
+        "No provider name appears in your Java code"
+      ]
+    }
+  },
+  "levels": [[0, "Novice"], [50, "Apprentice"], [70, "Practitioner"], [85, "Expert-ready"]]
+}

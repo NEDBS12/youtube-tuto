@@ -1,0 +1,86 @@
+{
+  "section": 2,
+  "title": "Chat applications",
+  "springAi": "2.0.x",
+  "quizzes": [
+    {
+      "id": "2.1",
+      "title": "Streaming responses",
+      "questions": [
+        {"q": "Why stream an AI answer instead of waiting for the full response?", "options": ["It uses fewer tokens", "Users see text after a fraction of a second instead of waiting many seconds", "The model becomes more accurate", "It is required by Ollama"], "answer": 1, "why": "Streaming does not change cost or quality; it changes perceived speed."},
+        {"q": "Which ChatClient call returns the answer as it is generated?", "options": ["call().content()", "stream().content()", "call().stream()", "async().content()"], "answer": 1, "why": "stream() returns a Flux; content() maps it to the text chunks."},
+        {"q": "What type does stream().content() return?", "options": ["String", "CompletableFuture<String>", "Flux<String>", "Stream<String>"], "answer": 2, "why": "A Reactor Flux that emits each chunk of text."},
+        {"q": "Which media type turns a Flux into Server-Sent Events in a Spring controller?", "options": ["application/json", "text/plain", "text/event-stream", "multipart/form-data"], "answer": 2, "why": "produces = MediaType.TEXT_EVENT_STREAM_VALUE."},
+        {"q": "Your page built with EventSource shows 'Helloworldhowareyou'. Why?", "options": ["The model removed the spaces", "SSE strips one leading space after 'data:', so tokens starting with a space lose it", "Ollama does not support spaces", "The temperature is too low"], "answer": 1, "why": "Wrap each token in JSON (e.g. a record) so the space survives."}
+      ]
+    },
+    {
+      "id": "2.2",
+      "title": "Structured output",
+      "questions": [
+        {"q": "What does entity(Candidate.class) do?", "options": ["Saves the answer in a database", "Asks the model for JSON matching the record, then maps it to a Candidate", "Validates the user input", "Creates a JPA entity"], "answer": 1, "why": "BeanOutputConverter adds format instructions with a JSON schema, then deserialises the result."},
+        {"q": "How do you get a List<Candidate> back?", "options": ["entity(List.class)", "entity(new ParameterizedTypeReference<List<Candidate>>() {})", "entityList(Candidate.class)", "It is not possible"], "answer": 1, "why": "Generic types need a ParameterizedTypeReference."},
+        {"q": "What does validateSchema() add?", "options": ["Bean Validation annotations", "A self-correcting retry when the JSON does not match the schema", "Faster answers", "A database check"], "answer": 1, "why": "StructuredOutputValidationAdvisor sends the validation error back to the model and retries (3 attempts by default)."},
+        {"q": "What does useProviderStructuredOutput() do?", "options": ["Uses the provider's native JSON-schema mode, when the model supports it", "Switches to OpenAI", "Disables structured output", "Streams the JSON"], "answer": 0, "why": "Native mode makes the provider return schema-conforming JSON directly. Support varies per model."},
+        {"q": "The model returns yearsOfExperience = 5 for a CV from 2016 to today. Best fix?", "options": ["Raise the temperature", "Extract the raw facts (jobs and years) and compute the total in Java", "Ask the model to try harder", "Remove the field"], "answer": 1, "why": "Structured output guarantees the shape, not the truth. Let the model extract and let code calculate."}
+      ]
+    },
+    {
+      "id": "2.3",
+      "title": "Advisors",
+      "questions": [
+        {"q": "What is an advisor in Spring AI?", "options": ["A model provider", "An interceptor around the AI call that can change the request and the response", "A logging framework", "A type of prompt"], "answer": 1, "why": "Like a servlet filter or AOP around advice, for ChatClient calls."},
+        {"q": "Which interface do you implement for a custom advisor on call()?", "options": ["CallAdvisor", "RequestInterceptor", "ChatFilter", "AroundAdvice"], "answer": 0, "why": "CallAdvisor.adviseCall(request, chain); StreamAdvisor for stream()."},
+        {"q": "Inside adviseCall, how do you continue to the next advisor and the model?", "options": ["return request;", "chain.nextCall(request)", "super.adviseCall()", "model.call(request)"], "answer": 1, "why": "Code before nextCall runs on the way in, code after runs on the way out."},
+        {"q": "What decides the order of advisors?", "options": ["Alphabetical order of names", "getOrder(): lower values run first on the request", "The order of the imports", "Random"], "answer": 1, "why": "Advisors implement Ordered."},
+        {"q": "SafeGuardAdvisor finds a sensitive word. What happens?", "options": ["The model answers anyway", "It returns the failure response without calling the model", "The app crashes", "The word is removed"], "answer": 1, "why": "No model call, no tokens spent."}
+      ]
+    },
+    {
+      "id": "2.4",
+      "title": "Chat memory",
+      "questions": [
+        {"q": "Why does a chatbot need chat memory?", "options": ["LLMs are stateless and forget previous messages", "To reduce latency", "To store API keys", "To stream answers"], "answer": 0, "why": "Memory resends the relevant past messages with each request."},
+        {"q": "Which advisor adds past messages to the prompt?", "options": ["SimpleLoggerAdvisor", "MessageChatMemoryAdvisor", "SafeGuardAdvisor", "QuestionAnswerAdvisor"], "answer": 1, "why": "It loads the conversation from ChatMemory before the call and saves the new messages after."},
+        {"q": "What separates Alice's conversation from Bob's?", "options": ["The HTTP session", "The ChatMemory.CONVERSATION_ID advisor parameter", "The model name", "Nothing: they share memory"], "answer": 1, "why": "Pass a conversation id per user or per chat."},
+        {"q": "What is the default ChatMemory auto-configured by Spring AI?", "options": ["Unlimited history in a file", "MessageWindowChatMemory, in memory, keeping the last 20 messages", "JDBC with PostgreSQL", "No memory at all"], "answer": 1, "why": "Backed by InMemoryChatMemoryRepository by default."},
+        {"q": "Your bot forgets everything after a restart. What do you add?", "options": ["A higher maxMessages", "A persistent repository, e.g. spring-ai-starter-model-chat-memory-repository-jdbc", "A system prompt", "Streaming"], "answer": 1, "why": "The in-memory repository lives only as long as the JVM."}
+      ]
+    }
+  ],
+  "eval": {
+    "title": "Section 2 eval: Chat applications",
+    "passMark": 70,
+    "questions": [
+      {"q": "A 20-second answer feels slow to users. What do you change first?", "options": ["Use stream() and Server-Sent Events", "Lower maxTokens to 5", "Use entity()", "Add chat memory"], "answer": 0},
+      {"q": "Which Spring MVC return type streams tokens to the browser?", "options": ["String", "Flux<...> with produces text/event-stream", "ResponseEntity<String>", "void"], "answer": 1},
+      {"q": "Your code needs a Java object, not prose. Which method?", "options": ["content()", "entity(MyRecord.class)", "chatResponse()", "stream()"], "answer": 1},
+      {"q": "With validateSchema() only, every call takes 4x longer and logs 'validation failed'. Likely cause?", "options": ["The model wraps the JSON in markdown code fences, so validation retries", "The network is slow", "Temperature is 0", "The record has too many fields"], "answer": 0},
+      {"q": "Which combination gave clean JSON on the first try with Ollama in the lab?", "options": ["validateSchema() alone", "useProviderStructuredOutput() + validateSchema()", "content() + regex", "A higher temperature"], "answer": 1},
+      {"q": "Where should arithmetic like 'total years of experience' happen?", "options": ["In the prompt", "In Java, from extracted facts", "In the model, with a higher temperature", "In the system message"], "answer": 1},
+      {"q": "You want to log the duration and tokens of every AI call. Best tool?", "options": ["A custom CallAdvisor registered with defaultAdvisors", "A try/finally in every controller", "A system prompt", "A new ChatModel"], "answer": 0},
+      {"q": "Which built-in advisor logs requests and responses at DEBUG level?", "options": ["SimpleLoggerAdvisor", "SafeGuardAdvisor", "MessageChatMemoryAdvisor", "TimingAdvisor"], "answer": 0},
+      {"q": "Memory is configured, but every user sees the others' context. What is missing?", "options": ["A distinct ChatMemory.CONVERSATION_ID per user", "A bigger model", "Streaming", "A system prompt"], "answer": 0},
+      {"q": "MessageWindowChatMemory keeps the last N messages. Why not keep everything?", "options": ["Every remembered message is sent again, costing tokens and filling the context window", "It is not allowed", "Messages expire after 1 hour", "The repository has no space"], "answer": 0},
+      {"q": "What makes chat memory survive a restart?", "options": ["A JDBC (or other persistent) ChatMemoryRepository", "@Cacheable", "A static Map", "Temperature 0"], "answer": 0},
+      {"q": "Chat memory vs chat history: which statement is true?", "options": ["They are the same thing", "Memory is what the model needs for context; full history for auditing is stored separately", "History is sent to the model, memory is not", "Memory requires a vector store"], "answer": 1}
+    ],
+    "challenge": {
+      "title": "Streaming tutor bot with memory",
+      "task": "Build a Java tutor bot: GET /tutor/{studentId}/stream?message=... streams the answer, remembers each student's conversation, and POST /tutor/{studentId}/summary returns a StudySummary record (topics covered, weak points, next exercise).",
+      "requirements": [
+        "Stream the chat endpoint as Server-Sent Events, with tokens wrapped in JSON",
+        "Use MessageChatMemoryAdvisor with a conversation id per student, persisted with JDBC",
+        "Return the summary with entity(StudySummary.class) and validateSchema()",
+        "Add a custom advisor that logs duration and total tokens",
+        "Block requests containing 'exam answers' with SafeGuardAdvisor"
+      ],
+      "selfCheck": [
+        "Two students never see each other's context",
+        "The tutor still remembers a student after a restart",
+        "The summary always deserialises into your record, for 5 different conversations"
+      ]
+    }
+  },
+  "levels": [[0, "Novice"], [50, "Apprentice"], [70, "Practitioner"], [85, "Expert-ready"]]
+}

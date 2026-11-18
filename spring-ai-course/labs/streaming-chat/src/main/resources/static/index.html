@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<body style="font-family: sans-serif; max-width: 640px; margin: 40px auto">
+<h2>Streaming chat</h2>
+<input id="q" size="50" value="Explain virtual threads in Java in 3 sentences">
+<button onclick="ask()">Ask</button>
+<p id="answer"></p>
+<script>
+function ask() {
+  const answer = document.getElementById("answer");
+  answer.textContent = "";
+  const q = encodeURIComponent(document.getElementById("q").value);
+  const source = new EventSource("/stream?message=" + q);
+  source.onmessage = (e) => answer.textContent += JSON.parse(e.data).text;
+  source.onerror = () => source.close();
+}
+</script>
+</body>
+</html>

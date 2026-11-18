@@ -1,0 +1,2 @@
+{"level": "junior",
+ "code": "var names = users.stream().filter(User::isActive).map(User::name).sorted().toList();"}

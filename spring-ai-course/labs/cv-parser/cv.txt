@@ -1,0 +1,4 @@
+Maria Lopez - maria.lopez@example.com
+Senior Backend Engineer at ShopNow (2021 - today)
+Backend Developer at BankCo (2016 - 2021)
+Skills: Java 21, Spring Boot, Kafka, PostgreSQL, Docker
