@@ -34,6 +34,11 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | 3.1 | Tool calling with @Tool and @ToolParam | Order assistant with tool calling | [`labs/order-assistant`](labs/order-assistant) |
 | 3.2 | The tool loop: ToolCallingAdvisor and tool search | Watch the tool loop, measure tokens, try tool search | [`labs/tool-loop`](labs/tool-loop) |
 | 3.3 | Agents vs workflows: 5 agentic patterns | Ticket-triage agent with routing and a review loop | [`labs/ticket-triage`](labs/ticket-triage) |
+| **4** | **RAG: chat with your data** | | |
+| 4.1 | Embeddings and cosine similarity | Semantic FAQ search with embeddings | [`labs/faq-search`](labs/faq-search) |
+| 4.2 | Vector stores: PGVector, filters, topK | Product search on PGVector with Docker Compose | [`labs/product-store`](labs/product-store) |
+| 4.3 | The ETL pipeline: readers, splitters, enrichers | Ingest PDF and Markdown into PGVector | [`labs/doc-ingest`](labs/doc-ingest) |
+| 4.4 | RAG advisors compared | Chat with your docs, and debug a wrong answer | [`labs/docs-chat`](labs/docs-chat) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
@@ -59,6 +64,9 @@ Notes:
 - `labs/model-options` also uses `llama3.2:1b` (`ollama pull llama3.2:1b`). Its `openai` profile needs an
   `OPENAI_API_KEY` environment variable. Never put a key in a properties file.
 - `labs/support-bot` stores conversations in a local H2 database under `data/`, created on first run.
+- Section 4 labs use the embedding model `mxbai-embed-large` (`ollama pull mxbai-embed-large`).
+  `labs/product-store`, `labs/doc-ingest` and `labs/docs-chat` start PGVector automatically with Docker Compose,
+  so you need **Docker** running.
 
 ---
 

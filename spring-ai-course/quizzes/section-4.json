@@ -1,0 +1,411 @@
+{
+ "section": 4,
+ "title": "RAG",
+ "springAi": "2.0.x",
+ "quizzes": [
+  {
+   "id": "4.1",
+   "title": "Embeddings and similarity",
+   "questions": [
+    {
+     "q": "What does an embedding model return for a text?",
+     "options": [
+      "A list of keywords",
+      "A generated answer",
+      "A summary",
+      "A vector: a list of numbers that encodes the meaning"
+     ],
+     "answer": 3,
+     "why": "An embedding model reads text and returns a vector (1024 numbers with mxbai-embed-large)."
+    },
+    {
+     "q": "Why does semantic search find 'refund policy' for 'Can I get my money back?'",
+     "options": [
+      "It uses a dictionary of synonyms",
+      "They share keywords",
+      "Their vectors are close because their meanings are similar",
+      "It asks a chat model"
+     ],
+     "answer": 2,
+     "why": "No shared words: the match comes from similar meaning, measured on the vectors."
+    },
+    {
+     "q": "In the lab, 'I love this phone' vs 'I hate this phone' scored 0.66. What does this teach?",
+     "options": [
+      "Embeddings capture the topic more than the opinion; read scores relatively",
+      "Cosine similarity only works for single words",
+      "The model was too small",
+      "Embeddings are broken"
+     ],
+     "answer": 0,
+     "why": "Same topic, opposite opinions, still a high score. Compare scores, don't read one alone."
+    },
+    {
+     "q": "Which call embeds many texts in one request?",
+     "options": [
+      "embeddingModel.embed(String)",
+      "embeddingModel.embed(List<String>)",
+      "embeddingModel.dimensions()",
+      "chatClient.embed(...)"
+     ],
+     "answer": 1,
+     "why": "embed(List<String>) returns one vector per text, in one call."
+    },
+    {
+     "q": "You embedded your FAQs with model A. Which model must embed the questions?",
+     "options": [
+      "The same model A",
+      "A chat model",
+      "A bigger model",
+      "Any model"
+     ],
+     "answer": 0,
+     "why": "Vectors from different models can't be compared. Same model for documents and questions."
+    }
+   ]
+  },
+  {
+   "id": "4.2",
+   "title": "Vector stores",
+   "questions": [
+    {
+     "q": "What does a vector store keep for each document?",
+     "options": [
+      "Text, vector and metadata",
+      "The chat history",
+      "Only the vector",
+      "Only the text"
+     ],
+     "answer": 0,
+     "why": "PGVector stores content, metadata (JSON) and the embedding in one row."
+    },
+    {
+     "q": "What does similarityThreshold(0.5) do?",
+     "options": [
+      "Drops results with a score below 0.5",
+      "Limits to 5 results",
+      "Returns 50% of the documents",
+      "Sets the temperature"
+     ],
+     "answer": 0,
+     "why": "Off-topic questions (like a cake recipe in the lab) then return an empty list."
+    },
+    {
+     "q": "How do you search only audio products under 100?",
+     "options": [
+      "A prompt instruction",
+      "topK(100)",
+      "filterExpression(\"category == 'audio' && price < 100\")",
+      "A second vector store"
+     ],
+     "answer": 2,
+     "why": "Filter expressions run on metadata, in a portable syntax translated for each store."
+    },
+    {
+     "q": "You switch from a 768-dimension model to a 1024-dimension model. What happens with the existing PGVector table?",
+     "options": [
+      "Nothing, it adapts",
+      "Spring AI converts the vectors",
+      "Only new documents are affected",
+      "Searches fail ('expected 768 dimensions, not 1024'): recreate the table and re-embed"
+     ],
+     "answer": 3,
+     "why": "The lab hit exactly this error. A model change means re-embedding everything."
+    },
+    {
+     "q": "A user types a filter value that you paste into a filter string. What's the risk?",
+     "options": [
+      "Wrong embeddings",
+      "Filter injection, like SQL injection: use FilterExpressionBuilder or validate",
+      "None",
+      "Slower searches"
+     ],
+     "answer": 1,
+     "why": "Never concatenate user input into filter strings."
+    }
+   ]
+  },
+  {
+   "id": "4.3",
+   "title": "The ETL pipeline",
+   "questions": [
+    {
+     "q": "Which interfaces make up the Spring AI ETL pipeline?",
+     "options": [
+      "Loader, Parser, Saver",
+      "Reader, Transformer, Writer",
+      "Advisor, Tool, Memory",
+      "Client, Model, Store"
+     ],
+     "answer": 1,
+     "why": "DocumentReader, DocumentTransformer, DocumentWriter (a VectorStore is a DocumentWriter)."
+    },
+    {
+     "q": "What does PagePdfDocumentReader return?",
+     "options": [
+      "One Document per word",
+      "Only images",
+      "One Document for the whole PDF",
+      "One Document per page, with the page number in metadata"
+     ],
+     "answer": 3,
+     "why": "Metadata includes file_name and page_number."
+    },
+    {
+     "q": "Why split documents into chunks before embedding?",
+     "options": [
+      "To make ingestion faster",
+      "One topic per vector gives precise matches",
+      "To save disk space",
+      "Because PDFs require it"
+     ],
+     "answer": 1,
+     "why": "A whole-document vector mixes every topic and matches poorly."
+    },
+    {
+     "q": "With its default prompt, the small model's keywords started with 'Here are three keywords...'. The fix in the lab?",
+     "options": [
+      "A higher temperature",
+      "Removing the enricher",
+      "A stricter keywordsTemplate: reply with the keywords only",
+      "A bigger chunk size"
+     ],
+     "answer": 2,
+     "why": "Small models add chatter; a strict prompt fixed it."
+    },
+    {
+     "q": "Running the ingestion twice must not create duplicates. How did the lab handle it?",
+     "options": [
+      "A unique index on content",
+      "Restart Postgres",
+      "It can't be avoided",
+      "Delete the file's old chunks by filter (file_name in [...]) before adding"
+     ],
+     "answer": 3,
+     "why": "vectorStore.delete(filter) then vectorStore.add(chunks): still 10 rows after a second run."
+    }
+   ]
+  },
+  {
+   "id": "4.4",
+   "title": "RAG advisors",
+   "questions": [
+    {
+     "q": "What are the three steps of RAG?",
+     "options": [
+      "Retrieve, augment, generate",
+      "Rewrite, ask, guess",
+      "Read, analyze, generate",
+      "Rank, answer, grade"
+     ],
+     "answer": 0,
+     "why": "Search the store, add the chunks to the prompt, let the model answer from them."
+    },
+    {
+     "q": "Which advisor lets you plug in query transformers and a custom retriever?",
+     "options": [
+      "SimpleLoggerAdvisor",
+      "MessageChatMemoryAdvisor",
+      "QuestionAnswerAdvisor",
+      "RetrievalAugmentationAdvisor"
+     ],
+     "answer": 3,
+     "why": "It's modular: transformers, expander, retriever, joiner, post-processors, augmenter."
+    },
+    {
+     "q": "No chunk matches the question. With ContextualQueryAugmenter.allowEmptyContext(false), the model...",
+     "options": [
+      "Declines politely",
+      "Retries the search",
+      "Answers from memory",
+      "Throws an exception"
+     ],
+     "answer": 0,
+     "why": "In the lab, the QuestionAnswerAdvisor answered 'Canberra', the modular advisor declined."
+    },
+    {
+     "q": "The lab's first answer was 'the handbook doesn't specify vacation days'. What was the root cause?",
+     "options": [
+      "Missing chat memory",
+      "The PDF was empty",
+      "Retrieval: 'Brightwave' pulled three other chunks; the vacation chunk was 5th with topK 3",
+      "The model was too small"
+     ],
+     "answer": 2,
+     "why": "Logging the retrieved chunks revealed it; topK 5 fixed it."
+    },
+    {
+     "q": "Where do you read the documents the QuestionAnswerAdvisor retrieved?",
+     "options": [
+      "In the model's answer",
+      "In chatClientResponse().context() under QuestionAnswerAdvisor.RETRIEVED_DOCUMENTS",
+      "In application.properties",
+      "Only in Postgres"
+     ],
+     "answer": 1,
+     "why": "RetrievalAugmentationAdvisor uses RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT."
+    }
+   ]
+  }
+ ],
+ "eval": {
+  "title": "Section 4 eval: RAG",
+  "passMark": 70,
+  "questions": [
+   {
+    "q": "An embedding model is used to...",
+    "options": [
+     "Call tools",
+     "Write answers",
+     "Store documents",
+     "Turn text into vectors that encode meaning"
+    ],
+    "answer": 3
+   },
+   {
+    "q": "Cosine similarity close to 1 means the two texts have...",
+    "options": [
+     "No relation",
+     "The same words",
+     "A similar meaning",
+     "The same length"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "Which property chooses the Ollama embedding model in Spring AI 2.0?",
+    "options": [
+     "spring.ai.ollama.chat.model",
+     "spring.ai.ollama.embedding.model",
+     "spring.ai.embedding.name",
+     "spring.ai.vectorstore.model"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "Why is a Java list of vectors not enough for a real app?",
+    "options": [
+     "Java can't store floats",
+     "It's fine for millions of documents",
+     "It doesn't scale (compares every vector) and is lost on restart",
+     "Lists are slower than maps"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "spring.ai.vectorstore.pgvector.dimensions must match...",
+    "options": [
+     "The number of documents",
+     "topK",
+     "The chunk size",
+     "The embedding model's vector size"
+    ],
+    "answer": 3
+   },
+   {
+    "q": "How did the lab start Postgres with PGVector?",
+    "options": [
+     "Spring Boot Docker Compose support, from compose.yaml",
+     "Testcontainers only",
+     "An embedded H2 database",
+     "Manually with psql"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "What does topK control?",
+    "options": [
+     "The maximum number of documents returned",
+     "The temperature",
+     "The minimum score",
+     "The chunk size"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "Which reader returns one document per Markdown section?",
+    "options": [
+     "TextReader",
+     "JsonReader",
+     "MarkdownDocumentReader",
+     "PagePdfDocumentReader"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "Why clean PDF text before splitting?",
+    "options": [
+     "To translate it",
+     "PDFs are encrypted",
+     "PDF text keeps layout spaces that pollute chunks",
+     "Splitters reject PDFs"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "KeywordMetadataEnricher costs...",
+    "options": [
+     "One call per document set",
+     "Only embeddings",
+     "One chat model call per chunk",
+     "Nothing"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "A RAG answer is wrong. What do you check first?",
+    "options": [
+     "The temperature",
+     "The retrieved documents and their scores",
+     "The model's training date",
+     "The JVM memory"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "For a company assistant that must never answer outside its documents, use...",
+    "options": [
+     "A higher topK only",
+     "No advisor",
+     "RetrievalAugmentationAdvisor with allowEmptyContext(false)",
+     "QuestionAnswerAdvisor with no threshold"
+    ],
+    "answer": 2
+   }
+  ],
+  "challenge": {
+   "title": "Chat with your own docs",
+   "task": "Build GET /ask?q=... that answers questions about a documentation set of your choice (at least one PDF and one Markdown file, 10+ pages in total), stored in PGVector, and returns the answer with its sources (file and page).",
+   "requirements": [
+    "Ingest with readers, a cleaning step, a TokenTextSplitter and file_name metadata; re-running ingestion creates no duplicates",
+    "Use a RetrievalAugmentationAdvisor with a VectorStoreDocumentRetriever and allowEmptyContext(false)",
+    "Log every retrieved chunk with its score",
+    "Write 10 test questions with expected answers (2 of them not covered by the docs) and record the results",
+    "Tune topK, the threshold or the chunk size until at least 8 of 10 are correct, and note what you changed"
+   ],
+   "selfCheck": [
+    "Out-of-scope questions are declined, not answered from memory",
+    "Every answer lists its sources",
+    "You can explain one wrong answer by looking at the retrieved chunks"
+   ]
+  }
+ },
+ "levels": [
+  [
+   0,
+   "Novice"
+  ],
+  [
+   50,
+   "Apprentice"
+  ],
+  [
+   70,
+   "Practitioner"
+  ],
+  [
+   85,
+   "Expert-ready"
+  ]
+ ]
+}
