@@ -11,8 +11,13 @@ Every lab runs on a free local model with Ollama, so the whole course costs noth
 |---|---|
 | [`labs/`](labs) | One ready-to-run Spring Boot project per lesson |
 | [`quiz/`](quiz) | The interactive quiz page (open it at https://nedbs12.github.io/youtube-tuto/spring-ai-course/quiz/) |
+| [`book/`](book) | The course book as a PDF |
 | [`quizzes/`](quizzes) | The quiz and section eval questions for each section (JSON) |
 | [`curriculum.md`](curriculum.md) | The full course plan: all sections, lessons and labs |
+
+**New: the free book.** [Spring AI: From Novice to Expert (PDF, 202 pages)](book/Spring-AI-From-Novice-to-Expert.pdf):
+every lesson of the course as a chapter, with the full lab code, real outputs, quizzes with answers, a production
+capstone and a troubleshooting guide.
 
 Take the quizzes and section evals online, free, no account needed: [Spring AI course quizzes](https://nedbs12.github.io/youtube-tuto/spring-ai-course/quiz/)
 
