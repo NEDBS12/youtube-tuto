@@ -50,11 +50,17 @@ Each lab notes where to swap in OpenAI or Anthropic with a one-line dependency a
 | 7.2 | | Observability: metrics, tracing, token cost | Token metrics and a cost report (Actuator, Prometheus) |
 | 7.3 | | Guardrails, security, prompt injection, cost control | Harden the "chat with your docs" app |
 | 🏁 | **Eval 7** | Production | Challenge: add evals and metrics to your own app |
-| 🎓 | **Final exam and capstone** | Expert level | Capstone: support agent = RAG + tools + memory + MCP + evals |
+| **8** | **Advanced agents** | | |
+| 8.1 | | Subagents: the Task tool, isolated contexts (spring-ai-agent-utils) | Research assistant that delegates reading to a subagent |
+| 8.2 | | Agent-to-agent (A2A): agent cards, tasks, JSON-RPC (spring-ai-a2a) | Inventory agent (A2A server) + order assistant (A2A client) |
+| 8.3 | | Agent orchestration: orchestrator-workers, supervisor, parallel agents, budgets | Incident-response orchestrator with worker agents and a reviewer loop |
+| 8.4 | | Agent tracking: traces across agents, tokens per agent, task lists, audit | Trace the orchestrator in Zipkin, per-agent token and cost report |
+| 🏁 | **Eval 8** | Advanced agents | Challenge: a traced travel-planner team (supervisor + subagents + an A2A agent) |
+| 🎓 | **Final exam and capstone** (Section 9) | Expert level | Capstone: support agent = RAG + tools + memory + MCP + evals |
 
 **Levels (shown after every eval):** 0-49% Novice · 50-69% Apprentice · 70-84% Practitioner · 85-100% Expert-ready.
 
-**Totals:** 1 welcome video + 24 concepts × 2 videos = 49 videos, 24 quizzes, 7 section evals, 1 final exam.
+**Totals:** 1 welcome video + 28 concepts × 2 videos = 57 videos, 28 quizzes, 8 section evals, 1 final exam.
 
 Folder layout:
 ```

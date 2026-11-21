@@ -57,6 +57,8 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | 7.1 | Evaluating AI: LLM as a judge | JUnit tests that grade the RAG app | [`labs/rag-evals`](labs/rag-evals) |
 | 7.2 | Observability: metrics, tracing, token cost | Token metrics and a cost report | [`labs/rag-observability`](labs/rag-observability) |
 | 7.3 | Guardrails and prompt injection | Stop a prompt injection attack, add a token budget | [`labs/rag-guardrails`](labs/rag-guardrails) |
+| **8** | **Advanced agents** | | |
+| 8.1 | Subagents: the Task tool | A research assistant with a subagent | [`labs/research-assistant`](labs/research-assistant) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
@@ -77,6 +79,9 @@ Each project already includes the Maven wrapper, so you don't need to install Ma
 Endpoints and requests for each lab are shown step by step in its lab video.
 
 Notes:
+- `labs/research-assistant` (Section 8) uses `qwen2.5:7b` and the community library
+  [spring-ai-agent-utils](https://github.com/spring-ai-community/spring-ai-agent-utils) 0.13.0 (the Task tool for subagents).
+  Run it from its own folder: it reads `docs/` and `agents/` relative to the project root.
 - `labs/order-assistant` uses `qwen2.5:3b` and `labs/tool-loop` uses `qwen2.5:7b` (models that handle tool calls well):
   `ollama pull qwen2.5:3b` / `ollama pull qwen2.5:7b`.
 - `labs/model-options` also uses `llama3.2:1b` (`ollama pull llama3.2:1b`). Its `openai` profile needs an

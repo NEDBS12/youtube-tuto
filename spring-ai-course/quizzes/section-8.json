@@ -1,0 +1,86 @@
+{
+ "section": 8,
+ "title": "Advanced agents: subagents, A2A, orchestration and tracking",
+ "springAi": "2.0.x",
+ "quizzes": [
+  {
+   "id": "8.1",
+   "title": "Subagents",
+   "questions": [
+    {
+     "q": "What comes back to the main agent when a subagent finishes?",
+     "options": [
+      "Every file the subagent read",
+      "The subagent's whole conversation",
+      "Nothing: the subagent answers the user directly",
+      "Only the subagent's final answer, as the Task tool result"
+     ],
+     "answer": 3,
+     "why": "The subagent's context stays with the subagent."
+    },
+    {
+     "q": "How does the main agent decide which subagent to call?",
+     "options": [
+      "From the tools line",
+      "From the file name only",
+      "At random",
+      "From the description in the subagent's Markdown header"
+     ],
+     "answer": 3,
+     "why": "Write a specific description: it's the only thing the main agent sees."
+    },
+    {
+     "q": "A subagent file has no tools line. What can that subagent use?",
+     "options": [
+      "Every built-in tool, including Bash and Write",
+      "Only Read",
+      "Only the tools of the main agent",
+      "No tools at all"
+     ],
+     "answer": 0,
+     "why": "Always list the tools: least privilege."
+    },
+    {
+     "q": "In the lab, the main agent's prompt grew from about 1,700 to about 2,000 tokens. What did it receive?",
+     "options": [
+      "The subagent's log",
+      "The five files",
+      "The Glob result",
+      "Only the subagent's summary"
+     ],
+     "answer": 3,
+     "why": "The raw files stayed in the subagent's context (up to ~2,200 tokens)."
+    },
+    {
+     "q": "What is a real cost of subagents, seen in the lab?",
+     "options": [
+      "They can't use tools",
+      "They need a cloud model",
+      "More model calls and more total tokens, so slower answers",
+      "They break structured output"
+     ],
+     "answer": 2,
+     "why": "5 calls instead of 3, about 1.5 minutes instead of about half a minute."
+    }
+   ]
+  }
+ ],
+ "levels": [
+  [
+   0,
+   "Novice"
+  ],
+  [
+   50,
+   "Apprentice"
+  ],
+  [
+   70,
+   "Practitioner"
+  ],
+  [
+   85,
+   "Expert-ready"
+  ]
+ ]
+}
