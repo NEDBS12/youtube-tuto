@@ -185,8 +185,212 @@
      "why": "A check before each call can't stop calls in flight: keep a margin."
     }
    ]
+  },
+  {
+   "id": "8.4",
+   "title": "Agent tracking",
+   "questions": [
+    {
+     "q": "What is a span?",
+     "options": [
+      "A metric",
+      "A JSON-RPC message",
+      "One step of a request: a name, a duration, a parent and tags",
+      "A log line"
+     ],
+     "answer": 2,
+     "why": "A trace is a tree of spans."
+    },
+    {
+     "q": "What does Spring AI trace for you once Actuator and a tracing starter are added?",
+     "options": [
+      "Nothing",
+      "Only errors",
+      "Only HTTP requests",
+      "ChatClient calls, advisors, model calls (with gen_ai token tags) and tool executions"
+     ],
+     "answer": 3,
+     "why": "You add your own spans per agent step on top."
+    },
+    {
+     "q": "In the lab, one request gave four traces. Why?",
+     "options": [
+      "Zipkin was down",
+      "Sampling was 50%",
+      "The workers ran on new virtual threads that started without the trace context",
+      "Each agent used a different model"
+     ],
+     "answer": 2,
+     "why": "Wrap the executor with ContextExecutorService.wrap(...)."
+    },
+    {
+     "q": "Which tag is fine on the agent.tokens metric?",
+     "options": [
+      "The agent name",
+      "The prompt",
+      "The user id",
+      "The trace id"
+     ],
+     "answer": 0,
+     "why": "Keep tags low cardinality."
+    },
+    {
+     "q": "The trace showed the deploys worker took 68 s for a tiny tool. Why?",
+     "options": [
+      "Zipkin added latency",
+      "One local Ollama served three parallel workers, so calls partly waited in line",
+      "The network was slow",
+      "The tool was slow"
+     ],
+     "answer": 1,
+     "why": "Traces reveal the real bottleneck."
+    }
+   ]
   }
  ],
+ "eval": {
+  "title": "Section 8 eval: Advanced agents",
+  "passMark": 70,
+  "questions": [
+   {
+    "q": "What comes back to the main agent from a subagent?",
+    "options": [
+     "Its whole context",
+     "Only its final answer",
+     "Nothing",
+     "Every tool result"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "Why always write a tools line in a subagent file?",
+    "options": [
+     "It's required to compile",
+     "It's faster",
+     "To pick the model",
+     "Without it the subagent gets every built-in tool, even Bash and Write"
+    ],
+    "answer": 3
+   },
+   {
+    "q": "Subagents usually make the total token count...",
+    "options": [
+     "Go down",
+     "Go up: more model calls, but a smaller main context",
+     "Drop to zero",
+     "Stay exactly the same"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "MCP connects an agent to tools. A2A connects an agent to...",
+    "options": [
+     "Another agent with its own model and tools",
+     "A browser",
+     "A GPU",
+     "A database"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "What does a client read first to use an A2A agent?",
+    "options": [
+     "Its agent card at /.well-known/agent-card.json",
+     "Its pom.xml",
+     "Its source code",
+     "Its logs"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "In A2A, where is the result of a task?",
+    "options": [
+     "In the error field",
+     "In the agent card",
+     "In the task's artifacts",
+     "In an HTTP header"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "Which A2A setting must never be turned off on a reachable server?",
+    "options": [
+     "spring.application.name",
+     "a2a.authorization.required",
+     "a2a.blocking.agent.timeout.seconds",
+     "server.port"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "The best orchestration split is:",
+    "options": [
+     "The model does everything",
+     "One agent per user",
+     "The model plans; Java executes the plan and enforces the rules",
+     "Only hard-coded steps"
+    ],
+    "answer": 2
+   },
+   {
+    "q": "A worker times out. A good orchestrator...",
+    "options": [
+     "Retries forever",
+     "Records it as a finding and continues",
+     "Crashes the request",
+     "Restarts the JVM"
+    ],
+    "answer": 1
+   },
+   {
+    "q": "A shared token budget checked before each call can still be exceeded because...",
+    "options": [
+     "Parallel calls already in flight finish anyway",
+     "Ollama ignores it",
+     "Java rounds numbers",
+     "Tokens are estimated"
+    ],
+    "answer": 0
+   },
+   {
+    "q": "Parallel workers show up as separate traces. The fix is...",
+    "options": [
+     "A bigger model",
+     "Logging the trace id",
+     "More sampling",
+     "ContextExecutorService.wrap(executor)"
+    ],
+    "answer": 3
+   },
+   {
+    "q": "Which is a good tag for per-agent metrics?",
+    "options": [
+     "The user id",
+     "The agent name",
+     "The full answer",
+     "The prompt"
+    ],
+    "answer": 1
+   }
+  ],
+  "challenge": {
+   "title": "A traced travel-planner team",
+   "task": "Build a travel planner with a supervisor agent, two local subagents and one remote agent over A2A, and trace it end to end.",
+   "requirements": [
+    "A supervisor that delegates with the Task tool to two subagents (e.g. flights and hotels), each defined in a Markdown file with a tools line",
+    "A third agent (e.g. weather) running as a separate A2A server with an agent card",
+    "Typed hand-offs: the supervisor returns a Java record with the plan, the costs and the sources",
+    "A per-agent token counter and a token budget for the whole team",
+    "One trace per request in Zipkin, including the parallel work; check whether it crosses the A2A call",
+    "A short note: one thing the trace showed that the logs didn't"
+   ],
+   "selfCheck": [
+    "The supervisor really delegates: the log shows Task calls to all three agents",
+    "One request gives exactly one trace in Zipkin (or you can explain where it breaks)",
+    "You can say which agent costs the most tokens, and why"
+   ]
+  }
+ },
  "levels": [
   [
    0,

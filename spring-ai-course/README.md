@@ -61,6 +61,7 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | 8.1 | Subagents: the Task tool | A research assistant with a subagent | [`labs/research-assistant`](labs/research-assistant) |
 | 8.2 | Agent-to-agent: the A2A protocol | Two agents talk: an A2A server and client | [`labs/inventory-agent`](labs/inventory-agent), [`labs/sales-assistant`](labs/sales-assistant) |
 | 8.3 | Agent orchestration: patterns and limits | An incident-response team of agents | [`labs/incident-orchestrator`](labs/incident-orchestrator) |
+| 8.4 | Agent tracking: traces and tokens per agent | Trace the incident team in Zipkin | [`labs/incident-tracking`](labs/incident-tracking) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
@@ -87,6 +88,8 @@ Notes:
 - Lab 8.2: start `labs/inventory-agent` (A2A server, :8081, uses `spring-ai-a2a-server-autoconfigure` 0.4.0) before
   `labs/sales-assistant` (:8080): the client reads the agent card at startup. Both use `qwen2.5:7b`.
   The server sets `a2a.authorization.required=false` for local use only.
+- `labs/incident-tracking` (8.4) starts Zipkin with Docker Compose: run it with `./mvnw spring-boot:run` and Docker running,
+  then open http://localhost:9411.
 - `labs/order-assistant` uses `qwen2.5:3b` and `labs/tool-loop` uses `qwen2.5:7b` (models that handle tool calls well):
   `ollama pull qwen2.5:3b` / `ollama pull qwen2.5:7b`.
 - `labs/model-options` also uses `llama3.2:1b` (`ollama pull llama3.2:1b`). Its `openai` profile needs an
