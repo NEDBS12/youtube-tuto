@@ -80,8 +80,8 @@ class App(tk.Tk):
         self.clear()
         self.unbind_all("<MouseWheel>")
         self.header("Senior Interview Simulator", f"{len(Q)} questions - {len(TOPICS)} topics")
-        card = tk.Frame(self, bg=CARD, padx=30, pady=24)
-        card.pack(fill="both", expand=True, padx=40, pady=24)
+        card = tk.Frame(self.scrollable(), bg=CARD, padx=30, pady=24)
+        card.pack(fill="x", padx=40, pady=24)
 
         tk.Label(card, text="Test your Spring AI knowledge like in a senior interview", bg=CARD, fg=DARK,
                  font=(FONT, 16, "bold")).pack(anchor="w")
@@ -97,31 +97,32 @@ class App(tk.Tk):
 
         tk.Label(card, text="Mode", bg=CARD, fg=DARK, font=(FONT, 10, "bold")).pack(anchor="w", pady=(16, 4))
         self.mode = tk.StringVar(value="quick")
-        for val, txt in [("quick", "Quick interview - 20 questions, one per topic (about 15 min)"),
+        for val, txt in [("quick", f"Quick interview - {len(TOPICS)} questions, one per topic (about {round(len(TOPICS) * 0.75)} min)"),
                          ("full", f"Full interview - all {len(Q)} questions"),
-                         ("topics", "Pick topics - all questions of the topics selected below")]:
+                         ("topics", "Pick topics - all questions of the topics you tick below")]:
             tk.Radiobutton(card, text=txt, variable=self.mode, value=val, bg=CARD, fg=DARK, font=(FONT, 10),
                            activebackground=CARD, selectcolor=CARD, anchor="w").pack(anchor="w")
 
+        self.explain = tk.BooleanVar(value=True)
+        ttk.Checkbutton(card, text="Show the answer and explanation after each question (learning mode)",
+                        variable=self.explain).pack(anchor="w", pady=(10, 0))
+
+        btns = tk.Frame(card, bg=CARD)
+        btns.pack(anchor="w", pady=(14, 0))
+        self.button(btns, "Start interview  >", self.start).pack(side="left")
+        self.button(btns, "Save Q&A study guide (PDF)", self.save_guide, primary=False).pack(side="left", padx=10)
+        tk.Label(card, text="Keyboard: 1-4 to choose, Enter to submit / continue.", bg=CARD, fg=MUTED,
+                 font=(FONT, 9)).pack(anchor="w", pady=(8, 0))
+
+        tk.Label(card, text="Topics (for Pick topics)", bg=CARD, fg=DARK, font=(FONT, 10, "bold")).pack(anchor="w", pady=(16, 4))
         grid = tk.Frame(card, bg=CARD)
-        grid.pack(anchor="w", pady=(10, 0), fill="x")
+        grid.pack(anchor="w", fill="x")
         self.topic_vars = {}
         for i, (key, label) in enumerate(TOPICS):
             v = tk.BooleanVar(value=False)
             self.topic_vars[key] = v
             ttk.Checkbutton(grid, text=label, variable=v,
                             command=lambda: self.mode.set("topics")).grid(row=i // 3, column=i % 3, sticky="w", padx=(0, 22), pady=1)
-
-        self.explain = tk.BooleanVar(value=True)
-        ttk.Checkbutton(card, text="Show the answer and explanation after each question (learning mode)",
-                        variable=self.explain).pack(anchor="w", pady=(14, 0))
-
-        btns = tk.Frame(card, bg=CARD)
-        btns.pack(anchor="w", pady=(18, 0))
-        self.button(btns, "Start interview  >", self.start).pack(side="left")
-        self.button(btns, "Save Q&A study guide (PDF)", self.save_guide, primary=False).pack(side="left", padx=10)
-        tk.Label(card, text="Keyboard: 1-4 to choose, Enter to submit / continue.", bg=CARD, fg=MUTED,
-                 font=(FONT, 9)).pack(anchor="w", pady=(10, 0))
         self.enter_action = self.start
 
     def save_guide(self):

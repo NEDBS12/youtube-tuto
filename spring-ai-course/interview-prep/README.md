@@ -1,8 +1,9 @@
 # Spring AI senior interview prep kit
 
-Files from the Zero Cost AI video **[Spring AI Interview Questions for Seniors: Free Prep Kit (80 Q&A)](https://youtu.be/NarXfbCqOAk)**.
+Files from the Zero Cost AI video **[Spring AI Interview Questions for Seniors: Free Prep Kit (80 Q&A)](https://youtu.be/NarXfbCqOAk)** (the kit has grown to 96 questions since).
 
-80 senior-level Spring AI interview questions in 20 topics, each with the answer and a detailed explanation.
+96 senior-level Spring AI interview questions in 24 topics, each with the answer and a detailed explanation.
+**Updated:** 16 new questions on advanced agents (subagents, A2A, orchestration and agent tracking), from Section 8 of the course.
 Covers Spring AI 2.0.x on Spring Boot 4 and Java 21.
 
 ## The files
@@ -10,26 +11,27 @@ Covers Spring AI 2.0.x on Spring Boot 4 and Java 21.
 | File | What it is |
 |---|---|
 | [`SpringAI-Interview.exe`](SpringAI-Interview.exe) | Windows practice app: an interview simulator that scores you and shows your strong and weak points. One file, no install, works offline |
-| [`Spring-AI-Interview-Questions-and-Answers.pdf`](Spring-AI-Interview-Questions-and-Answers.pdf) | Study guide: all 80 questions with options, answers, explanations and an answer key |
+| [`Spring-AI-Interview-Questions-and-Answers.pdf`](Spring-AI-Interview-Questions-and-Answers.pdf) | Study guide: all 96 questions with options, answers, explanations and an answer key |
 | [`sample-score-report.pdf`](sample-score-report.pdf) | An example of the PDF score report the app saves |
 | [`source/`](source) | The Python source of the app and the question bank |
 
 To download a file, open it above and click **Download raw file** (the download icon at the top right).
 
-## The 20 topics
+## The 24 topics
 
 Architecture and abstractions · ChatClient API · Prompts and templates · Model options and providers · Streaming ·
 Structured output · Advisors · Chat memory · Tool calling · Agentic patterns · Embeddings · Vector stores ·
 ETL pipeline · RAG · Model Context Protocol (MCP) · Multimodality · Evaluation and testing · Observability ·
-Security and guardrails · Production and performance
+Security and guardrails · Production and performance ·
+Subagents · Agent-to-agent (A2A) · Agent orchestration · Agent tracking
 
 ## The practice app
 
 1. Double-click `SpringAI-Interview.exe`. Windows SmartScreen may warn you the first time because the file isn't
    signed: choose **More info**, then **Run anyway**.
 2. Type your name and pick a mode:
-   - **Quick interview**: 20 questions, one per topic (about 15 minutes)
-   - **Full interview**: all 80 questions
+   - **Quick interview**: 24 questions, one per topic (about 18 minutes)
+   - **Full interview**: all 96 questions
    - **Pick topics**: every question of the topics you tick
 3. With **learning mode** on, you see the correct answer and the explanation after each question.
    Keys `1`-`4` choose an answer, `Enter` submits and continues. Answer order is shuffled every time.
@@ -43,7 +45,7 @@ Security and guardrails · Production and performance
 1. Take a quick interview with learning mode **off**: that's your baseline.
 2. Read your weak topics in the study guide PDF, and say the explanations out loud.
 3. Use **Pick topics** mode on your weak spots until they turn green.
-4. Take the full 80-question interview. Aim for 85% (Expert-ready).
+4. Take the full 96-question interview. Aim for 85% (Expert-ready).
 
 ## Run it from source (macOS, Linux or Windows)
 
