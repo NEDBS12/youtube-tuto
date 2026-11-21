@@ -12,12 +12,15 @@ Every lab runs on a free local model with Ollama, so the whole course costs noth
 | [`labs/`](labs) | One ready-to-run Spring Boot project per lesson |
 | [`quiz/`](quiz) | The interactive quiz page (open it at https://nedbs12.github.io/youtube-tuto/spring-ai-course/quiz/) |
 | [`book/`](book) | The course book as a PDF |
+| [`interview-prep/`](interview-prep) | Senior interview prep kit: 80 Q&A, a Windows practice app with a score report, and a PDF |
 | [`quizzes/`](quizzes) | The quiz and section eval questions for each section (JSON) |
 | [`curriculum.md`](curriculum.md) | The full course plan: all sections, lessons and labs |
 
 **New: the free book.** [Spring AI: From Novice to Expert (PDF, 202 pages)](book/Spring-AI-From-Novice-to-Expert.pdf):
 every lesson of the course as a chapter, with the full lab code, real outputs, quizzes with answers, a production
 capstone and a troubleshooting guide.
+
+**New: the senior interview prep kit.** [80 Spring AI interview questions](interview-prep) in 20 topics, with answers explained, a [Windows practice app](interview-prep/SpringAI-Interview.exe) that scores you and shows your strong and weak points, and a [Q&A PDF](interview-prep/Spring-AI-Interview-Questions-and-Answers.pdf).
 
 Take the quizzes and section evals online, free, no account needed: [Spring AI course quizzes](https://nedbs12.github.io/youtube-tuto/spring-ai-course/quiz/)
 

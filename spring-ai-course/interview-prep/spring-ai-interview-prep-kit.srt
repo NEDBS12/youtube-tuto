@@ -1,0 +1,220 @@
+1
+00:00:00,600 --> 00:00:03,757
+Do you have a Spring AI interview coming up, for a senior role?
+
+2
+00:00:04,207 --> 00:00:13,248
+Interviewers won't just ask what ChatClient is. They'll ask how advisors are ordered, how you secure tools, and how you test answers that change every time.
+
+3
+00:00:13,698 --> 00:00:23,068
+In this video, I'm sharing a free kit to prepare: eighty senior-level questions, a Windows practice app that scores you, and a PDF with every answer explained.
+
+4
+00:00:24,518 --> 00:00:25,254
+Here's what you get.
+
+5
+00:00:25,704 --> 00:00:30,322
+A practice app for Windows. It's one file: you double-click it, and that's it.
+
+6
+00:00:30,772 --> 00:00:38,413
+At the end of each interview, it gives you a report with your score, your level, and your strong and weak points. You can save it as a PDF.
+
+7
+00:00:38,863 --> 00:00:44,198
+And a study guide PDF with all eighty questions, the answers, and the explanations.
+
+8
+00:00:45,648 --> 00:00:50,883
+The questions cover the whole of Spring AI, in twenty topics, with four questions each.
+
+9
+00:00:51,333 --> 00:00:57,049
+The core: the architecture, the ChatClient API, prompts, model options and streaming.
+
+10
+00:00:57,499 --> 00:01:04,012
+The building blocks: structured output, advisors, chat memory, tool calling and agentic patterns.
+
+11
+00:01:04,462 --> 00:01:10,173
+Working with your own data: embeddings, vector stores, the ETL pipeline and RAG.
+
+12
+00:01:10,623 --> 00:01:17,974
+And production topics: MCP, multimodality, evaluation, observability, security and performance.
+
+13
+00:01:18,424 --> 00:01:24,174
+Everything targets Spring AI 2.0, on Spring Boot 4 and Java 21.
+
+14
+00:01:25,624 --> 00:01:28,782
+This is the practice app. Type your name, and choose a mode.
+
+15
+00:01:29,232 --> 00:01:35,379
+A quick interview is twenty questions, one per topic. It takes about fifteen minutes. Or take all eighty.
+
+16
+00:01:35,829 --> 00:01:42,603
+If you want to focus, tick the topics you need, like RAG and MCP, and you'll get every question for those topics.
+
+17
+00:01:43,053 --> 00:01:47,263
+Then click Start. You can also save the full study guide as a PDF from here.
+
+18
+00:01:47,713 --> 00:01:53,910
+Windows may warn you the first time, because the file isn't signed. Choose More info, then Run anyway.
+
+19
+00:01:55,360 --> 00:02:00,779
+Each question tells you its topic. This one is about model options: what does a low temperature do?
+
+20
+00:02:01,229 --> 00:02:05,022
+I chose shorter responses, on purpose. The app marks it in red.
+
+21
+00:02:05,472 --> 00:02:09,716
+And shows the correct answer in green: more deterministic, focused output.
+
+22
+00:02:10,166 --> 00:02:20,313
+Then it explains why, the way a senior engineer would. Even at temperature zero, many providers aren't fully deterministic, so your tests must not rely on exact text.
+
+23
+00:02:20,763 --> 00:02:27,936
+The answers are shuffled every time, so you can't just remember positions. You can also use the keys one to four, and Enter.
+
+24
+00:02:29,386 --> 00:02:31,211
+When you finish, you get your report.
+
+25
+00:02:31,661 --> 00:02:39,481
+Your score, and your level: Novice, Apprentice, Practitioner, or Expert-ready. Here, seventy percent: Practitioner.
+
+26
+00:02:39,931 --> 00:02:44,668
+Below, your score in each of the twenty topics, so you see at a glance where you stand.
+
+27
+00:02:45,118 --> 00:02:47,949
+And one click saves the whole report as a PDF.
+
+28
+00:02:49,299 --> 00:02:53,989
+Then come your strong points: the topics where you scored seventy-five percent or more.
+
+29
+00:02:54,439 --> 00:03:00,174
+And your weak points, below fifty percent. For each one, the app tells you exactly what to study.
+
+30
+00:03:00,624 --> 00:03:07,066
+For MCP, for example: the roles, the primitives, the transports, and the server annotations.
+
+31
+00:03:07,516 --> 00:03:12,868
+Further down, you can review every question you missed, with the correct answer and the explanation.
+
+32
+00:03:14,318 --> 00:03:19,518
+Here's the saved PDF report. It's easy to keep, print, or compare over time.
+
+33
+00:03:19,968 --> 00:03:21,796
+Page one has your score and level.
+
+34
+00:03:22,246 --> 00:03:25,446
+A bar for each topic, then your strong and weak points.
+
+35
+00:03:25,896 --> 00:03:33,278
+And the answer review lists every question, marked correct or wrong, with your answer, the right one, and the explanation.
+
+36
+00:03:34,728 --> 00:03:39,621
+The last file is the study guide. Twenty-three pages, with all eighty questions.
+
+37
+00:03:40,071 --> 00:03:43,443
+They're grouped by topic, in the same twenty topics as the app.
+
+38
+00:03:43,893 --> 00:03:51,066
+Each question has four options, the answer, and an explanation, with the class names and properties you'd mention in an interview.
+
+39
+00:03:51,516 --> 00:03:54,513
+An answer key at the end lets you test yourself on paper.
+
+40
+00:03:55,963 --> 00:03:57,438
+So, how should you prepare?
+
+41
+00:03:57,888 --> 00:04:02,318
+First, take a quick interview with learning mode off. That's your honest baseline.
+
+42
+00:04:02,768 --> 00:04:08,898
+Then read your weak topics in the study guide. Say the explanations out loud, as if you were in the interview.
+
+43
+00:04:09,348 --> 00:04:14,695
+Next, use Pick topics mode to practise only those weak spots, until they turn green.
+
+44
+00:04:15,145 --> 00:04:21,027
+Finally, take the full eighty-question interview. Aim for eighty-five percent, the Expert-ready level.
+
+45
+00:04:22,477 --> 00:04:24,255
+Everything is free, on GitHub.
+
+46
+00:04:24,705 --> 00:04:26,351
+The practice app, for Windows.
+
+47
+00:04:26,801 --> 00:04:28,695
+The questions and answers PDF.
+
+48
+00:04:29,145 --> 00:04:33,824
+And the Python source, if you're on macOS or Linux, or want to add your own questions.
+
+49
+00:04:34,274 --> 00:04:38,824
+The link is in the description, next to the free Spring AI course and book.
+
+50
+00:04:40,274 --> 00:04:40,928
+Let's recap.
+
+51
+00:04:41,378 --> 00:04:47,216
+Eighty senior-level questions, in twenty topics, from ChatClient to MCP and production.
+
+52
+00:04:47,666 --> 00:04:53,504
+The app scores you, gives you a level, and shows your strong and weak points, with a PDF report.
+
+53
+00:04:53,954 --> 00:04:58,570
+And study the explanations, not just the answers. That's what interviewers want to hear.
+
+54
+00:05:00,120 --> 00:05:02,429
+Thanks for watching, and good luck in your interview.
+
+55
+00:05:02,879 --> 00:05:07,713
+If this helped, like the video, subscribe, and share it with a friend who's preparing too.
+
