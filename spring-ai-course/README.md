@@ -59,6 +59,7 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | 7.3 | Guardrails and prompt injection | Stop a prompt injection attack, add a token budget | [`labs/rag-guardrails`](labs/rag-guardrails) |
 | **8** | **Advanced agents** | | |
 | 8.1 | Subagents: the Task tool | A research assistant with a subagent | [`labs/research-assistant`](labs/research-assistant) |
+| 8.2 | Agent-to-agent: the A2A protocol | Two agents talk: an A2A server and client | [`labs/inventory-agent`](labs/inventory-agent), [`labs/sales-assistant`](labs/sales-assistant) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
@@ -82,6 +83,9 @@ Notes:
 - `labs/research-assistant` (Section 8) uses `qwen2.5:7b` and the community library
   [spring-ai-agent-utils](https://github.com/spring-ai-community/spring-ai-agent-utils) 0.13.0 (the Task tool for subagents).
   Run it from its own folder: it reads `docs/` and `agents/` relative to the project root.
+- Lab 8.2: start `labs/inventory-agent` (A2A server, :8081, uses `spring-ai-a2a-server-autoconfigure` 0.4.0) before
+  `labs/sales-assistant` (:8080): the client reads the agent card at startup. Both use `qwen2.5:7b`.
+  The server sets `a2a.authorization.required=false` for local use only.
 - `labs/order-assistant` uses `qwen2.5:3b` and `labs/tool-loop` uses `qwen2.5:7b` (models that handle tool calls well):
   `ollama pull qwen2.5:3b` / `ollama pull qwen2.5:7b`.
 - `labs/model-options` also uses `llama3.2:1b` (`ollama pull llama3.2:1b`). Its `openai` profile needs an

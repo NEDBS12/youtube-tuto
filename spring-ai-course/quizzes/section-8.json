@@ -63,6 +63,67 @@
      "why": "5 calls instead of 3, about 1.5 minutes instead of about half a minute."
     }
    ]
+  },
+  {
+   "id": "8.2",
+   "title": "Agent-to-agent (A2A)",
+   "questions": [
+    {
+     "q": "What does A2A connect?",
+     "options": [
+      "A model to a GPU",
+      "An agent to a database",
+      "An agent to another agent, which has its own model and tools",
+      "A browser to a server"
+     ],
+     "answer": 2,
+     "why": "MCP connects an agent to tools; A2A to other agents."
+    },
+    {
+     "q": "Where does an A2A agent publish its agent card?",
+     "options": [
+      "/actuator/agent",
+      "/.well-known/agent-card.json",
+      "/api/card",
+      "In the pom.xml"
+     ],
+     "answer": 1,
+     "why": "Clients read it to discover the agent's skills and URL."
+    },
+    {
+     "q": "In the response to SendMessage, where is the remote agent's answer?",
+     "options": [
+      "In the agent card",
+      "In the error field",
+      "In the HTTP headers",
+      "In the task's artifacts"
+     ],
+     "answer": 3,
+     "why": "A message becomes a task; the result comes back as artifacts."
+    },
+    {
+     "q": "Why did the lab set a2a.authorization.required=false?",
+     "options": [
+      "To make it faster",
+      "It's required by Spring Boot",
+      "The SDK refuses every task without an authorization provider: OK only for a local lab",
+      "To enable streaming"
+     ],
+     "answer": 2,
+     "why": "Keep authorization on for any server others can reach."
+    },
+    {
+     "q": "The inventory agent said 'restock on 2026-12-03'. The sales agent said 'not before Christmas'. What does it show?",
+     "options": [
+      "The timeout was too short",
+      "The protocol moved the right fact; the final agent reasoned wrongly",
+      "The agent card was wrong",
+      "A2A lost data"
+     ],
+     "answer": 1,
+     "why": "Compute dates and numbers in code, or return structured data."
+    }
+   ]
   }
  ],
  "levels": [
