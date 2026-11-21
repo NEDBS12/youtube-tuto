@@ -1,6 +1,6 @@
 # Spring AI senior interview prep kit
 
-Files from the Zero Cost AI video **"Spring AI Senior Interview Prep Kit: 80 Questions, Practice App and PDF"**.
+Files from the Zero Cost AI video **[Spring AI Interview Questions for Seniors: Free Prep Kit (80 Q&A)](https://youtu.be/NarXfbCqOAk)**.
 
 80 senior-level Spring AI interview questions in 20 topics, each with the answer and a detailed explanation.
 Covers Spring AI 2.0.x on Spring Boot 4 and Java 21.
