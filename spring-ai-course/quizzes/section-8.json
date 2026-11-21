@@ -124,6 +124,67 @@
      "why": "Compute dates and numbers in code, or return structured data."
     }
    ]
+  },
+  {
+   "id": "8.3",
+   "title": "Agent orchestration",
+   "questions": [
+    {
+     "q": "What is the 'best of both' way to orchestrate agents?",
+     "options": [
+      "Only hard-coded steps, no model",
+      "The model plans; Java executes the plan, checks it and enforces the rules",
+      "One agent per HTTP request",
+      "Let the model do everything"
+     ],
+     "answer": 1,
+     "why": "Model-driven planning, code-driven execution."
+    },
+    {
+     "q": "Why do the agents exchange Java records (Plan, Finding, Review)?",
+     "options": [
+      "So the code can check and decide with real types instead of free text",
+      "Ollama requires it",
+      "Records are faster",
+      "To save tokens"
+     ],
+     "answer": 0,
+     "why": "Structured output between agents."
+    },
+    {
+     "q": "In the first run, why was the root cause wrong?",
+     "options": [
+      "The planner forgot the deploys worker, so nobody looked at the deployment",
+      "The logs were empty",
+      "The model was too small",
+      "The budget was too small"
+     ],
+     "answer": 0,
+     "why": "A team is only as good as its plan."
+    },
+    {
+     "q": "How did the lab fix it?",
+     "options": [
+      "A runbook rule in Java: always add a deploys step",
+      "A bigger model",
+      "More drafts",
+      "A higher temperature"
+     ],
+     "answer": 0,
+     "why": "Put non-negotiable rules in code."
+    },
+    {
+     "q": "The budget was 1,500 tokens but the team used 2,556. Why?",
+     "options": [
+      "Tokens are estimated",
+      "A bug in Ollama",
+      "The planner ignored it",
+      "The workers were already running in parallel when the budget ran out"
+     ],
+     "answer": 3,
+     "why": "A check before each call can't stop calls in flight: keep a margin."
+    }
+   ]
   }
  ],
  "levels": [

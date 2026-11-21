@@ -60,6 +60,7 @@ Take the quizzes and section evals online, free, no account needed: [Spring AI c
 | **8** | **Advanced agents** | | |
 | 8.1 | Subagents: the Task tool | A research assistant with a subagent | [`labs/research-assistant`](labs/research-assistant) |
 | 8.2 | Agent-to-agent: the A2A protocol | Two agents talk: an A2A server and client | [`labs/inventory-agent`](labs/inventory-agent), [`labs/sales-assistant`](labs/sales-assistant) |
+| 8.3 | Agent orchestration: patterns and limits | An incident-response team of agents | [`labs/incident-orchestrator`](labs/incident-orchestrator) |
 
 Watch the videos in order in the **Spring AI** playlist on the [channel](https://www.youtube.com/@zerocostai-f1h).
 
